@@ -1,6 +1,4 @@
-![](git.png)
-
-
+<img src="git.png" alt="drawing" width="400"/>
 
 # Git - a distributed version control system
 

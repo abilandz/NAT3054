@@ -1,10 +1,8 @@
-![](GNUmake.png)
-![](CMake.png)
-
+<img src="make_cmake.png" alt="drawing" width="440"/>
 
 # make & cmake
 
-**Last update**: 20250908
+**Last update**: 20250915
 
 
 ### Table of Contents
