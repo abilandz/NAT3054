@@ -1,4 +1,4 @@
-<img src="make_cmake.png" alt="drawing" width="440"/>
+<img src="make_cmake.png" alt="drawing" width="500"/>
 
 # make & cmake
 
