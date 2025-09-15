@@ -1,8 +1,8 @@
-<img src="make_cmake.png" alt="drawing" width="550"/>
+<img src="make_cmake.png" alt="drawing" width="600"/>
 
 # make & cmake
 
-**Last update**: 20250915-1
+**Last update**: 20250915-2
 
 
 ### Table of Contents
