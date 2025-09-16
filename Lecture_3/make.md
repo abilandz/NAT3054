@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20250915-3
+**Last update**: 20250916
 
 
 ### Table of Contents
@@ -104,30 +104,29 @@ all    clean  run    test1  test2
 
 ### 3. Shared libraries <a name="shared.libraries"></a>
 
+Libraries are pre-existing code that is compiled and ready to use. When a logically distinct set of functions is available, it is helpful to build a library from that set so that the same source code doesn't have to be copied in the current project and recompiled all the time. If a bug fix or new feature has to be implemented in a given function, this has to be done only in one place. There are two types of libraries:
+
+- _static_ &mdash; the actual library is placed in the final program;
+- _shared_ &mdash; only a reference to the library is placed inside the final program (i.e. program is _linked_ with a library).
+
+The main disadvantage of static libraries is the code bloat and disk space waste, because the very same code with compiled function appear across different programs. In addition, if a change is introduced in a static library, all programs using that library need to be recompiled. On the other hand, programs linked with shared libraries do not need to be recompiled when changes are introduced in those libraries &mdash; only libraries need to be recompiled.
+
+The stages needed in the project development utilizing shared libraries can be delineated as follows:
+
+1. _Source code_ &mdash; the standard code development from scratch.
+2. _Preprocessor_ &mdash; this stage deals with all the preprocessor directives, to programmatically modify the source code and make it ready for compilation. For instance, in the C/C++ programming language, this step amounts to processing all lines in the source code that start with a ```#```, such as ```#define```, ```#include```, etc. If in the source code there is a line in the preamble ```#include <someHeaderFile.h>```, the preprocessor will literally inline the content of the header file ```someHeaderFile.h``` into that source code. No code compilation occurs at this stage, only programmatic manipulation of source code via the preprocessor. 
+3. _Compilation_ &mdash; once the source file has been preprocessed, the compilation commences over the modified source code. In the C/C++ programming language, at this stage, the source code in .c or .cxx files is turned into an .o (object) files. An object file contains machine code specific to the underlying hardware, and it's ready to be included via linking in a final executable (but typically cannot be executed directly).
+4. _Linking_ &mdash; at this stage all of the object files and shared libraries are linked together to make the final executable, that is ready to run. The executable can be started in the terminal from the shell, and is then handed off to the loader.
+5. _Loading_ &mdash; this stage happens when the program starts up. The program is scanned for references to shared libraries, and any references found are resolved and the shared libraries are mapped into the program. This way, only at runtime, different programs re-use exactly the same pre-compiled code in the shared libraries. TBI 20250916 improve the wording further here
+6. _Build_ &mdash; All stages above put together.
+
+All steps above are now illustrated with a simple example, in which a shared library is made for some functions, and then used afterward in a program. TBI 20250916 improve the wording further here
 
 
-Libraries are pre-existing code that is compiled and ready to use. 
 
-o use for later
-
-o separate out the code for organizational purposes
-
-When you have a reusable or logically distinct set of functions, it is helpful to build a library from it so that you do not have to copy the source code into your current project and recompile it all the time - and so you can keep different modules of your program disjoint and change one without affecting others. Once it is been written and tested, you can safely reuse it over and over again, saving the time and hassle of building it into your project every time.
-
-o static and shared libraries: Note that for static libraries, the actual library is placed in your final program, while for shared libraries, only a reference to the library is placed inside.
-
-o everything that happens from source code to running program:
-
-1. C Preprocessor: This stage processes all the [preprocessor directives](https://www.cprogramming.com/tutorial/cpreprocessor.html). Basically, any line that starts with a #, such as #define and #include.
-2. Compilation Proper: Once the source file has been preprocessed, the result is then compiled. Since many people refer to the [entire build process](https://www.cprogramming.com/compilingandlinking.html) as compilation, this stage is often referred to as compilation proper. This stage turns a .c file into an .o (object) file.
-3. Linking: Here is where all of the object files and any libraries are linked together to make your final program. Note that for static libraries, the actual library is placed in your final program, while for shared libraries, only a reference to the library is placed inside. Now you have a complete program that is ready to run. You launch it from the shell, and the program is handed off to the loader.
-4. Loading: This stage happens when your program starts up. Your program is scanned for references to shared libraries. Any references found are resolved and the libraries are mapped into your program.
+TBC 20250916
 
 
-
-Steps 3 and 4 are where the magic (and confusion) happens with shared libraries.
-
-Let's make a shared library for some functions:
 
 Step 1: implement some functions:
 
