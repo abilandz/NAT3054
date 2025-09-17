@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20250916
+**Last update**: 20250917
 
 
 ### Table of Contents
@@ -104,40 +104,36 @@ all    clean  run    test1  test2
 
 ### 3. Shared libraries <a name="shared.libraries"></a>
 
-Libraries are pre-existing code that is compiled and ready to use. When a logically distinct set of functions is available, it is helpful to build a library from that set so that the same source code doesn't have to be copied in the current project and recompiled all the time. If a bug fix or new feature has to be implemented in a given function, this has to be done only in one place. There are two types of libraries:
+Libraries are pre-existing code that is compiled and ready to use. When a logically distinct set of functions is available, it is helpful to build a library from that set of functions so that the same source code doesn't have to be copied in the current project and recompiled all the time. If a bug fix or new feature has to be implemented in a given function, this has to be done only in one place. There are two types of libraries:
 
-- _static_ &mdash; the actual library is placed in the final program;
+- _static_ &mdash; the actual library is placed in the final program during compilation;
 - _shared_ &mdash; only a reference to the library is placed inside the final program (i.e. program is _linked_ with a library).
 
-The main disadvantage of static libraries is the code bloat and disk space waste, because the very same code with compiled function appear across different programs. In addition, if a change is introduced in a static library, all programs using that library need to be recompiled. On the other hand, programs linked with shared libraries do not need to be recompiled when changes are introduced in those libraries &mdash; only libraries need to be recompiled.
+A static library is commonly stored in a file with an extension ```.a```, while a shared library is in a file with ```.so``` extension. The main disadvantage of static libraries is the code bloat and the resulting waste of disk space, because the very same code with compiled functions appears in different programs. In addition, if a change is introduced in a static library, all programs using that library must be recompiled. On the other hand, programs linked with shared libraries do not need to be recompiled when changes are introduced in those libraries &mdash; only the libraries need to be recompiled. When it comes to performance, programs using static libraries will run slightly faster, because all the symbols in the library are already resolved at compile time (with shared libraries, they need to be resolved at run time). Once compiled, programs using static libraries no longer depend on those libraries, which removes the external dependency on library version (this is particularly relevant when a major upgrade of the underlying operating system is performed, during which most libraries are updated to a newer version). In what follows next, we focus on shared libraries, using as an example code written in C/C++ programming language, and compiled via the open-source **gcc** compiler (originally, _GNU C Compiler_, lated renamed into _GNU Compiler Collection_).
 
 The stages needed in the project development utilizing shared libraries can be delineated as follows:
 
 1. _Source code_ &mdash; the standard code development from scratch.
 2. _Preprocessor_ &mdash; this stage deals with all the preprocessor directives, to programmatically modify the source code and make it ready for compilation. For instance, in the C/C++ programming language, this step amounts to processing all lines in the source code that start with a ```#```, such as ```#define```, ```#include```, etc. If in the source code there is a line in the preamble ```#include <someHeaderFile.h>```, the preprocessor will literally inline the content of the header file ```someHeaderFile.h``` into that source code. No code compilation occurs at this stage, only programmatic manipulation of source code via the preprocessor. 
-3. _Compilation_ &mdash; once the source file has been preprocessed, the compilation commences over the modified source code. In the C/C++ programming language, at this stage, the source code in .c or .cxx files is turned into an .o (object) files. An object file contains machine code specific to the underlying hardware, and it's ready to be included via linking in a final executable (but typically cannot be executed directly).
+3. _Compilation_ &mdash; once the source file has been preprocessed, the compilation takes place over the modified source code. In the C/C++ programming language, at this stage, the **gcc** compiler turns the source code from ```.c``` or ```.cxx``` files into an ```.o``` (object) files. An object file contains machine code specific to the underlying hardware, and it's ready to be included via linking in a final executable (but typically cannot be executed directly).
 4. _Linking_ &mdash; at this stage all of the object files and shared libraries are linked together to make the final executable, that is ready to run. The executable can be started in the terminal from the shell, and is then handed off to the loader.
-5. _Loading_ &mdash; this stage happens when the program starts up. The program is scanned for references to shared libraries, and any references found are resolved and the shared libraries are mapped into the program. This way, only at runtime, different programs re-use exactly the same pre-compiled code in the shared libraries. TBI 20250916 improve the wording further here
+5. _Loading_ &mdash; this stage happens when the program starts up. The program is scanned for references to shared libraries, and any references found are resolved and the shared libraries are mapped into the program. This way, only at runtime, different programs re-use exactly the same pre-compiled code stored in the shared libraries. TBI 20250916 improve the wording further here
 6. _Build_ &mdash; All stages above put together.
 
 All steps above are now illustrated with a simple example, in which a shared library is made for some functions, and then used afterward in a program. TBI 20250916 improve the wording further here
 
 
 
-TBC 20250916
+**Step 1: Source code**
 
-
-
-Step 1: implement some functions:
-
-functions.h :
+First, we place all function declarations in the header file ```functions.h```, with the following content:
 
 ```C
 void Hello();
 void Hallo();
 ```
 
-functions.cxx :
+For each function declared in the header file, we provide the implementation in the corresponding file ```functions.cxx```:
 
 ```c
 #include <stdio.h>
@@ -153,7 +149,7 @@ void Hallo()
 }
 ```
 
-main.C
+We had to add a line ```#include <stdio.h>```, so that we can use a function **printf** from the standard library ```stdio.h```. Finally, the main program (executable) is in the file ```test.C```, and it is implemented as follows:
 
 ```c
 #include <stdio.h>
@@ -169,43 +165,64 @@ int main()
 
 
 
-**Step 1: Compiling with Position Independent Code**
+**Step 2: Compilation**
+
+For compilation of the source code, we use **gcc** compiler, and we compile with position independent code (TBI 20250917 clarify), as follows:
 
 ```bash
-gcc -c -Wall -Werror -fpic functions.cxx
+# Check the content of current working directory:
+$ ls
+functions.cxx  functions.h
+
+# Compile:
+$ gcc -c -Wall -Werror -fpic functions.cxx
+
+# Check again the content of current working directory:
+$ ls 
+functions.cxx  functions.h  functions.o 
 ```
 
-=> this step produced an object file **functions.o**
+The compilation step produced a new object file _functions.o_, which contains the machine code, and whose content cannot be inspected with standard editors (if curious, try nevertheless **cat functions.o** &mdash; you will get only incomprehensible sequence of non-printable characters on the screen).
 
-**Step 2: Creating a shared library from an object file**
+
+
+**Step 3: Creating a shared library from an object file**
+
+TBI 20250917 add intro sentence here
 
 ```bash
-gcc -shared -o libfunctions.so functions.o
+$ gcc -shared -o libfunctions.so functions.o
+$ ls
+functions.cxx  functions.h  functions.o  libfunctions.so
 ```
 
-**Step 3: Linking with a shared library**
+This step produced a shared library in the file _libfunctions.so_, which also contains the machine code (or binary code).
 
-Let us compile our main.C and link it with libfunctions. We will call our final program test. Note that the -**lfunctions** option is not looking for functions.o, but libfunctions.so. GCC assumes that all libraries start with lib and end with .so or .a (.so is for shared object or shared libraries, and .a is for archive, or statically linked libraries).
+  
+
+**Step 4: Linking with a shared library**
+
+Let us compile our main program written in the file _test.C_ and link it with shared library in the file _libfunctions.so_. We will call our final executable **test**. 
 
 ```bash
-gcc -Wall -o test main.C -lfunctions
-```
-
-/usr/bin/ld: cannot find -lfunctions
-
+# Compile and link:
+$ gcc -Wall -o test test.C -l functions
+/usr/bin/ld: cannot find -l functions
 collect2: error: ld returned 1 exit status
-
-*** Telling GCC where to find the shared library***
-
-The linker does not know where to find libfunctions. GCC has a list of places it looks by default, but our directory is not in that list.[2](https://www.cprogramming.com/tutorial/shared-libraries-linux-gcc.html#fn:gcclist) We need to tell GCC where to find libfunctions.so. We will do that with the -L option. In this example, we will use the current directory /home/abilandz/Tutorials/sharedLibraries
-
-```bash
-gcc -L/home/abilandz/Tutorials/sharedLibraries -Wall -o test main.C -lfunctions
 ```
 
+Note that the **-l functions** option is not looking for a file _functions.o_, but for _libfunctions.so_. Namely, **gcc** assumes that all libraries start with prefix ```lib``` and end with a file extension ```.so``` (for shared libraries) or ```.a``` (for static libraries). That being written, the option **-l functions.so** would also lead to an error, because **gcc** will be looking for shared library in a file _libfunctions.so.so_. 
 
+However, we got an error. The linker **ld** does not know where to find the shared library _libfunctions.so_ (Remark: **gcc** merely acts as a front-end to **ld** at link time). The **gcc** has a list of places it looks by default for the libraries, but our current working directory is not in that list. By default, **gcc** searches for libraries first in ```/usr/local/lib```, and then in ```/usr/lib``` (but this may vary from one system to another). After that, it searches for libraries in the directories specified by the -L option, in the order specified on the command line. 
 
-from ld man page: TBI 20250915 improve the spacing
+```bash
+# Compile and link, telling gcc that the shared library "libfunctions.so" is in PWD:
+gcc -L $PWD -Wall -o test test.C -l functions
+```
+
+We have now successfully linked our executable **test** with the pre-compiled shared library _libfunctions.so_.
+
+TBI 20250917 Use still somewhere in this section here this:
 
 ```bash
  -l LIBNAME, --library LIBNAME
@@ -217,34 +234,72 @@ from ld man page: TBI 20250915 improve the spacing
 
 
 
-AB : Remark: -llibfunction.so doesn't work, it seems indeed that lib and .so are assumed
+**Step 5: Loading the shared library at runtime and executing the main programme**
 
-
-
-**Step 4: making the library available at runtime**
+However, if we attempt after compilation and linking to execute **test**, we get a new error:
 
 ```bash
 $ ./test
 ./test: error while loading shared libraries: libfunctions.so: cannot open shared object file: No such file or directory
 ```
 
-The loader cannot find the shared library.[3](https://www.cprogramming.com/tutorial/shared-libraries-linux-gcc.html#fn:loadorder) We did not install it in a standard location, so we need to give the loader a little help. We have a couple of options: we can use the environment variable LD_LIBRARY_PATH for this, or rpath.
+Now the loader cannot find the shared library. Again, the problem is that the shared library is not in any of the standard locations, so we need to give the loader a custom location of directory. The easiest it to use the environment variable **LD_LIBRARY_PATH**, for instance:
 
-a) **LD_LIBRARY_PATH**
+```bash
+# add new location, in this example PWD, to LD_LIBRARY_PATH:
+export LD_LIBRARY_PATH=${PWD}:${LD_LIBRARY_PATH}
+```
 
-**export LD_LIBRARY_PATH=/home/abilandz/Tutorials/sharedLibraries:${LD_LIBRARY_PATH}**
+**Remark: It has to be exported!!** TBI 20250917 clarify perhaps why
 
-**Remark: It has to be exported!!**
+**LD_LIBRARY_PATH** is great for quick tests and for systems on which you do not have admin privileges. As a downside, however, exporting the **LD_LIBRARY_PATH** variable means it may cause problems with other programs you run that also rely on **LD_LIBRARY_PATH** if you do not reset it to its previous state when you are done.
 
-./test
+TBI 20250917 an alternative is to use **rpath** => do I want to add that as well? On Ubuntu, I do not have it installed by default, so most likely not.
 
+Finally, we are ready to run:
+
+```bash
+# Start the main programme:
+$ ./test
 This is a shared library test...
 
 Hallo, wie geht's dir Heute?
+```
 
-LD_LIBRARY_PATH is great for quick tests and for systems on which you do not have admin privileges. As a downside, however, exporting the LD_LIBRARY_PATH variable means it may cause problems with other programs you run that also rely on LD_LIBRARY_PATH if you do not reset it to its previous state when you are done.
 
-**b) rpath TBI  20250915 do I need this? Check online reference below**
+
+**Step 6: Introduce a change in the shared library**
+
+```c
+#include <stdio.h>
+#include "functions.h"
+
+void Hello()
+{
+ printf("\nHello, how is life?\n\n");
+}
+void Hallo()
+{
+ printf("\nHallo, wie geht's dir Heute? TBI\n\n");
+}
+```
+
+Recompile again object file + shared library TBI 20250917 improve the wording
+
+Finally, the main point &mdash; execute the main programme WITHOUT recompiling:
+
+```bash
+$ ./test
+This is a shared library test...
+
+Hallo, wie geht's dir Heute? TBI
+```
+
+TBI 20250917 improve the wording here and there.
+
+TBI 20250917 shall I also add the section for static libraries?
+
+
 
 
 
