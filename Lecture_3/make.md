@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20250917
+**Last update**: 20250918
 
 
 ### Table of Contents
@@ -130,44 +130,46 @@ First, we place all function declarations in the header file ```functions.h```, 
 
 ```C
 void Hello();
-void Hallo();
+void Bye();
 ```
 
-For each function declared in the header file, we provide the implementation in the corresponding file ```functions.cxx```:
+For each function declared in the header file, we provide its implementation in the corresponding file ```functions.cxx```:
 
 ```c
 #include <stdio.h>
 #include "functions.h"
 
-void Hello()
-{
- printf("\nHello, how is life?\n\n");
+void Hello() {
+  printf("\n Hello, how is life? \n");
 }
-void Hallo()
-{
- printf("\nHallo, wie geht's dir Heute?\n\n");
+void Bye() {
+  printf("\n See you later! \n");
 }
 ```
 
-We had to add a line ```#include <stdio.h>```, so that we can use a function **printf** from the standard library ```stdio.h```. Finally, the main program (executable) is in the file ```test.C```, and it is implemented as follows:
+We had to add a line ```#include <stdio.h>```, so that we can use a function **printf** from the standard library ```stdio.h```. With the notation ```< ... >``` we indicate that this header will be taken from one of the standard locations in the filesystem where header files are stored (typically, ```/usr/include```). On the other hand, with notation ```" ... "``` we indicate that the header file is taken from the current working directory. In case of a doubt, we can always specify the full path to the header file. 
+
+Finally, the main program (executable) is in the file ```test.cxx```, and it is implemented as follows:
 
 ```c
 #include <stdio.h>
 #include "functions.h"
 
-int main()
-{
- puts("This is a shared library test...");
- Hallo();
- return 0;
+int main() {
+  puts("This is a shared library test...");
+  Hello();
+  Bye();  
+  return 0;
 }
 ```
+
+In this exercise, we will make a library for functions implemented in ```functions.h``` and ```functions.cxx```, and demonstrate how to use it in the executable **test** obtained after compiling ```test.cxx```.
 
 
 
 **Step 2: Compilation**
 
-For compilation of the source code, we use **gcc** compiler, and we compile with position independent code (TBI 20250917 clarify), as follows:
+For compilation of the source code, we use the **gcc** compiler, and we have to compile using the flag ```-fpic``` to create position independent code (this flag is mandatory for shared libraries, because the generated machine code will not be dependent on a specific address in memory, which is important when several shared libraries are loaded simultaneously in the memory):
 
 ```bash
 # Check the content of current working directory:
@@ -182,13 +184,13 @@ $ ls
 functions.cxx  functions.h  functions.o 
 ```
 
-The compilation step produced a new object file _functions.o_, which contains the machine code, and whose content cannot be inspected with standard editors (if curious, try nevertheless **cat functions.o** &mdash; you will get only incomprehensible sequence of non-printable characters on the screen).
+The compilation step produced a new object file _functions.o_, which contains the machine (or binary) code, and whose content cannot be inspected with the standard editors (if curious, try nevertheless **cat functions.o** &mdash; you will get only incomprehensible sequence of non-printable characters on the screen).
 
 
 
 **Step 3: Creating a shared library from an object file**
 
-TBI 20250917 add intro sentence here
+This step is straightforward:
 
 ```bash
 $ gcc -shared -o libfunctions.so functions.o
@@ -196,33 +198,24 @@ $ ls
 functions.cxx  functions.h  functions.o  libfunctions.so
 ```
 
-This step produced a shared library in the file _libfunctions.so_, which also contains the machine code (or binary code).
+As it can be seen above, this step produced a shared library in the file _libfunctions.so_, which contains the machine code.
 
   
 
 **Step 4: Linking with a shared library**
 
-Let us compile our main program written in the file _test.C_ and link it with shared library in the file _libfunctions.so_. We will call our final executable **test**. 
+Let us compile our main program from the source code _test.C_, by linking it with the shared library in the file _libfunctions.so_, to create our final executable named **test**:
 
 ```bash
 # Compile and link:
-$ gcc -Wall -o test test.C -l functions
-/usr/bin/ld: cannot find -l functions
+$ gcc -Wall -o test test.cxx -l functions
+/usr/bin/ld: cannot find -lfunctions
 collect2: error: ld returned 1 exit status
 ```
 
-Note that the **-l functions** option is not looking for a file _functions.o_, but for _libfunctions.so_. Namely, **gcc** assumes that all libraries start with prefix ```lib``` and end with a file extension ```.so``` (for shared libraries) or ```.a``` (for static libraries). That being written, the option **-l functions.so** would also lead to an error, because **gcc** will be looking for shared library in a file _libfunctions.so.so_. 
+The first attempt failed, but we use this failure to clarify few non-trivial things which are happening at this step. First, note that the option **-l functions** is not looking for a file _functions.o_, but instead for a file _libfunctions.so_. Namely, **gcc** assumes that all libraries start with prefix ```lib``` and end with a file extension ```.so``` (for shared libraries) or ```.a``` (for static libraries). That being written, the option **-l functions.so** would also lead to an error, because **gcc** will be looking for shared library in a file _libfunctions.so.so_. 
 
-However, we got an error. The linker **ld** does not know where to find the shared library _libfunctions.so_ (Remark: **gcc** merely acts as a front-end to **ld** at link time). The **gcc** has a list of places it looks by default for the libraries, but our current working directory is not in that list. By default, **gcc** searches for libraries first in ```/usr/local/lib```, and then in ```/usr/lib``` (but this may vary from one system to another). After that, it searches for libraries in the directories specified by the -L option, in the order specified on the command line. 
-
-```bash
-# Compile and link, telling gcc that the shared library "libfunctions.so" is in PWD:
-gcc -L $PWD -Wall -o test test.C -l functions
-```
-
-We have now successfully linked our executable **test** with the pre-compiled shared library _libfunctions.so_.
-
-TBI 20250917 Use still somewhere in this section here this:
+We got a compilation error, because the linker **ld** does not know where to find the shared library _libfunctions.so_ (Remark: **gcc** compiler merely acts as a front-end to the linker **ld** at link time). The **gcc** has a list of directories it looks by default for the libraries, but our current working directory which contains the library _libfunctions.so_ is not in that list. By default, **gcc** searches for libraries first in ```/usr/local/lib```, and then in ```/usr/lib``` (but this may vary from one operating system to another). After that, it searches for libraries in the directories specified by the **-L** option, in the order specified on the command line. From documentation:
 
 ```bash
  -l LIBNAME, --library LIBNAME
@@ -232,72 +225,89 @@ TBI 20250917 Use still somewhere in this section here this:
                Add DIRECTORY to library search path
 ```
 
+Since our shared library _libfunctions.so_ is in the current working directory, we can disclose its location to **gcc** with the option **-L $PWD**:
+
+```bash
+# Compile and link, telling gcc that the shared library "libfunctions.so" is in PWD:
+gcc -L $PWD -Wall -o test test.cxx -l functions
+```
+
+We have now successfully linked our executable **test** with the pre-compiled shared library _libfunctions.so.
+
 
 
 **Step 5: Loading the shared library at runtime and executing the main programme**
 
-However, if we attempt after compilation and linking to execute **test**, we get a new error:
+Before a program can be executed, the executable must be loaded from the disk into the primary memory (RAM). This is accomplished by the _loader_, an essential part of an underlying operating system that is responsible for loading programs and libraries into memory. However, if we attempt after compilation and linking to execute our final executable **test**, we get yet another error:
 
 ```bash
 $ ./test
 ./test: error while loading shared libraries: libfunctions.so: cannot open shared object file: No such file or directory
 ```
 
-Now the loader cannot find the shared library. Again, the problem is that the shared library is not in any of the standard locations, so we need to give the loader a custom location of directory. The easiest it to use the environment variable **LD_LIBRARY_PATH**, for instance:
+Now the loader cannot find the shared library. Again, the problem is that the shared library is not in any of the standard locations, so we need to pass to the loader an information about the custom location of our library. The easiest way to accomplish this is to use the environment variable **LD_LIBRARY_PATH**, for instance:
 
 ```bash
-# add new location, in this example PWD, to LD_LIBRARY_PATH:
+# Add new location, in this example PWD, to LD_LIBRARY_PATH:
 export LD_LIBRARY_PATH=${PWD}:${LD_LIBRARY_PATH}
 ```
 
-**Remark: It has to be exported!!** TBI 20250917 clarify perhaps why
+In the above re-definition of environment variable **LD_LIBRARY_PATH**, we have appended its previous content. Otherwise, its redefinition may cause problems with other programs that also rely on **LD_LIBRARY_PATH**.
 
-**LD_LIBRARY_PATH** is great for quick tests and for systems on which you do not have admin privileges. As a downside, however, exporting the **LD_LIBRARY_PATH** variable means it may cause problems with other programs you run that also rely on **LD_LIBRARY_PATH** if you do not reset it to its previous state when you are done.
-
-TBI 20250917 an alternative is to use **rpath** => do I want to add that as well? On Ubuntu, I do not have it installed by default, so most likely not.
-
-Finally, we are ready to run:
+Finally, after redefinition of **LD_LIBRARY_PATH** we are ready to run:
 
 ```bash
 # Start the main programme:
 $ ./test
 This is a shared library test...
 
-Hallo, wie geht's dir Heute?
+ Hello, how is life? 
+
+ See you later! 
 ```
+
+In the next step, we illustrate the main point of using shared libraries.
 
 
 
 **Step 6: Introduce a change in the shared library**
 
+We now introduce some change in the source code of functions in the file _functions.cxx_:
+
 ```c
 #include <stdio.h>
 #include "functions.h"
 
-void Hello()
-{
- printf("\nHello, how is life?\n\n");
+void Hello() {
+ // printf("\n Hello, how is life? \n"); // old version
+ puts(" Hello from new version!");
 }
-void Hallo()
-{
- printf("\nHallo, wie geht's dir Heute? TBI\n\n");
+void Bye() {
+  // printf("\n See you later! \n"); // old version
+  puts(" Hasta la vista!");
 }
 ```
 
-Recompile again object file + shared library TBI 20250917 improve the wording
+We recompile again only the functions:
 
-Finally, the main point &mdash; execute the main programme WITHOUT recompiling:
+```bash
+# Recompile the object file:
+$ gcc -c -Wall -Werror -fpic functions.cxx
+
+# Recompile the shared library:
+$ gcc -shared -o libfunctions.so functions.o
+```
+
+And finally, the main point &mdash; we can execute the main programme without recompiling:
 
 ```bash
 $ ./test
 This is a shared library test...
-
-Hallo, wie geht's dir Heute? TBI
+ Hello from new version!
+ Hasta la vista! 
 ```
 
-TBI 20250917 improve the wording here and there.
-
-TBI 20250917 shall I also add the section for static libraries?
+This becomes particularly beneficial if we have compiled our main programme against several hundreds external shared libraries. TBI 20250918 Add some more text here in conclusion
 
 
 
@@ -306,4 +316,4 @@ TBI 20250917 shall I also add the section for static libraries?
 ### 4. References <a name="references"></a>
 * _"UNIX A History and a Memoir"_, Brian Kernighan
   * Section TBI 20250909: Regular expressions 
-* Online resource on shared libraries: https://www.cprogramming.com/tutorial/shared-libraries-linux-gcc.html  TBI 20250519 improve this link
+* Online resources on shared libraries can be found at this [link](https://www.cprogramming.com/tutorial/shared-libraries-linux-gcc.html )
