@@ -13,3 +13,4 @@ The formal course description can be found at the TUM website at the following i
 * [Lecture 2: Git](./Lecture_2/git.md)
 * [Lecture 3: make & cmake](./Lecture_3/make.md)
 * [Lecture 4: Working remotely](./Lecture_4/remote.md)
+* [Lecture 5: Valgrind](./Lecture_5/valgrind.md)
