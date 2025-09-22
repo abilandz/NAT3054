@@ -1,6 +1,6 @@
 # Working remotely
 
-**Last update**: 20250919
+**Last update**: 20250922
 
 
 ### Table of Contents
@@ -19,34 +19,104 @@
 
 ### 1. Terminal multiplexers (screen, tmux) <a name="screen"></a>
 
-TBI 20250918 add some introductory text
+In high-energy physics, one frequently encounters a situation where the processing of a dataset is feasible only by using large computing facilities. In that case, one needs to connect and organize the work on a remote computer (typically, this amounts to running shell scripts for the automated job submission, merging output files, copying, etc.). It would be very inconvenient if, after each remote login, one would need to set up the working environment from scratch, start all the scripts, etc. In addition, if on a remote computer there is a running process that will not terminate before a user wants to disconnect, it is essential to be able to keep that process running, and reattach to it with a new login later, without affecting the status of that running process.
 
-This is the summary of basic 'screen' commands, which is really a great software if you want to do your thing without interruption from multiple machines. For instance, if you have a process running in 'screen' on your desktop machine in the office, then you can detach from that screen session, go somewhere else, and re-attach to that screen session remotely from any other machine in this world, and continue just like you are sitting in front of your desktop machine.
+All these functionalities can be achieved by _terminal multiplexers_. These software tools make it possible to detach and reattach sessions from a terminal running on any computer, including the computers on which only remote access is possible. They also enable the separation of running processes from the shell that started that process (by design, one shell cannot take control of a process started by another shell). In turn, this keeps the remote process running even when the user is disconnected from remote computer (i.e. after its login shell has terminated). Several open-source terminal multiplexers are available, with **screen** and **tmux** being the most popular ones. In this lecture, the primary focus and all examples are provided for **screen**. 
+
+To start a **screen** one executes in the terminal:
+
+```bash
+$ screen -S test
+```
+
+However, at least at first glance, nothing seems to change. But the important difference is that now we are in a new process, independent from the parent shell, which will keep running even if the parent shell terminates. At any point later, and from any other shell on this computer, we can reattach to this **screen** session named "test", and all processes started in it will be running uninterrupted. To illustrate this, we can in the **screen** session start the following command:
+
+````bash
+$ while :; do date; sleep 10s; done
+Mo 22. Sep 08:31:51 CEST 2025
+Mo 22. Sep 08:32:01 CEST 2025
+...
+````
+
+The above code snippet will after each 10 seconds print the timestamp in an infinite loop. To detach from this **screen** session, we execute:
+
+```bash
+$ Ctrl+a+d # hit this combination of keystrokes to detach from screen session
+[detached from 536338.test]
+```
+
+From the info message "detached from 536338.test" we can read off the process ID (536338) of the **screen** session which we just left, and its name "test". We now illustrate the main point: at any point later we can login again on this computer, and reattach to this very same **screen** session, in the following way:
+
+```bash 
+# List all running screen sessions on this computer:
+$ screen -ls 
+There are screens on:
+	536338.test	(22.09.2025 08:31:45)	(Detached)
+... list of other screen sessions on this computer, if any ...
+Remove dead screens with 'screen -wipe'.
+12 Sockets in /run/screen/S-abilandz.
+
+# Reattach to screen session using its process ID 536338, or its name "test":
+$ screen -rd "test"
+while :; do date; sleep 10s; done
+Mo 22. Sep 08:31:51 CEST 2025
+Mo 22. Sep 08:32:01 CEST 2025
+Mo 22. Sep 08:32:11 CEST 2025
+Mo 22. Sep 08:32:21 CEST 2025
+Mo 22. Sep 08:32:31 CEST 2025
+Mo 22. Sep 08:32:41 CEST 2025
+Mo 22. Sep 08:32:51 CEST 2025
+Mo 22. Sep 08:33:01 CEST 2025
+....
+```
+
+As we can see, the process started in **screen** was running uninterrupted in the meantime, even after we detached from it. 
+
+Below is the summary of basic **screen** commands, which can be executed either from the terminal, or within **screen** session.
+
+* When in terminal:
+
+  - ```screen -S someName``` # start a new screen with name "someName"
 
 
+  - ```screen -ls``` # list all running screen sessions on this computer
 
-When in terminal:
 
-- screen -S <name> # start a new screen with <name>
+  - ```screen -rd someScreenName``` # reattach to screen session with the name "someScreenName" (alternatively, screen PID can be used)
 
-- screen -ls # what are the running screen sessions on my machine?
 
-- screen -rd <screen-session-name> # re-attach to particular screen, from anywhere in the world, e.g. screen -rd 3612.pts-12.anteb
+  - ```kill -9 screenPID``` # terminate screen session from the terminal. Its PID can can be obtained from ```screen -ls```, e.g. in "536338.test" screenPID is 536338
 
-- kill -9 <screen-PID> # where <screen-PID> you can get from screen -ls, e.g. in "3612.pts-12.anteb" screen-PID is 3612
 
-- screen -wipe <screen-name> # after you killed the certain screen, use also this command to wipe it out from history
+  - ```screen -wipe someScreenName``` # after you killed the certain screen, this step may be necessary &mdash; use this command to wipe out the killed **screen** session from history
 
-  
-  
 
-When in 'screen':
+* When in **screen**:
 
-* Ctrl+a+d # detach from screen
-* Ctrl+a+c # make new session in the screen
-* Ctrl+a Shift+a # name a new session in the screen
-* Ctrl+a Shift+" # menu of screen sessions
-* Ctrl+a+K # kill the current session in the screen
+  * ```Ctrl+a+d``` # detach from **screen**
+
+  * ```Ctrl+a+c``` # make new window in the **screen**, running its own process
+
+  * ```Ctrl+a Shift+a``` # name a new window in the **screen**
+
+  * ```Ctrl+a Shift+"``` # menu of all **screen** windows, each running its own independent process
+
+  * ```Ctrl+a+K``` # kill the current window in the **screen** session
+
+
+In practice, in a given **screen** session, we establish several windows (see ```Ctrl+a Shift+a``` above), each of running its own process. If within **screen** session we hit the combination ```Ctrl+a Shift+"```, we get the menu of all independent processes running in that **screen**:
+
+```bash
+ Num Name
+   0 Submit - kta                                                                                                                 
+   1 Offline                                                                                                                     
+   2 Monitoring                                                                                                                   
+   3 Move  
+```
+
+Simply selecting 0, 1, 2, or 3, will move us to the environment where any of these processes is executed. When we detach and reattach from the **screen** session, all independent processes in each of the windows keep running uninterrupted. In the very same spirit, if you have a process running in a **screen** on your desktop machine in the office, then you can detach from that **screen** session, go somewhere else, and reattach to that **screen** session remotely from any other computer, and continue your work just like you are still sitting in front of your desktop machine.
+
+
 
 
 
