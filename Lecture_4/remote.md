@@ -1,6 +1,6 @@
 # Working remotely
 
-**Last update**: 20250923
+**Last update**: 20250923-2
 
 
 ### Table of Contents
@@ -95,6 +95,8 @@ Below is the summary of basic **screen** commands, which can be executed either 
 
   * ```Ctrl+a+k``` # kill the current window in the **screen** session
   
+  * ```Ctrl+a+ESC``` # enters the vertical scroll mode in the current window &mdash; use up and arrow keys, or mouse wheel, to scroll back and forth vertically (press ```ESC``` to go back to the normal mode)
+  
   * ```Ctrl+a+:``` # gives internal **screen** prompt starting with ```:``` which accepts internal **screen** commands, for instance: 
   
     ```
@@ -126,7 +128,7 @@ Finally, we remark on the environment: since a **screen** session runs in its ow
 
 ### 2. ping <a name="ping"></a>
 
-Before connecting remotely on another computer, or before starting to transfer files remotely from one computer to another, we can check from the command line whether the remote computer is accessible (i.e. whether the remote computer is up and running, and whether the network connection to it is stable). Typically, that check is being accomplished by using the **ping** command, which checks that packets can reach remote hosts. The **ping** command verifies that the networking system can successfully support communication with another computer on the network:
+Before connecting remotely to another computer, or before starting to transfer files remotely from one computer to another, we can check from the command line whether the remote computer is accessible (i.e. whether the remote computer is up and running, and whether the network connection to it is stable). Typically, that check is accomplished by using the **ping** command, which checks that packets can reach remote hosts. The **ping** command verifies that the networking system can successfully support communication with another computer on the network:
 
 ```bash
 ping <IP-address|hostname>
@@ -135,10 +137,11 @@ ping <IP-address|hostname>
 Some popular options are:
 
 ```bash
-ping -c COUNT ... # limit to COUNT attemnts
+ping -c COUNT ... # limit to COUNT attempts
 ping -I <network interface> # check directly which network interface is causing trouble
 ping -i <interval> # specify the time interval (in seconds) between packets (by default it's 1 second)
-ping -t <TTL> ... # Time to Live (TTL) is maximum number of routers a packet can travel (also number of hops)
+ping -t <TTL> # Time to Live (TTL) is maximum number of routers a packet can travel (also number of hops)
+ping -s <packetsize> # specifies the number of data bytes to be sent
 ```
 
 The output of **ping** command shows a report for each packet in an unending list that includes information on whether the attempt was successful or not, along with the response times, for instance:
@@ -163,22 +166,36 @@ PING 10.152.133.25 (10.152.133.25) 56(84) bytes of data.
 ...
 ```
 
+The above printout can be interpreted as follows: It takes less than 1 ms for the packet of 64 bytes to get to the remote host be responded to (everything less than 1 s is usually perfectly fine). The variable ```icmp_seq``` is the number of packet, and if there is no problem with the routing, packets will be enlisted in consecutive order. 
 
+Finally, we remark on the IP ("Internet Protocol") address. This is a numerical label uniquely assigned to each computer connected to a network. If we know the host name, we can read off its IP address using for instance either **ping** or **nslookup** commands:
 
-TBI 20250919 shall I document here how to determine IP address of a computer? If I am on that computer, it's simple: 
+```bash
+$ ping nidoqueen.ktas.ph.tum.de
+PING nidoqueen.ktas.ph.tum.de (10.152.133.25) 56(84) bytes of data.
+64 bytes from nidoqueen.ktas.ph.tum.de (10.152.133.25): icmp_seq=1 ttl=63 time=0.756 ms
+...
+# => IP address of 'nidoqueen' is 10.152.133.25
+
+$ nslookup nidoqueen.ktas.ph.tum.de
+Server:		127.0.0.53
+Address:	127.0.0.53#53
+
+Non-authoritative answer:
+Name:	nidoqueen.ktas.ph.tum.de
+Address: 10.152.133.25
+# => IP address of 'nidoqueen' is 10.152.133.25
+```
+
+If we need IP address of the computer we are currently working on, it's even simple by using **hostname** command: 
 
 ```bash
 # Print IP address of this computer:
-$ hostname -i
-127.0.1.1
-
-# Connect remotely by using IP:
-$ ssh -Y someUserName@127.0.1.1
+ga45mof@nidoqueen:~$ hostname -i
+10.152.133.25
 ```
 
-TBI 20250919 I could also add more elaborate example when I am not on the computer
-
-
+TBI 20250923 See if I want still to add something here, or at least make a bridge towards next section
 
 
 
