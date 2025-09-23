@@ -75,25 +75,15 @@ As we can see, the process started in **screen** was running uninterrupted in th
 Below is the summary of basic **screen** commands, which can be executed either from the terminal, or within **screen** session.
 
 * When in a terminal:
-
-  - ```screen -S someName``` # start a new screen with name "someName"
-  
-  
-    - ```screen -ls``` # list all running screen sessions on this computer
-  
-  
-    - ```screen -rd someScreenName``` # reattach to screen session with the name "someScreenName" (alternatively, screen PID can be used)
-  
-  
-    - ```kill -9 screenPID``` # terminate screen session from the terminal. Its PID can can be obtained from ```screen -ls```, e.g. in "536338.test", screenPID is 536338
-  
-  
-    - ```screen -wipe someScreenName``` # after you killed the certain screen, this step may be necessary &mdash; use this command to wipe out the killed **screen** session from history
-    - ```screen -S screenPID.oldName -X sessionname newName``` &mdash; rename screen session after it was created 
-  
+  * ```screen -S someName``` # start a new screen with name "someName"
+  * ```screen -ls``` # list all running screen sessions on this computer
+  * ```screen -rd someScreenName``` # reattach to screen session with the name "someScreenName" (alternatively, screen PID can be used)
+  * ```kill -9 screenPID``` # terminate screen session from the terminal. Its PID can can be obtained from ```screen -ls```, e.g. in "536338.test", screenPID is 536338
+  * ```screen -wipe someScreenName``` # after you killed the certain screen, this step may be necessary &mdash; use this command to wipe out the killed **screen** session from history
+  * ```screen -S screenPID.oldName -X sessionname newName``` &mdash; rename screen session after it was created 
 
 
-* When in **screen** ("+" in the syntax below is a metacharacter, and stands ):
+* When in **screen** ("+" in the syntax below is a metacharacter, and stands for "_and press_"):
 
   * ```Ctrl+a+d``` # detach from **screen**
 
@@ -123,9 +113,9 @@ In practice, in a given **screen** session, we establish several windows (see ``
    3 Move  
 ```
 
-Simply selecting 0, 1, 2, or 3, will move us to the environment where any of these processes is executed. When we detach and reattach from the **screen** session, all independent processes in each of the windows keep running uninterrupted. In the very same spirit, if you have a process running in a **screen** on your desktop machine in the office, then you can detach from that **screen** session, go somewhere else, and reattach to that **screen** session remotely from any other computer, and continue your work just like you are still sitting in front of your desktop machine.
+Simply selecting 0, 1, 2, or 3, will move us to the environment where any of these processes is executed. When we detach and reattach from the **screen** session, all independent processes in each window keep running uninterrupted. In the very same spirit, if you have a process running in a **screen** on your desktop machine in the office, then you can detach from that **screen** session, go somewhere else, and reattach to that **screen** session remotely from any other computer, and continue your work just like you are still sitting in front of your desktop machine.
 
-Finally, we remark on the environment: since **screen** runs in its own process it will inherit at creation time from the parent shell only the settings of variables which were exported in the parent shell, and afterward cannot modify them globally. Since each **screen** window runs in its own process, each window maintains its own independent environment in a given **screen** session.
+Finally, we remark on the environment: since a **screen** session runs in its own process, it will inherit at creation time from the parent shell only the settings of variables exported in the parent shell, and afterward cannot modify them globally. Since each **screen** window runs in its own process, each **screen** window maintains its own independent environment within a given **screen** session.
 
 
 
