@@ -1,6 +1,6 @@
 # Working remotely
 
-**Last update**: 20250923-2
+**Last update**: 20250924-1
 
 
 ### Table of Contents
@@ -205,100 +205,106 @@ TBI 20250923 See if I want still to add something here, or at least make a bridg
 
 ### 3. ssh <a name="ssh"></a>
 
-TBI 20250919 basic commands and examples
+Secure Shell (SSH) protocol was designed in 1995 by Tatu Ylönen as a secure way of accessing and executing commands on a remote computer, over unsecured network. Through the use of encryption mechanisms, authentication across a public network, i.e. sending username and password to remote computer, is made safe. The **ssh** command is typically used to log into a remote computer's shell and to execute commands remotely after connection is established.
+
+Technically, the **ssh** command establishes _encrypted tunnel_ between two computers, using client/server architecture based on TCP/IP (Transmission Control Protocol/Internet Protocol). The **ssh** server (which in essence is the **sshd** process running the background or daemon) runs on one machine, where it listens for incoming connections on TCP port 22. The client then uses TCP port 22 to connect to the server. When connection between two computers is established, a few things happen in the background:
+
+- server and client exchange information about supported protocols for encrypted communication (SSH2 is default nowadays); 
+
+- server and client negotiate the algorithm, followed by the key that both will use for data transfer;
+
+- the key is used only once, for the current connection, and both ends will destroy it when connection terminates;
+
+- for extended sessions the key will change regularly (with 1 hour being the default interval).
+
+We now summarize all steps needed to use **ssh** for remote access and remote command execution:
 
 
 
-**ssh** : Secure Shell (SSH)
-
-o 'encrypted tunnel'
-
-o the SSH client/server architecture is based on TCP/IP
-
-o the ssh server (sshd) runs on one machine, where it listens for incoming connections on TCP port 22
-
-o the client simply uses TCP port 22 to connect to the server
-
-o when connection is established, few things happen in the background
-
-  => server and client exchange information about supported protocols (SSH2 is default these days)
-
-  => encryption is much safer with SSH2
-
-  => the server and client negotiate then the algorithm, followed by key that both will use for data transfer
-
-  => the key is used only once, for the current connections, and both ends destroy it when connection terminates
-
-  => for extended sessions the key will change regularly, with 1h being the default interval
-
-
-
-**o Step 1**: install as root the SSH server on the target machine (e.g. OpenSSH)
+**Step 1** &mdash; install as a root using **sudo** command the SSH server on the target remote machine (e.g. OpenSSH server):
 
 ```bash
-apt-get install openssh-server
+$ sudo apt-get install openssh-server
 ```
 
+This step is rarely needed for remote computer, because an admin responsible for it will install OpenSSH server among the first things on that computer. However, if you want to allow remote access to your own computer (also to yourself), you need to install OpenSSH server with root privileges on your computer. 
 
 
-**o Step 2:** to change something in the configuration of ssh server (e.g. incoming port), edit the file:
+**Step 2** &mdash; to change something in the configuration of **ssh** server (e.g. its incoming port), edit with root privileges the configuration file:
 
 ```bash
 /etc/ssh/sshd_config
 ```
 
-If you did change someting in the configuration, restart the ssh server:
+This step is rarely needed in practice, but if you did change something in this configuration file, you have to restart the **ssh** server:
 
 ```bash
-/etc/init.d/ssh restart # AB note that this is note the same thing as ssh, which is /bin/ssh
+$ /etc/init.d/ssh restart # note that this is not the same executable as ssh, which is /bin/ssh
 ```
 
 
 
-**o Step 3**: install as root the OpenSSH client on your own machine
+**Step 3** &mdash; install as root the OpenSSH client on your own computer:
 
 ```bash
-apt-get install openssh-client
+$ sudo apt-get install openssh-client
 ```
 
 
 
-**o Step 4:** establish the connection using default port 22:
+**Step 4a** &mdash; login to remote computer using the default port 22, using the generic syntax:
 
 ```bash
-ssh user@remotehost
+$ ssh user@remotehost
 # user: the actual user name on the server
 # remotehost: IP address or domain name of the server
-
-Example:
-ssh ga45mof@transfer.ktas.ph.tum.de # or ssh -l ga45mof transfer.ktas.ph.tum.de
-
-Example: Connection via non-default port 1777
-ssh -p 1777 ga45mof@transfer.ktas.ph.tum.de
 ```
 
-o on first login, the client will not know the server's host key, and will prompt you to confirm that you really want to establish a connection with this remote machine. After confirming, the program generates the fingerprint
-
-
-
-o Running commands on remote machines:
+For instance:
 
 ```bash
-ssh ga45mof@transfer.ktas.ph.tum.de "ls -l" > someFile.log
+# Connect remotely to "nidoqueen.ktas.ph.tum.de", with username "ga45mof":
+$ ssh -Y ga45mof@nidoqueen.ktas.ph.tum.de
+ga45mof@nidoqueen.ktas.ph.tum.de's password:
+ga45mof@nidoqueen:~$
+# ... do your thing in a shell running on a remote computer ...
 ```
 
-Note that someFile.log is on your local machine!
+The flag ```-Y``` will enable trusted graphics (the X Window System or X11) forwarding, i.e. executing graphics on remote computer. On the first login, the client will not know the server's host key, and will prompt you to confirm that you really want to establish a connection with this remote computer. After confirming, the program generates the fingerprint.
 
 
 
-o Running multiple commands remotely:
+**Step 4b** &mdash; execute from your computer some commands on remote computer:
 
 ```bash
-transfer 'ls -al; pwd; date'> temp4444.log # running multiple commands remotely
-# note that transfer is alias, i.e.:
-$ alias transfer
-alias transfer='ssh -Y ga45mof@transfer.ktas.ph.tum.de'
+# List the content of your home directory on remote computer:
+$ ssh ga45mof@nidoqueen.ktas.ph.tum.de 'ls -al'
+ga45mof@nidoqueen.ktas.ph.tum.de's password:
+... list of files ...
+
+# List the content of your home directory on remote computer, 
+# and redirect it to a file on your local computer :
+
+$ ssh ga45mof@nidoqueen.ktas.ph.tum.de 'ls -al' > someFile.log
+ga45mof@nidoqueen.ktas.ph.tum.de's password:
+
+$ cat someFile.log
+... list of files ...
 ```
+
+It is straightforward to execute multiple commands remotely using ```;``` to separate them:
+
+```bash
+$ ssh ga45mof@nidoqueen.ktas.ph.tum.de 'hostname; pwd; date'
+ga45mof@nidoqueen.ktas.ph.tum.de's password: 
+nidoqueen.ktas.ph.tum.de
+/home/ktas/ga45mof
+Wed Sep 24 09:14:30 CEST 2025
+```
+
+
+
+TBC 20250924
 
 
 
