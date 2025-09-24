@@ -1,6 +1,6 @@
 # Working remotely
 
-**Last update**: 20250924-1
+**Last update**: 20250924-2
 
 
 ### Table of Contents
@@ -283,8 +283,7 @@ ga45mof@nidoqueen.ktas.ph.tum.de's password:
 ... list of files ...
 
 # List the content of your home directory on remote computer, 
-# and redirect it to a file on your local computer :
-
+# and redirect it to a file on your local computer:
 $ ssh ga45mof@nidoqueen.ktas.ph.tum.de 'ls -al' > someFile.log
 ga45mof@nidoqueen.ktas.ph.tum.de's password:
 
