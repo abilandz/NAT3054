@@ -309,7 +309,7 @@ Each time the **ssh** command was executed, the password prompt appeared to re-a
 
 
 
-#### Public and private keys
+#### a) Public and private keys
 
 In this section, all steps needed for an authentication via public keys are summarized. TBI 20250930 expand a bit this intro, it's too terse at the moment
 
@@ -380,6 +380,10 @@ someFile                             100%    123     228.0KB/s   00:00
 ```
 
 Key-based, password-free logins are often used to automate copying to remote machines, backuping some local date on remote machine, etc.
+
+
+
+TBC 20250930
 
 
 
