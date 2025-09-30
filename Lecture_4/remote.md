@@ -1,13 +1,13 @@
 # Working remotely
 
-**Last update**: 20250924-2
+**Last update**: 20250930
 
 
 ### Table of Contents
 
 1. [Terminal multiplexers (screen, tmux)](#screen)
 2. [ping](#ping)
-3. [ssh](#ssh)
+3. [ssh](#ssh)	 	
 4. [scp](#scp)
 5. [ftp](#ftp)
 6. [sftp](#sftp) 
@@ -205,9 +205,9 @@ TBI 20250923 See if I want still to add something here, or at least make a bridg
 
 ### 3. ssh <a name="ssh"></a>
 
-Secure Shell (SSH) protocol was designed in 1995 by Tatu Ylönen as a secure way of accessing and executing commands on a remote computer, over unsecured network. Through the use of encryption mechanisms, authentication across a public network, i.e. sending username and password to remote computer, is made safe. The **ssh** command is typically used to log into a remote computer's shell and to execute commands remotely after connection is established.
+Secure Shell (SSH) protocol was designed in 1995 by Tatu Ylönen as a secure way of accessing and executing commands on a remote computer, over unsecured network. Through the use of encryption mechanisms authentication across a public network, i.e. sending username and password to remote computer, is made safe. The **ssh** command is typically used to log into a remote computer's shell and to execute commands remotely after connection is established.
 
-Technically, the **ssh** command establishes _encrypted tunnel_ between two computers, using client/server architecture based on TCP/IP (Transmission Control Protocol/Internet Protocol). The **ssh** server (which in essence is the **sshd** process running the background or daemon) runs on one machine, where it listens for incoming connections on TCP port 22. The client then uses TCP port 22 to connect to the server. When connection between two computers is established, a few things happen in the background:
+Technically, the **ssh** command establishes _encrypted tunnel_ between two computers, using client/server architecture based on TCP/IP (Transmission Control Protocol/Internet Protocol). The **ssh** server, which in essence is the **sshd** process running in the background (i.e. _daemon_), runs on one machine where it listens for incoming connections on TCP port 22. The client then uses TCP port 22 to connect to the server. When connection between two computers is established, a few things happen in the background:
 
 - server and client exchange information about supported protocols for encrypted communication (SSH2 is default nowadays); 
 
@@ -228,6 +228,8 @@ $ sudo apt-get install openssh-server
 ```
 
 This step is rarely needed for remote computer, because an admin responsible for it will install OpenSSH server among the first things on that computer. However, if you want to allow remote access to your own computer (also to yourself), you need to install OpenSSH server with root privileges on your computer. 
+
+
 
 
 **Step 2** &mdash; to change something in the configuration of **ssh** server (e.g. its incoming port), edit with root privileges the configuration file:
@@ -252,12 +254,12 @@ $ sudo apt-get install openssh-client
 
 
 
-**Step 4a** &mdash; login to remote computer using the default port 22, using the generic syntax:
+**Step 4a** &mdash; login to remote computer using the generic syntax (using the default port 22) and continue to work there:
 
 ```bash
 $ ssh user@remotehost
-# user: the actual user name on the server
-# remotehost: IP address or domain name of the server
+# user: the actual user name on a remote computer
+# remotehost: IP address or domain name of a remote computer
 ```
 
 For instance:
@@ -274,7 +276,7 @@ The flag ```-Y``` will enable trusted graphics (the X Window System or X11) forw
 
 
 
-**Step 4b** &mdash; execute from your computer some commands on remote computer:
+**Step 4b** &mdash; execute from your computer remotely some commands on a remote computer, and continue to work on your local computer:
 
 ```bash
 # List the content of your home directory on remote computer:
@@ -291,7 +293,7 @@ $ cat someFile.log
 ... list of files ...
 ```
 
-It is straightforward to execute multiple commands remotely using ```;``` to separate them:
+It is straightforward to execute remotely multiple commands using ```;``` to separate them:
 
 ```bash
 $ ssh ga45mof@nidoqueen.ktas.ph.tum.de 'hostname; pwd; date'
@@ -301,54 +303,85 @@ nidoqueen.ktas.ph.tum.de
 Wed Sep 24 09:14:30 CEST 2025
 ```
 
-
-
-TBC 20250924
-
-
-
-**PUBLIC AND PRIVATE KEYS**  &mdash; TBI 20250919 make a subsection here
-
-o How to circumvent a need to type passwords again and again?
-
-=> public key authentication is an alternative
-
-**Step 1:** generate a pair of keys
-
-```bash
-ssh-keygen -b 1024 -t rsa
-```
-
-=> this created a keypair with a public and a private key, based on RSA approach, with a length of 1024 bits
-
-=> when prompted to enter password, press Enter twice
-
-=> recommended key length as of 2020 is 2048 (the key length doesn't influence the speed of data transfer because this key is not used to encrypt the data)
-
-=> this program will tell you where it has dumped the public key, typically named 'id.rsa.pub'
+Each time the **ssh** command was executed, the password prompt appeared to re-authenticate, before new connection can be established. This step can be circumvented by using public key for authentication as an alternative. 
 
 
 
-**Step 2:** 
 
-o add a content of 'id.rsa.pub' on your local machine, to the following file on sever side: $HOME/.ssh/authorized_keys
 
-=> the recommendation is to copy it via floppy or usb, avoid tranfer via email of ftp
+#### Public and private keys
 
-AB: but I guess it shell be also fine via scp:
+In this section, all steps needed for an authentication via public keys are summarized. TBI 20250930 expand a bit this intro, it's too terse at the moment
+
+
+
+**Step 1** &mdash; generate a pair of keys on your local computer:
 
 ```bash
-scp <path-on-local-machine>/id.rsa.pub ga45mof@transfer.ktas.ph.tum.de:~/
-ssh -Y ga45mof@transfer.ktas.ph.tum.de
-cat ~/id.rsa.pub >> $HOME/.ssh/authorized_keys
-rm ~/id.rsa.pub
+$ ssh-keygen -b 2048 -t rsa
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/abilandz/.ssh/id_rsa):
+# just press Enter, and the default file /home/abilandz/.ssh/id_rsa.pub will be used
+Enter passphrase (empty for no passphrase): 
+# just press Enter
+Enter same passphrase again:
+# just press Enter again
+Your identification has been saved in /home/abilandz/.ssh/id_rsa
+Your public key has been saved in /home/abilandz/.ssh/id_rsa.pub
+The key fingerprint is:
+... some more specific info for this key pair ...
 ```
 
-o passwords protect keys for interactive sessions
+This command created a keypair with a public and a private key, based on RSA ("Rivest–Shamir–Adleman") cryptosystem, with a length of 2048 bits. The recommended key length as of 2020 is 2048 bits (the key length doesn't influence the speed of data transfer because this key is not used to encrypt the data). By default, the public key is stored in the file ```${HOME}/.ssh/id_rsa.pub```.
 
-o key-based, password-free logins are often used to automate copying to remote machines, backuping some local date on remote machine, etc.
 
-o ssh aliases
+
+**Step 2** &mdash; copy the public key to remote computer:  
+
+Add the content of file  ```${HOME}/.ssh/id_rsa.pub``` on your local computer, to the file ```$HOME/.ssh/authorized_keys``` on a remote computer (in this example, a user named 'ga45mof' is connecting remotely on a computer named 'nidoqueen.ktas.ph.tum.de'): 
+
+```bash
+# Copy a file from your local computer to remote computer, using 'scp' command:
+$ scp ${HOME}/.ssh/id_rsa.pub ga45mof@nidoqueen.ktas.ph.tum.de:~/
+ga45mof@nidoqueen.ktas.ph.tum.de's password: 
+id_rsa.pub                             100%  397   228.6KB/s   00:00    
+
+# Connect to remote computer:
+$ ssh -Y ga45mof@nidoqueen.ktas.ph.tum.de
+ga45mof@nidoqueen.ktas.ph.tum.de's password:
+
+# Add the content of just copied file with a public key to a list of authorized_keys:
+$ cat ${HOME}/id_rsa.pub >> $HOME/.ssh/authorized_keys
+
+# Remove the copied file with a public key:
+$ rm ${HOME}/id_rsa.pub
+```
+
+
+
+**Step 3** &mdash; check if you can connect to remote computer, without being prompted for a password:  
+
+```bash
+$ ssh -Y ga45mof@nidoqueen.ktas.ph.tum.de
+ga45mof@nidoqueen:~$
+# ... do your thing in a shell running on a remote computer ...
+```
+
+
+
+**Step 4** &mdash; check if you can copy something from remote computer locally, without being prompted for a password:  
+
+```bash
+# Copy a file ~/someFile from remote computer, to the current working directory on a local computer
+$ scp ga45mof@nidoqueen.ktas.ph.tum.de:~/someFile .
+someFile                             100%    123     228.0KB/s   00:00    
+
+# Remark: To copy directories this way, use scp -r
+```
+
+Key-based, password-free logins are often used to automate copying to remote machines, backuping some local date on remote machine, etc.
+
+
 
 => note that, instead of using Bash aliases, you can define them in ~/.ssh/config file
 
