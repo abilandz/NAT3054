@@ -1,13 +1,13 @@
 # Working remotely
 
-**Last update**: 20250930
+**Last update**: 20251002-1
 
 
 ### Table of Contents
 
 1. [Terminal multiplexers (screen, tmux)](#screen)
 2. [ping](#ping)
-3. [ssh](#ssh)	 	
+3. [ssh, scp, sftp](#ssh.scp.sftp)	 	
 4. [scp](#scp)
 5. [ftp](#ftp)
 6. [sftp](#sftp) 
@@ -203,7 +203,7 @@ TBI 20250923 See if I want still to add something here, or at least make a bridg
 
 
 
-### 3. ssh <a name="ssh"></a>
+### 3. ssh, scp, sftp <a name="ssh.scp.sftp"></a>
 
 Secure Shell (SSH) protocol was designed in 1995 by Tatu Ylönen as a secure way of accessing and executing commands on a remote computer, over unsecured network. Through the use of encryption mechanisms authentication across a public network, i.e. sending username and password to remote computer, is made safe. The **ssh** command is typically used to log into a remote computer's shell and to execute commands remotely after connection is established.
 
@@ -303,7 +303,140 @@ nidoqueen.ktas.ph.tum.de
 Wed Sep 24 09:14:30 CEST 2025
 ```
 
-Each time the **ssh** command was executed, the password prompt appeared to re-authenticate, before new connection can be established. This step can be circumvented by using public key for authentication as an alternative. 
+Each time the **ssh** command was executed, the password prompt appeared to re-authenticate, before new connection can be established. This step can be circumvented by using public key for authentication as an alternative &mdash; this is explained in subsection "Public and private keys" further below. 
+
+The **scp** command comes within the SSH package, and it can be used to securely copy files between computers on a network. This includes the case when one wants to copy a file from a local computer to remote computer, or vice versa. 
+
+The metacharacters ```@``` and ```:``` have a special meaning in the syntax of **scp** command:
+
+* ```@``` &mdash; separates the user name and the name of remote computer;
+
+* ```:``` &mdash; separates the name of remote computer from some pathname on that computer. 
+
+Basic use cases of the **scp** command are summarized as follows:  
+
+```bash
+# copying a file from remote to local computer:
+scp userName@remoteComputer:pathOnRemote pathOnLocal
+
+# copying a file from local to remote computer:
+scp pathOnLocal userName@remoteComputer:pathOnRemote
+```
+
+The same syntax can be used to copy securely directories from one computer to another, only **scp** has to be replaced with **scp -r**.
+
+**Example 1:**  Copy into a current working directory the file _someFile.txt_, which sits in a directory ```${HOME}/someDir``` on a remote computer named ```nidoqueen.ktas.ph.tum.de```, on which a user has an account named ```ga45mof```.
+
+```bash
+$ scp ga45mof@nidoqueen.ktas.ph.tum.de:~/someDir/someFile.txt .
+ga45mof@nidoqueen.ktas.ph.tum.de's password:
+someFile.txt                                   100%    0     0.0KB/s   00:00 
+```
+
+Note that for a home directory on remote computer, we have used metacharacter ```~```, and not the environment variable ```$HOME```, because the latter would have been expanded by a shell on a local computer. On a contrary, `~` is expanded only if it is the first character of a word and it is unquoted:
+
+```bash
+$ echo $HOME
+/home/abilandz
+
+$ echo "$HOME"
+/home/abilandz
+
+$ echo ~
+/home/abilandz
+
+$ echo :~
+:~
+
+$ echo ~:
+/home/abilandz:
+
+$ echo "~:"
+~:
+```
+
+
+
+**Example 2:** Copy a directory  ```${HOME}/someDir``` from local computer, into home directory on a remote computer named ```nidoqueen.ktas.ph.tum.de```, on which a user has an account named ```ga45mof```.
+
+```bash
+$ scp -r ${HOME}/someDir ga45mof@nidoqueen.ktas.ph.tum.de:~/
+ga45mof@nidoqueen.ktas.ph.tum.de's password:
+someDir                                   100%    0     0.0KB/s   00:00 
+```
+
+As a rule of thumb, when using the **scp** command, refer to home directory on a local computer with ```${HOME}```, and on remote computer with ```~``` metacharacter. The **scp** command can be only used for transferring files from one computer to another, and cannot do other things like list directories on remote computer or delete files remotely. That can be achieved with the **sftp** command, which is introduced next.
+
+The **sftp** command can be used interactively on a remote computer, and is basically a secure version of an old **ftp** command. One establishes an interactive session on remote computer by using the following generic syntax:
+
+```bash
+sftp userName@remoteComputer
+```
+
+For instance, to establish an interactive session on a remote computer ```nidoqueen.ktas.ph.tum.de``` as a user ```ga45mof```:
+
+```bash
+$ sftp ga45mof@nidoqueen.ktas.ph.tum.de
+ga45mof@nidoqueen.ktas.ph.tum.de's password:
+Connected to nidoqueen.ktas.ph.tum.de.
+sftp> 
+```
+
+We are now running interactive session remotely, and **sftp** command is waiting to interpret our command input. To see which commands **sftp** can accept, hit TAB + TAB in the **sftp** promt:
+
+```bash
+sftp> TAB + TAB
+bye       cd        chdir     chgrp     chmod     chown     df        dir       exit      get       help      lcd       lchdir    lls       lmkdir    ln        lpwd      ls        lumask    mkdir     mget      
+mput      progress  put       pwd       quit      reget     rename    reput     rm        rmdir     symlink   version   !         
+```
+
+You can get more details about each command this way:
+
+```bash
+sftp> help
+Available commands:
+bye                               Quit sftp
+cd path                           Change remote directory to 'path'
+chgrp grp path                    Change group of file 'path' to 'grp'
+chmod mode path                   Change permissions of file 'path' to 'mode'
+chown own path                    Change owner of file 'path' to 'own'
+df [-hi] [path]                   Display statistics for current directory or
+                                  filesystem containing 'path'
+exit                              Quit sftp
+get [-afPpRr] remote [local]      Download file
+reget [-fPpRr] remote [local]     Resume download file
+reput [-fPpRr] [local] remote     Resume upload file
+help                              Display this help text
+lcd path                          Change local directory to 'path'
+lls [ls-options [path]]           Display local directory listing
+lmkdir path                       Create local directory
+ln [-s] oldpath newpath           Link remote file (-s for symlink)
+lpwd                              Print local working directory
+ls [-1afhlnrSt] [path]            Display remote directory listing
+lumask umask                      Set local umask to 'umask'
+mkdir path                        Create remote directory
+progress                          Toggle display of progress meter
+put [-afPpRr] local [remote]      Upload file
+pwd                               Display remote working directory
+quit                              Quit sftp
+rename oldpath newpath            Rename remote file
+rm path                           Delete remote file
+rmdir path                        Remove remote directory
+symlink oldpath newpath           Symlink remote file
+version                           Show SFTP version
+!command                          Execute 'command' in local shell
+!                                 Escape to local shell
+?                                 Synonym for help
+```
+
+
+
+TBI 20251002 sftp examples
+
+
+
+
+
 
 
 
@@ -412,34 +545,10 @@ o Xming: X11 display server for Windows
 
 
 
-### 4. scp <a name="scp"></a>
-
-
-scp => comes  with SSH package
-=> copy files via SSH
-
-o the meaning of : is special in scp => it separates the name of remote machine from the pathname
-
-Basic use cases:
-```bash
-# copying from remote to local:
-scp <remoteComputer>:<path-on-remote> <path-on-local>
-
-# copying from local to remote:
-scp <path-on-local> <remoteComputer>:<path-on-remote>
-
-# copying from multiple remmote machines locally in one go also possible:
-scp <remoteComputer1>:<path-on-remote> <remoteComputer2>:<path-on-remote> <path-on-local>
-
-# copying from one remote machine to another remote machine is also possible:
-scp <remoteComputer1>:<path-on-remote> <remoteComputer2>:<path-on-remote>
-```
 
 
 
-
-
-### 5. ftp <a name="ftp"></a>
+### 4. ftp <a name="ftp"></a>
 
 TBI 20250919 add some intro here
 
@@ -578,72 +687,6 @@ connection(){
 
 
 
-
-### 6. sftp <a name="sftp"></a>
-
- sftp => comes  with SSH package
-=> transfer files via SSH
-
-o **sftp** uses the same command structure as **scp**, but it has two modus operandi: interactive and batch
-
-```bash
-sftp <remoteComputer>:<path-on-remote> <path-on-local>
-```
-
-
-
-=> interactive encrypted FTP session on remote machine:
-
-```bash
-sftp ga45mof@transfer.ktas.ph.tum.de
-sftp>
-# now interactively I can use standard FTP commands like 'get' or 'put'
-
-These are the commands supported in interactive sftp mode:
-sftp> help
-Available commands:
-bye                                Quit sftp
-cd path                            Change remote directory to 'path'
-chgrp grp path                    Change group of file 'path' to 'grp'
-chmod mode path                    Change permissions of file 'path' to 'mode'
-chown own path                    Change owner of file 'path' to 'own'
-df [-hi] [path]                    Display statistics for current directory or
-                                  filesystem containing 'path'
-exit                              Quit sftp
-get [-afPpRr] remote [local]      Download file
-reget [-fPpRr] remote [local]      Resume download file
-reput [-fPpRr] [local] remote      Resume upload file
-help                              Display this help text
-lcd path                          Change local directory to 'path'
-lls [ls-options [path]]            Display local directory listing
-lmkdir path                        Create local directory
-ln [-s] oldpath newpath            Link remote file (-s for symlink)
-lpwd                              Print local working directory
-ls [-1afhlnrSt] [path]            Display remote directory listing
-lumask umask                      Set local umask to 'umask'
-mkdir path                        Create remote directory
-progress                          Toggle display of progress meter
-put [-afPpRr] local [remote]      Upload file
-pwd                                Display remote working directory
-quit                              Quit sftp
-rename oldpath newpath            Rename remote file
-rm path                            Delete remote file
-rmdir path                        Remove remote directory
-symlink oldpath newpath            Symlink remote file
-version                            Show SFTP version
-!command                          Execute 'command' in local shell
-!                                  Escape to local shell
-?                                  Synonym for help
-```
-
-from internet: SCP is only for transferring files, and can't do other things like list remote directories or removing files, which SFTP does do.
-
-
-
-
-
-
-
-### 7. References <a name="references"></a>
+### 5. References <a name="references"></a>
 
 * TBI 20250919 Li
