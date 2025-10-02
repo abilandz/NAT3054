@@ -1,6 +1,6 @@
 # Working remotely
 
-**Last update**: 20251002-3
+**Last update**: 20251002-4
 
 
 ### Table of Contents
