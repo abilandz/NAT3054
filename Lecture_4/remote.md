@@ -433,6 +433,12 @@ version                           Show SFTP version
 
 A lot of **sftp** commands are self-explanatory, or analogous to **Bash** shell. 
 
+
+
+TBC 20251002
+
+
+
 o **get** and **mget** 
 
 ```bash
