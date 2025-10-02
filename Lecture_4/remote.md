@@ -1,6 +1,6 @@
 # Working remotely
 
-**Last update**: 20251002-2
+**Last update**: 20251002-3
 
 
 ### Table of Contents
@@ -384,15 +384,20 @@ sftp>
 
 We are now running interactive session remotely, and **sftp** command is waiting to interpret our command input. To see which commands **sftp** can accept, hit TAB + TAB in the **sftp** promt:
 
-```bash
+```
 sftp> TAB + TAB
-bye       cd        chdir     chgrp     chmod     chown     df        dir       exit      get       help      lcd       lchdir    lls       lmkdir    ln        lpwd      ls        lumask    mkdir     mget      
-mput      progress  put       pwd       quit      reget     rename    reput     rm        rmdir     symlink   version   !         
+bye       cd        chdir     chgrp     chmod     
+chown     df        dir       exit      get       
+help      lcd       lchdir    lls       lmkdir    
+ln        lpwd      ls        lumask    mkdir     
+mget      mput      progress  put       pwd       
+quit      reget     rename    reput     rm        
+rmdir     symlink   version   !         ? 
 ```
 
 You can get more details about each command this way:
 
-```bash
+```
 sftp> help
 Available commands:
 bye                               Quit sftp
