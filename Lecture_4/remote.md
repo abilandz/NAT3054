@@ -1,6 +1,6 @@
 # Working remotely
 
-**Last update**: 20251002-4
+**Last update**: 20251002-5
 
 
 ### Table of Contents
@@ -8,10 +8,7 @@
 1. [Terminal multiplexers (screen, tmux)](#screen)
 2. [ping](#ping)
 3. [ssh, scp, sftp](#ssh.scp.sftp)	 	
-4. [scp](#scp)
-5. [ftp](#ftp)
-6. [sftp](#sftp) 
-7. [References](#references)
+4. [References](#references)
 
 
 
@@ -305,7 +302,7 @@ Wed Sep 24 09:14:30 CEST 2025
 
 Each time the **ssh** command was executed, the password prompt appeared to re-authenticate, before new connection can be established. This step can be circumvented by using public key for authentication as an alternative &mdash; this is explained in subsection "Public and private keys" further below. 
 
-The **scp** command comes within the SSH package, and it can be used to securely copy files between computers on a network. This includes the case when one wants to copy a file from a local computer to remote computer, or vice versa. 
+The **scp** ("Secure Copy") command comes within the SSH package, and it can be used to securely copy files between computers on a network. This includes the case when one wants to copy a file from a local computer to remote computer, or vice versa. 
 
 The metacharacters ```@``` and ```:``` have a special meaning in the syntax of **scp** command:
 
@@ -365,7 +362,7 @@ ga45mof@nidoqueen.ktas.ph.tum.de's password:
 someDir                                   100%    0     0.0KB/s   00:00 
 ```
 
-As a rule of thumb, when using the **scp** command, refer to home directory on a local computer with ```${HOME}```, and on remote computer with ```~``` metacharacter. The **scp** command can be only used for transferring files from one computer to another, and cannot do other things like list directories on remote computer or delete files remotely. That can be achieved with the **sftp** command, which is introduced next.
+As a rule of thumb, when using the **scp** command, refer to home directory on a local computer with ```${HOME}```, and on remote computer with ```~``` metacharacter. The **scp** command can be only used for transferring files from one computer to another, and cannot do other things like list directories on remote computer or delete files remotely. That can be achieved with the **sftp** ("Secure File Transfer Protocol") command, which is introduced next.
 
 The **sftp** command can be used interactively on a remote computer, and is basically a secure version of an old **ftp** command. One establishes an interactive session on remote computer by using the following generic syntax:
 
@@ -434,9 +431,109 @@ version                           Show SFTP version
 ?                                 Synonym for help
 ```
 
+A lot of **sftp** commands are self-explanatory, or analogous to **Bash** shell. 
+
+o **get** and **mget** 
+
+```bash
+ftp> get someFile
+```
+
+=> this downloads 'someFile' from the current remote directory to the current local directory
 
 
-TBI 20251002 sftp examples => just re-use ftp examples
+
+```bash
+ftp> get someFile1 someFile2
+```
+
+=> this downloads 'someFile1' from the current remote directory to the file 'someFile2' in the current local directory
+
+
+
+```bash
+ftp> mget someFile1 someFile2
+```
+
+=> this downloads 'someFile1' and 'someFile2' from the current remote directory to the current local directory
+
+
+
+=> it is possible to use wildcards
+
+```bash
+ftp> mget someFile*
+```
+
+
+
+Example: **Download new Bash release via ftp:**
+
+```bash
+Announcement from Chet:
+The first public release of bash-5.2 is now available with the URLs
+ftp://ftp.cwru.edu/pub/bash/bash-5.2.tar.gz
+ftp://ftp.gnu.org/pub/gnu/bash/bash-5.2.tar.gz
+
+Then, I can simply:
+
+$ ftp
+ftp> open ftp.gnu.org # when prompted for a Name, use "ftp" or "anonymous"
+                      # for ftp.cwru.edu, use "ftp" both for username and password
+ftp> pass # switch on the passive mode. Do it only if you trust the server
+ftp> cd /pub/gnu/bash # navigate to Bash dir 
+ftp> get bash-5.2.tar.gz
+local: bash-5.2.tar.gz remote: bash-5.2.tar.gz
+227 Entering Passive Mode (3,216,83,128,125,83).
+150 Opening BINARY mode data connection for bash-5.2.tar.gz (10950833 bytes).
+226 Transfer complete.
+10950833 bytes received in 1.2 seconds (8.7e+03 Kbytes/s)
+
+And that's it!
+```
+
+
+
+o **put** and **mput** 
+
+=> the other way around (client => server)
+
+
+
+o **promt** : toggle prompting, the default is ON
+
+```bash
+ftp> prompt
+```
+
+Switches off interacting mode when transferring the files (after this, I do not have to press 'y' for each file)
+
+
+
+o **mdelete** : deletes multiple files on the server side
+
+o **lpwd** : print pwd on a local machine
+
+
+
+**TBI 20250919** See also explanation of some 'ftp' commands here https://www.computerhope.com/issues/ch001246.htm
+
+
+
+TBI 20250919 use the following nice example from SO, how **ftp** can read here-doc  https://stackoverflow.com/questions/66348808/ftp-upload-in-bash-script
+
+```bash
+#!/bin/bash
+
+connection(){
+ ftp -i -n $line << EOS
+ user $user $pass
+ put $filename
+ bye
+ EOS
+}
+```
+
 
 
 
@@ -552,146 +649,6 @@ o Xming: X11 display server for Windows
 
 
 
-
-### 4. ftp <a name="ftp"></a>
-
-TBI 20250919 add some intro here
-
-
-
-o FTP (File Transfer Protocol) => internet protocol for file transfer between client and server
-
-o the server listens for connection requests across the networks
-
-o many FTP servers on Internet provide anonymous service (no password is required)
-
-o FTP transmits usernames, passwords, etc. in plain text, therefore its unsecure (sftp is secure version)
-
-
-
-```bash
-ftp ftp.server.com # opens a connection to ftp server
-# or alternatively, first launch ftp client, and then use its keyword 'open'
-ftp> open ftp.server.com # opens a connection to ftp server from ftp client promt
-```
-
-or on some servers:
-
-```bash
-ftp username@ftp.server.com # opens a connection to ftp server
-```
-
-o username: 'anonymous', 'ftp', or username+password
-
-
-
-**FTP prompt ftp>exit**
-
-o a lot of ftp commands are self-explanatory, or analogous to Bash shell
-
-o **get** and **mget** 
-
-```bash
-ftp> get someFile
-```
-
-=> this downloads 'someFile' from the current remote directory to the current local directory
-
-
-
-```bash
-ftp> get someFile1 someFile2
-```
-
-=> this downloads 'someFile1' from the current remote directory to the file 'someFile2' in the current local directory
-
-
-
-```bash
-ftp> mget someFile1 someFile2
-```
-
-=> this downloads 'someFile1' and 'someFile2' from the current remote directory to the current local directory
-
-
-
-=> it is possible to use wildcards
-
-```bash
-ftp> mget someFile*
-```
-
-
-
-Example: **Download new Bash release via ftp:**
-
-```bash
-Announcement from Chet:
-The first public release of bash-5.2 is now available with the URLs
-ftp://ftp.cwru.edu/pub/bash/bash-5.2.tar.gz
-ftp://ftp.gnu.org/pub/gnu/bash/bash-5.2.tar.gz
-
-Then, I can simply:
-
-$ ftp
-ftp> open ftp.gnu.org # when prompted for a Name, use "ftp" or "anonymous"
-                      # for ftp.cwru.edu, use "ftp" both for username and password
-ftp> pass # switch on the passive mode. Do it only if you trust the server
-ftp> cd /pub/gnu/bash # navigate to Bash dir 
-ftp> get bash-5.2.tar.gz
-local: bash-5.2.tar.gz remote: bash-5.2.tar.gz
-227 Entering Passive Mode (3,216,83,128,125,83).
-150 Opening BINARY mode data connection for bash-5.2.tar.gz (10950833 bytes).
-226 Transfer complete.
-10950833 bytes received in 1.2 seconds (8.7e+03 Kbytes/s)
-
-And that's it!
-```
-
-
-
-o **put** and **mput** 
-
-=> the other way around (client => server)
-
-
-
-o **promt** : toggle prompting, the default is ON
-
-```bash
-ftp> prompt
-```
-
-Switches off interacting mode when transferring the files (after this, I do not have to press 'y' for each file)
-
-
-
-o **mdelete** : deletes multiple files on the server side
-
-o **lpwd** : print pwd on a local machine
-
-
-
-**TBI 20250919** See also explanation of some 'ftp' commands here https://www.computerhope.com/issues/ch001246.htm
-
-
-
-TBI 20250919 use the following nice example from SO, how **ftp** can read here-doc  https://stackoverflow.com/questions/66348808/ftp-upload-in-bash-script
-
-```bash
-#!/bin/bash
-
-connection(){
- ftp -i -n $line << EOS
- user $user $pass
- put $filename
- bye
- EOS
-}
-```
-
-
-
-### 5. References <a name="references"></a>
+### 4. References <a name="references"></a>
 
 * TBI 20250919 Li
