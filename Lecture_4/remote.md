@@ -1,6 +1,6 @@
 # Working remotely
 
-**Last update**: 20251002-1
+**Last update**: 20251002-2
 
 
 ### Table of Contents
@@ -431,7 +431,7 @@ version                           Show SFTP version
 
 
 
-TBI 20251002 sftp examples
+TBI 20251002 sftp examples => just re-use ftp examples
 
 
 
