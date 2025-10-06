@@ -1,6 +1,6 @@
 # Working remotely
 
-**Last update**: 20251002-5
+**Last update**: 20251006-1
 
 
 ### Table of Contents
@@ -202,7 +202,7 @@ TBI 20250923 See if I want still to add something here, or at least make a bridg
 
 ### 3. ssh, scp, sftp <a name="ssh.scp.sftp"></a>
 
-Secure Shell (SSH) protocol was designed in 1995 by Tatu Ylönen as a secure way of accessing and executing commands on a remote computer, over unsecured network. Through the use of encryption mechanisms authentication across a public network, i.e. sending username and password to remote computer, is made safe. The **ssh** command is typically used to log into a remote computer's shell and to execute commands remotely after connection is established.
+Secure Shell (SSH) protocol was designed in 1995 by Tatu Ylönen as a secure way of accessing and executing commands on a remote computer, over unsecured network. Through the use of encryption mechanisms, authentication across a public network (i.e. sending username and password to remote computer), is made safe. The **ssh** command is typically used to log into a remote computer's shell and to execute commands remotely after connection is established.
 
 Technically, the **ssh** command establishes _encrypted tunnel_ between two computers, using client/server architecture based on TCP/IP (Transmission Control Protocol/Internet Protocol). The **ssh** server, which in essence is the **sshd** process running in the background (i.e. _daemon_), runs on one machine where it listens for incoming connections on TCP port 22. The client then uses TCP port 22 to connect to the server. When connection between two computers is established, a few things happen in the background:
 
@@ -218,7 +218,7 @@ We now summarize all steps needed to use **ssh** for remote access and remote co
 
 
 
-**Step 1** &mdash; install as a root using **sudo** command the SSH server on the target remote machine (e.g. OpenSSH server):
+**Step 1** &mdash; install as a root using the **sudo** command the SSH server on the target remote machine (e.g. OpenSSH server):
 
 ```bash
 $ sudo apt-get install openssh-server
@@ -269,7 +269,7 @@ ga45mof@nidoqueen:~$
 # ... do your thing in a shell running on a remote computer ...
 ```
 
-The flag ```-Y``` will enable trusted graphics (the X Window System or X11) forwarding, i.e. executing graphics on remote computer. On the first login, the client will not know the server's host key, and will prompt you to confirm that you really want to establish a connection with this remote computer. After confirming, the program generates the fingerprint.
+The flag ```-Y``` will enable trusted graphics (the X Window System or X11) forwarding, i.e. executing graphics on remote computer. On the first login, the client will not know the server's host key, and will prompt you to confirm that you really want to establish a connection with this remote computer. After confirming, the program generates the fingerprint. TBI 20251006 do I need to clarify this better/further?
 
 
 
@@ -282,7 +282,7 @@ ga45mof@nidoqueen.ktas.ph.tum.de's password:
 ... list of files ...
 
 # List the content of your home directory on remote computer, 
-# and redirect it to a file on your local computer:
+# and redirect the output to a file on your local computer:
 $ ssh ga45mof@nidoqueen.ktas.ph.tum.de 'ls -al' > someFile.log
 ga45mof@nidoqueen.ktas.ph.tum.de's password:
 
@@ -302,7 +302,7 @@ Wed Sep 24 09:14:30 CEST 2025
 
 Each time the **ssh** command was executed, the password prompt appeared to re-authenticate, before new connection can be established. This step can be circumvented by using public key for authentication as an alternative &mdash; this is explained in subsection "Public and private keys" further below. 
 
-The **scp** ("Secure Copy") command comes within the SSH package, and it can be used to securely copy files between computers on a network. This includes the case when one wants to copy a file from a local computer to remote computer, or vice versa. 
+The **scp** ("Secure Copy") command comes within the SSH package, and it can be used to securely copy files between computers on a network. Most importantly, this includes the case when one wants to copy a file from a local computer to remote computer, or vice versa. 
 
 The metacharacters ```@``` and ```:``` have a special meaning in the syntax of **scp** command:
 
@@ -320,9 +320,9 @@ scp userName@remoteComputer:pathOnRemote pathOnLocal
 scp pathOnLocal userName@remoteComputer:pathOnRemote
 ```
 
-The same syntax can be used to copy securely directories from one computer to another, only **scp** has to be replaced with **scp -r**.
+The same syntax can be used to copy securely directories from one computer to another, only **scp** has to be replaced with **scp -r** in the above examples.
 
-**Example 1:**  Copy into a current working directory the file _someFile.txt_, which sits in a directory ```${HOME}/someDir``` on a remote computer named ```nidoqueen.ktas.ph.tum.de```, on which a user has an account named ```ga45mof```.
+**Example 1:**  Copy into a current working directory the file _someFile.txt_, which sits in a directory ```${HOME}/someDir``` on a remote computer named ```nidoqueen.ktas.ph.tum.de```, on which the user has an account named ```ga45mof```.
 
 ```bash
 $ scp ga45mof@nidoqueen.ktas.ph.tum.de:~/someDir/someFile.txt .
@@ -330,7 +330,7 @@ ga45mof@nidoqueen.ktas.ph.tum.de's password:
 someFile.txt                                   100%    0     0.0KB/s   00:00 
 ```
 
-Note that for a home directory on remote computer, we have used metacharacter ```~```, and not the environment variable ```$HOME```, because the latter would have been expanded by a shell on a local computer. On a contrary, `~` is expanded only if it is the first character of a word and it is unquoted:
+Note that for a home directory on remote computer, we have used metacharacter ```~```, and not the environment variable ```$HOME```, because the latter would have been expanded by a shell on a local computer. On a contrary, `~` is interpreted as a metacharacter and is expanded only if it is the first character of a word and it is unquoted:
 
 ```bash
 $ echo $HOME
@@ -354,7 +354,7 @@ $ echo "~:"
 
 
 
-**Example 2:** Copy a directory  ```${HOME}/someDir``` from local computer, into home directory on a remote computer named ```nidoqueen.ktas.ph.tum.de```, on which a user has an account named ```ga45mof```.
+**Example 2:** Copy a directory  ```${HOME}/someDir``` from local computer, into home directory on a remote computer named ```nidoqueen.ktas.ph.tum.de```, on which the user has an account named ```ga45mof```.
 
 ```bash
 $ scp -r ${HOME}/someDir ga45mof@nidoqueen.ktas.ph.tum.de:~/
@@ -364,13 +364,13 @@ someDir                                   100%    0     0.0KB/s   00:00
 
 As a rule of thumb, when using the **scp** command, refer to home directory on a local computer with ```${HOME}```, and on remote computer with ```~``` metacharacter. The **scp** command can be only used for transferring files from one computer to another, and cannot do other things like list directories on remote computer or delete files remotely. That can be achieved with the **sftp** ("Secure File Transfer Protocol") command, which is introduced next.
 
-The **sftp** command can be used interactively on a remote computer, and is basically a secure version of an old **ftp** command. One establishes an interactive session on remote computer by using the following generic syntax:
+The **sftp** command can be used interactively on a remote computer, and is basically a secure version of an old **ftp** command. One establishes an interactive session on a remote computer by using the following generic syntax:
 
 ```bash
 sftp userName@remoteComputer
 ```
 
-For instance, to establish an interactive session on a remote computer ```nidoqueen.ktas.ph.tum.de``` as a user ```ga45mof```:
+For instance, to establish an interactive session on the remote computer ```nidoqueen.ktas.ph.tum.de``` as the user ```ga45mof```:
 
 ```bash
 $ sftp ga45mof@nidoqueen.ktas.ph.tum.de
@@ -431,45 +431,76 @@ version                           Show SFTP version
 ?                                 Synonym for help
 ```
 
-A lot of **sftp** commands are self-explanatory, or analogous to **Bash** shell. 
+Most of **sftp** commands are self-explanatory, or analogous to **Bash** shell. In what follows next, we summarize some frequently used examples.
 
 
 
-TBC 20251002
-
-
-
-o **get** and **mget** 
+* **get** and **mget** &mdash; use to download files or directories from remote computer to local computer
 
 ```bash
-ftp> get someFile
+# Download 'someFile' from the current remote directory into the current local directory:
+sftp> get someFile
+someFile                                100%   12KB   2.6MB/s   00:00    
+
+# Download 'someFile_1' from the current remote directory to the file 'someFile_2' into the current local directory:
+sftp> get someFile_1 someFile_2
+Fetching /home/ktas/ga45mof/someFile_1 to someFile_2
+someFile_1
+
+# Downloads 'someFile_1', 'someFile_2', ..., from the current remote directory into the current local directory:
+sftp> mget someFile_?
+... some printout ...
+# Remark: Use mget only when arguments can be condensed with wildcards (like "?" in the above example)
 ```
 
-=> this downloads 'someFile' from the current remote directory to the current local directory
+The above examples apply also when one wants to copy a directory from remote computer locally, only **get** and **mget** have to be replaced with **get -r** and **mget -r**, respectively.
 
 
+
+* **put** and **mput** &mdash; use to upload files or directories from local computer to remote computer
 
 ```bash
-ftp> get someFile1 someFile2
+# Upload 'someFile' from the current local directory into the current remote directory:
+sftp> put someFile
+someFile                                100%   12KB   2.6MB/s   00:00    
+sftp> ls
+someFile  
+
+# Upload 'someFile_1' from the current local directory into the file 'someFile_2' into the current remote directory:
+sftp> put someFile_1 someFile_2
+Uploading someFile_1 to /home/ktas/ga45mof/someFile_2
+someFile_1                              100%  420KB  31.8MB/s   00:00 
+
+# Upload 'someFile_1', 'someFile_2', ..., from the current local directory into the current remote directory:
+sftp> mput someFile_?
+... some printout ...
+# Remark: Use mput only when arguments can be condensed with wildcards (like "?" in the above example)
 ```
 
-=> this downloads 'someFile1' from the current remote directory to the file 'someFile2' in the current local directory
+The above examples apply also when one wants to upload a directory from the local computer to the remote computer, only **put** and **mput** have to be replaced with **put -r** and **mput -r**, respectively.
 
 
+
+* **pwd** and **lpwd** &mdash; use to print current working directory on remote and local computer, respectively
 
 ```bash
-ftp> mget someFile1 someFile2
+# Print the current working directory on a remote computer:
+sftp> pwd
+Remote working directory: /home/ktas/ga45mof
+
+# Print the current working directory on a local computer:
+sftp> lpwd
+Remote working directory: /home/ktas/ga45mof
+Local working directory: /home/abilandz
 ```
 
-=> this downloads 'someFile1' and 'someFile2' from the current remote directory to the current local directory
 
 
 
-=> it is possible to use wildcards
 
-```bash
-ftp> mget someFile*
-```
+**TBC 20251006** ctd. from here
+
+
 
 
 
@@ -499,26 +530,6 @@ And that's it!
 ```
 
 
-
-o **put** and **mput** 
-
-=> the other way around (client => server)
-
-
-
-o **promt** : toggle prompting, the default is ON
-
-```bash
-ftp> prompt
-```
-
-Switches off interacting mode when transferring the files (after this, I do not have to press 'y' for each file)
-
-
-
-o **mdelete** : deletes multiple files on the server side
-
-o **lpwd** : print pwd on a local machine
 
 
 
