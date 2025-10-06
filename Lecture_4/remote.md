@@ -496,44 +496,51 @@ Local working directory: /home/abilandz
 
 
 
+Finally, we remark that for cases where an anonymous access is expected, one needs to use **ftp** instead of **sftp**, because the latter relies on authentication. To achieve anonymous access via **ftp**, customarily as a username one needs to use either "ftp" or "anonymous".
+
+**Example:** Download the source code of the latest **Bash** release via **ftp**. 
+
+The latest **Bash** release is typically announced by the main **Bash** developer and maintainer, Chet Ramey, in the following way:
 
 
-**TBC 20251006** ctd. from here
-
-
-
-
-
-Example: **Download new Bash release via ftp:**
-
-```bash
-Announcement from Chet:
-The first public release of bash-5.2 is now available with the URLs
+> The first public release of bash-5.2 is now available with the URLs
 ftp://ftp.cwru.edu/pub/bash/bash-5.2.tar.gz
 ftp://ftp.gnu.org/pub/gnu/bash/bash-5.2.tar.gz
 
-Then, I can simply:
+We can proceed as follows: TBI 20251006 embellish the text here 
 
-$ ftp
-ftp> open ftp.gnu.org # when prompted for a Name, use "ftp" or "anonymous"
-                      # for ftp.cwru.edu, use "ftp" both for username and password
-ftp> pass # switch on the passive mode. Do it only if you trust the server
-ftp> cd /pub/gnu/bash # navigate to Bash dir 
+```bash
+# Connect:
+$ ftp ftp.gnu.org 
+Trying 209.51.188.20:21 ...
+Connected to ftp.gnu.org.
+220 GNU FTP server ready.
+Name (ftp.gnu.org:abilandz): # when prompted for a Name, use "ftp" or "anonymous"
+                             # for "ftp.cwru.edu", use "ftp" both for username and password
+
+# Switch on the passive mode - do it only if you trust the server:
+ftp> passive 
+Passive mode: on; fallback to active mode: on.
+
+# Navigate to Bash dir and list all versions:
+ftp> cd /pub/gnu/bash 
+ftp> ls 
+-rw-r--r--    1 3003     65534       27668 Jul 08  1994 bash-1.14.0-1.14.1.diff.gz
+-rw-r--r--    1 3003     65534      311063 Aug 23  1994 bash-1.14.1-1.14.2.diff
+... many more Bash versions ...
+-rw-r--r--    1 3003     3002     10950833 Sep 26  2022 bash-5.2.tar.gz
+-rw-r--r--    1 3003     3002           95 Sep 26  2022 bash-5.2.tar.gz.sig
+
+# Ok, download the desired version locally:
 ftp> get bash-5.2.tar.gz
-local: bash-5.2.tar.gz remote: bash-5.2.tar.gz
-227 Entering Passive Mode (3,216,83,128,125,83).
-150 Opening BINARY mode data connection for bash-5.2.tar.gz (10950833 bytes).
+... some info messages related to the file transfer ...
 226 Transfer complete.
-10950833 bytes received in 1.2 seconds (8.7e+03 Kbytes/s)
-
-And that's it!
+10950833 bytes received in 00:51 (206.25 KiB/s)
 ```
 
 
 
 
-
-**TBI 20250919** See also explanation of some 'ftp' commands here https://www.computerhope.com/issues/ch001246.htm
 
 
 
