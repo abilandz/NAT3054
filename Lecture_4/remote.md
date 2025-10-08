@@ -1,6 +1,6 @@
 # Working remotely
 
-**Last update**: 20251006-2
+**Last update**: 20251008-1
 
 
 ### Table of Contents
@@ -642,32 +642,6 @@ Key-based, password-free logins are often used to automate copying to remote mac
 
 
 
-TBC 20250930
-
-
-
-=> note that, instead of using Bash aliases, you can define them in ~/.ssh/config file
-
-**TBI see example on page 71 => most likely this is more general that bash alias, as it shall work for all shells**
-
-
-
-
-
-**Tunneling X Windows System (X11) via ssh (X11 forwarding)** &mdash; TBI 20250910 make new subsection
-
-o sshd emulates an X server and occupies a display (number 11 by default)
-
-o when you login to the server, the server sets the DISPLAY environment variable to this value, i.e. to **localhost:11.0**
-
-o the idea it to avoid collisions with the X server running locally
-
-o the information sent by computer to this display is encrypted, and sent to your computer
-
-=> you can enable automatic X11 forwarding by modifying **ForwardX11 no** field in /etc/ssh/ssh_config
-
-o Xming: X11 display server for Windows
-
 
 
 
@@ -675,4 +649,4 @@ o Xming: X11 display server for Windows
 
 ### 4. References <a name="references"></a>
 
-* TBI 20250919 Li
+* TBI 20251008 references are missing
