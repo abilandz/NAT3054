@@ -1,6 +1,6 @@
 # Working remotely
 
-**Last update**: 20251009-6
+**Last update**: 20251009-7
 
 
 ### Table of Contents
@@ -562,14 +562,27 @@ EOF
 }
 ```
 
-For completeness sake, we outline how alternatively by using **git** one can achieve the same goal:
+For completeness sake, we outline that alternatively by using **git** one can achieve the same goal, albeit it will take much longer, and the local disk usage will be order of magnitude larger (because a lot of additional data is downloaded as a part of **git** repository):
 
 ```bash
-# Clone bash git repository locally:
+# Clone Bash git repository locally:
 $ git clone https://git.savannah.gnu.org/git/bash.git bash
+... some progress info ...
 
-# 
+# List all available Bash versions ("tags" in git's parlance):
+$ cd bash
+$ git tag
+bash-3.0-beta
+bash-3.0-rc1
+bash-3.1-alpha
+... many more Bash versions ...
+bash-5.1-rc3
+bash-5.2
 
+# Checkout the source code of desired version 5.2:
+$ git checkout bash-5.2
+Previous HEAD position was 6ddc9cf2 Bash-5.2 patch 7: fixes for alias expansion inside command substitution in POSIX mode
+HEAD is now at 74091dd4 bash-5.2 distribution sources and documentation
 ```
 
 
