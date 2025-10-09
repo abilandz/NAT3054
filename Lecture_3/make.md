@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20250918
+**Last update**: 20251001-2
 
 
 ### Table of Contents
@@ -109,7 +109,7 @@ Libraries are pre-existing code that is compiled and ready to use. When a logica
 - _static_ &mdash; the actual library is placed in the final program during compilation;
 - _shared_ &mdash; only a reference to the library is placed inside the final program (i.e. program is _linked_ with a library).
 
-A static library is commonly stored in a file with an extension ```.a```, while a shared library is in a file with ```.so``` extension. The main disadvantage of static libraries is the code bloat and the resulting waste of disk space, because the very same code with compiled functions appears in different programs. In addition, if a change is introduced in a static library, all programs using that library must be recompiled. On the other hand, programs linked with shared libraries do not need to be recompiled when changes are introduced in those libraries &mdash; only the libraries need to be recompiled. When it comes to performance, programs using static libraries will run slightly faster, because all the symbols in the library are already resolved at compile time (with shared libraries, they need to be resolved at run time). Once compiled, programs using static libraries no longer depend on those libraries, which removes the external dependency on library version (this is particularly relevant when a major upgrade of the underlying operating system is performed, during which most libraries are updated to a newer version). In what follows next, we focus on shared libraries, using as an example code written in C/C++ programming language, and compiled via the open-source **gcc** compiler (originally, _GNU C Compiler_, lated renamed into _GNU Compiler Collection_).
+A static library is commonly stored in a file with an extension ```.a```, while a shared library in a file with ```.so``` extension. The main disadvantage of static libraries is the code bloat and the resulting waste of disk space, because the very same code with pre-compiled functions appears in different programs. In addition, if a change is introduced in a static library, all programs using that library must be recompiled. On the other hand, programs linked with shared libraries do not need to be recompiled when changes are introduced in those libraries &mdash; only the libraries need to be recompiled. When it comes to performance, programs using static libraries will run slightly faster, because all the symbols in the library are already resolved at compile time (with shared libraries, they need to be resolved at run time). Once compiled, programs using static libraries no longer depend on those libraries, which removes the external dependency on library version (this is particularly relevant when a major upgrade of the underlying operating system is performed, during which most libraries are updated to a newer version). In what follows next, we focus on shared libraries, using as an example code written in C/C++ programming language, and compiled via the open-source **gcc** compiler (originally, _GNU C Compiler_, lated renamed into _GNU Compiler Collection_).
 
 The stages needed in the project development utilizing shared libraries can be delineated as follows:
 
@@ -120,7 +120,7 @@ The stages needed in the project development utilizing shared libraries can be d
 5. _Loading_ &mdash; this stage happens when the program starts up. The program is scanned for references to shared libraries, and any references found are resolved and the shared libraries are mapped into the program. This way, only at runtime, different programs re-use exactly the same pre-compiled code stored in the shared libraries. TBI 20250916 improve the wording further here
 6. _Build_ &mdash; All stages above put together.
 
-All steps above are now illustrated with a simple example, in which a shared library is made for some functions, and then used afterward in a program. TBI 20250916 improve the wording further here
+All stages above are now illustrated with a simple example, in which a shared library is made for some functions, and then used afterward in a program. TBI 20250916 improve the wording further here
 
 
 
@@ -147,7 +147,7 @@ void Bye() {
 }
 ```
 
-We had to add a line ```#include <stdio.h>```, so that we can use a function **printf** from the standard library ```stdio.h```. With the notation ```< ... >``` we indicate that this header will be taken from one of the standard locations in the filesystem where header files are stored (typically, ```/usr/include```). On the other hand, with notation ```" ... "``` we indicate that the header file is taken from the current working directory. In case of a doubt, we can always specify the full path to the header file. 
+We had to add a line ```#include <stdio.h>```, so that we can use a function **printf** from the standard library ```stdio.h```. With the notation ```< ... >``` we indicate that this header will be taken from one of the standard locations in the filesystem where header files are stored (typically, ```/usr/include```). On the other hand, with notation ```" ... "``` we indicate that the header file is taken from the current working directory. In case of a doubt, we can always specify instead in the source code the full path to the header file. 
 
 Finally, the main program (executable) is in the file ```test.cxx```, and it is implemented as follows:
 
@@ -163,7 +163,7 @@ int main() {
 }
 ```
 
-In this exercise, we will make a library for functions implemented in ```functions.h``` and ```functions.cxx```, and demonstrate how to use it in the executable **test** obtained after compiling ```test.cxx```.
+In this exercise, we will make a library for functions implemented in ```functions.cxx```, and demonstrate how to use that library in the executable **test** obtained after compiling ```test.cxx```. TBI 20251009 shall I move this sentence before the code block?
 
 
 
@@ -184,7 +184,7 @@ $ ls
 functions.cxx  functions.h  functions.o 
 ```
 
-The compilation step produced a new object file _functions.o_, which contains the machine (or binary) code, and whose content cannot be inspected with the standard editors (if curious, try nevertheless **cat functions.o** &mdash; you will get only incomprehensible sequence of non-printable characters on the screen).
+The compilation step produced a new object file named _functions.o_, which contains the machine (or binary) code, and whose content cannot be inspected with the standard editors (if curious, try nevertheless **cat functions.o** &mdash; you will get mostly incomprehensible sequence of non-printable characters on the screen).
 
 
 
@@ -213,9 +213,9 @@ $ gcc -Wall -o test test.cxx -l functions
 collect2: error: ld returned 1 exit status
 ```
 
-The first attempt failed, but we use this failure to clarify few non-trivial things which are happening at this step. First, note that the option **-l functions** is not looking for a file _functions.o_, but instead for a file _libfunctions.so_. Namely, **gcc** assumes that all libraries start with prefix ```lib``` and end with a file extension ```.so``` (for shared libraries) or ```.a``` (for static libraries). That being written, the option **-l functions.so** would also lead to an error, because **gcc** will be looking for shared library in a file _libfunctions.so.so_. 
+The first attempt failed, but we use this failure to clarify a few non-trivial things which are happening at this step. First, note that the option **-l functions** is not looking for a file _functions.o_, but instead for a file _libfunctions.so_. Namely, **gcc** assumes that all libraries start with prefix ```lib``` and end with a file extension ```.so``` (for shared libraries) or ```.a``` (for static libraries). That being written, the option **-l functions.so** would also lead to an error, because **gcc** will be looking for shared library in a file _libfunctions.so.so_. 
 
-We got a compilation error, because the linker **ld** does not know where to find the shared library _libfunctions.so_ (Remark: **gcc** compiler merely acts as a front-end to the linker **ld** at link time). The **gcc** has a list of directories it looks by default for the libraries, but our current working directory which contains the library _libfunctions.so_ is not in that list. By default, **gcc** searches for libraries first in ```/usr/local/lib```, and then in ```/usr/lib``` (but this may vary from one operating system to another). After that, it searches for libraries in the directories specified by the **-L** option, in the order specified on the command line. From documentation:
+We got a compilation error, because the linker **ld** does not know where to find the shared library _libfunctions.so_ (Remark: **gcc** compiler merely acts as a front-end to the linker **ld** at link time). The **gcc** has a list of directories it looks by default for the libraries, but our current working directory which contains the library _libfunctions.so_ is not on that list. By default, **gcc** searches for libraries first in ```/usr/local/lib```, and then in ```/usr/lib``` (but this may vary from one operating system to another). After that, it searches for libraries in the directories specified by the **-L** option, in the order specified on the command line. From documentation:
 
 ```bash
  -l LIBNAME, --library LIBNAME
@@ -298,7 +298,7 @@ $ gcc -c -Wall -Werror -fpic functions.cxx
 $ gcc -shared -o libfunctions.so functions.o
 ```
 
-And finally, the main point &mdash; we can execute the main programme without recompiling:
+And finally, the main point &mdash; we can execute the main programme without recompiling it:
 
 ```bash
 $ ./test
@@ -315,5 +315,5 @@ This becomes particularly beneficial if we have compiled our main programme agai
 
 ### 4. References <a name="references"></a>
 * _"UNIX A History and a Memoir"_, Brian Kernighan
-  * Section TBI 20250909: Regular expressions 
+  * Section TBI 20250909:
 * Online resources on shared libraries can be found at this [link](https://www.cprogramming.com/tutorial/shared-libraries-linux-gcc.html )
