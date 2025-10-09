@@ -2,7 +2,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20250825
+**Last update**: 20251009-1
 
 
 ### Table of Contents
@@ -2215,23 +2215,41 @@ TBI 20241007 re-order examples in terms of importance
     ```
 
 
+
+* **How to clone locally only the specific branch or tag (without cloning the whole repository)?**
+
+  This functionality is needed when one wants to download locally only the specific version. The syntax is the same, either for branch or tag:
+  
+  ```bash
+  git clone --depth 1 --branch someBranchOrTagName repositoryURL
+  ```
+  
+  For instance, if one wants to download locally only the source code of Bash, version 5.2, one case use:
+  
+  ```bash
+  git clone --depth 1 --branch bash-5.2 https://git.savannah.gnu.org/git/bash.git
+  ```
+  
+  
+
 * **How to change the commit message?**
-When the commit was already made with a particular message, and if there is a typo or missing information which needs to be edited afterward in that message, that can be achieved with the command **git commit --amend** as follows:
+
+  When the commit was already made with a particular message, and if there is a typo or missing information which needs to be edited afterward in that message, that can be achieved with the command **git commit --amend** as follows:
 
     ```bash
     # initial commit with a typo in the commit message:
     $ git commit -m "some wrong message"
-
+  
     # change the commit message into a new one:
     $ git commit --amend -m "new correct message"
-
+  
     # check reflogs:
     $ git reflog
     c32b4f2 (HEAD -> master) HEAD@{0}: commit (amend): new correct message
     04c5ba9 HEAD@{1}: commit: some wrong message
     ...
     ```
-As can be seen from the reflogs, the command **git commit --amend** creates a new commit identifier and therefore this command shall be used only if the initial commit with the typo was still not pushed outside of the current local repository.
+  As can be seen from the reflogs, the command **git commit --amend** creates a new commit identifier and therefore this command shall be used only if the initial commit with the typo was still not pushed outside of the current local repository.
 
 
 * **How to clone all remote branches?**
