@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20251001-2
+**Last update**: 20251009-1
 
 
 ### Table of Contents
@@ -17,28 +17,31 @@
 
 
 ### 1. Introduction <a name="introduction"></a>
-The command-line utility **make** is used in the development of large-scale projects consisting of multiple source files, which have to be compiled and linked together to make one common executable file. 
+The command-line utility **make** is used in the development of large-scale projects consisting of multiple source files, which have to be compiled and linked together to make one common executable file. One finds such modus operandi, for instance, at major collaborations at the Large Hadron Collider, where several hundreds of developers concurrently develop the analysis framework for a given experiment. 
 
-**TBI 20250909 mention here real-life physics examples, e.g. aliroot, cbmroot, O2Physics, etc.**
+One can see immediately one potential caveat — would it be necessary to recompile all source files, if there was a change in only one of them? This would lead to the tremendous loss of efficiency during the code development, because recompiling from scratch a large-scale project typically takes several hours, even on very powerful computers. An obvious solution (existed already in the 1970s) would be to use a **linker**: recompile only changed files, and link with previously compiled files. However, in practice this approach is error prone, because if several sources files were modified, frequently one will forget to recompile at least one of them, which will lead either to compilation errors, or pointless debugging sessions (a bug was fixed, but the code wasn't recompiled). In the past, solving this problem was accomplished with carefully written shell scripts, always specific for a project in question. Since this problem was shared among all large-scale projects, there was a need for general solution. This is precisely where **make** originated. 
 
-One can see immediately one caveat — do we have to re-compile all source files, if there was a change in only one of them? This would lead to the tremendous loss of efficiency during the code development, because re-compiling from scratch a large-scale project typically takes several hours, even on very powerful computers.
-- Obvious solution (existed already in the 1970s): **linker** ⇒ recompile only changed files, and link with previously compiled files
-- TBI 20250906 add an example for this
-    - However, this is not perfect either: What if one changed several sources files, and forgot to recompiled only one of them? ⇒ **make**
-    - History note: the first version of ‘make’ was developed by Stuart Feldman in April 1976, in the C programming language, after he and one of his colleagues spent hours debugging the correct source code, by simply forgetting to recompile the code after the bug was fixed.
-- v1 : implemented over the weekend with infamous “tab-in-column-1” syntax
-- v2 : rewritten from scratch next weekend, but already 10+ people picked up the idea and started using ‘v1’ of ‘make’ during the week, and “tab-in-column-1” syntax remained also in v2, so that backward compatibility is maintained
-- There are several major implementations of ‘make’ nowadays
-    - GNU ‘make’ ⇒ used in this lecture
-    - BSD ‘make’
-    - Microsoft ‘nmake’
-    - The key idea: automate checking of ‘mtime’ metadata flag (’gives the time when the file was last changed’)
+Historical note: The first version of **make** was developed by Stuart Feldman in April 1976, in the C programming language, after he and one of his colleagues at Bell Labs (New Jersey, US) spent in the same week hours debugging the correct source code, by simply forgetting to recompile it after the bug was fixed. Motivated by endless frustration, Stuart Feldman immediately over the weekend implemented the first version of **make**, with infamous "tab-in-column-1" syntax. The very next weekend, the second version of **make** was rewritten from scratch, but already 10+ collaborators at Bell Labs picked up the idea and started using the first version of **make** during the week &mdash; "tab-in-column-1" syntax remained in the code, so that backward compatibility is not broken.
+
+There are several major implementations of **make** nowadays:
+- GNU **make** &mdash; used in this lecture
+- BSD **make**
+- Microsoft **nmake**
+
+While all implementations of **make** share same basic ideas and goals, their syntax is incompatible. 
+
+The key idea: automate checking of ‘mtime’ metadata flag (’gives the time when the file was last changed’)
+
 - TBI 20250906 add some example with ‘stat’ + remark that ‘atime’ flag is not reliable (I have the paragraph below)
-    - The key benefits of ‘make’
+  - The key benefits of ‘make’
 - Compilation is as efficient as possible — only changes are re-compiled
 - Trivial errors of forgetting to recompile the changed code with fixed bugs, is completely eliminated
-    - How does ‘make’ work?
+  - How does ‘make’ work?
 - declarative specification language written in the ‘makefile’
+
+
+
+### 
 
 
 
@@ -316,4 +319,5 @@ This becomes particularly beneficial if we have compiled our main programme agai
 ### 4. References <a name="references"></a>
 * _"UNIX A History and a Memoir"_, Brian Kernighan
   * Section TBI 20250909:
+* "GNU make" Manual is available at this [link](https://www.gnu.org/software/make/)
 * Online resources on shared libraries can be found at this [link](https://www.cprogramming.com/tutorial/shared-libraries-linux-gcc.html )
