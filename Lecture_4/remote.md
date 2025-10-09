@@ -1,13 +1,14 @@
 # Working remotely
 
-**Last update**: 20251008-1
+**Last update**: 20251009-1
 
 
 ### Table of Contents
 
 1. [Terminal multiplexers (screen, tmux)](#screen)
 2. [ping](#ping)
-3. [ssh, scp, sftp](#ssh.scp.sftp)	 	
+3. [ssh, scp, sftp](#ssh.scp.sftp)
+	[a) Public and private keys](#public.and.private.keys) 	  	
 4. [References](#references)
 
 
@@ -507,7 +508,7 @@ The latest **Bash** release is typically announced by the main **Bash** develope
 ftp://ftp.cwru.edu/pub/bash/bash-5.2.tar.gz
 ftp://ftp.gnu.org/pub/gnu/bash/bash-5.2.tar.gz
 
-We can proceed as follows: TBI 20251006 embellish the text here 
+To download directly the source code only of this particular **Bash** version 5.2, we can proceed as follows: 
 
 ```bash
 # Connect:
@@ -538,24 +539,37 @@ ftp> get bash-5.2.tar.gz
 10950833 bytes received in 00:51 (206.25 KiB/s)
 ```
 
-
-
-
-
-
-
-TBI 20250919 use the following nice example from SO, how **ftp** can read here-doc  https://stackoverflow.com/questions/66348808/ftp-upload-in-bash-script
+The above procedure can be automated and executed non-interactively with a simple **Bash** function implemented as follows:
 
 ```bash
-#!/bin/bash
+function Download
+{
+ # Utility function to download in a local home directory
+ # the source code of a specific Bash version via ftp. 
 
-connection(){
- ftp -i -n $line << EOS
- user $user $pass
- put $filename
- bye
- EOS
+ # Example usage: Download bash-5.2
+
+ local Version=$1 # expected format is e.g. "bash-5.2"
+
+ ftp -i -n ftp.gnu.org << EOF
+  user ftp ftp
+  get /pub/gnu/bash/${Version}.tar.gz ${HOME}/${Version}.tar.gz
+  bye
+EOF
+# The above "EOF" end-delimiter of here-doc should NOT be surrounded with empty characters.
+
+ return 0;
 }
+```
+
+For completeness sake, we outline how alternatively by using **git** one can achieve the same goal:
+
+```bash
+# Clone bash git repository locally:
+$ git clone https://git.savannah.gnu.org/git/bash.git bash
+
+# 
+
 ```
 
 
@@ -566,9 +580,7 @@ connection(){
 
 
 
-
-
-#### a) Public and private keys
+#### a) Public and private keys  <a name="public.and.private.keys"></a>
 
 In this section, all steps needed for an authentication via public keys are summarized. TBI 20250930 expand a bit this intro, it's too terse at the moment
 
