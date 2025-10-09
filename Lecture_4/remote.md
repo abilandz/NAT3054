@@ -562,27 +562,16 @@ EOF
 }
 ```
 
-For completeness sake, we outline that alternatively by using **git** one can achieve the same goal, albeit it will take much longer, and the local disk usage will be order of magnitude larger (because a lot of additional data is downloaded as a part of **git** repository):
+For completeness sake, we outline that alternatively by using **git** one can achieve the same goal, albeit it will take much longer, and the local disk usage will be order of magnitude larger, if one clones the whole **git** repository locally. Instead, one needs to clone differentially only that specific version, as follows:    
 
 ```bash
-# Clone Bash git repository locally:
-$ git clone https://git.savannah.gnu.org/git/bash.git bash
-... some progress info ...
-
-# List all available Bash versions ("tags" in git's parlance):
-$ cd bash
-$ git tag
-bash-3.0-beta
-bash-3.0-rc1
-bash-3.1-alpha
-... many more Bash versions ...
-bash-5.1-rc3
-bash-5.2
-
-# Checkout the source code of desired version 5.2:
-$ git checkout bash-5.2
-Previous HEAD position was 6ddc9cf2 Bash-5.2 patch 7: fixes for alias expansion inside command substitution in POSIX mode
-HEAD is now at 74091dd4 bash-5.2 distribution sources and documentation
+# Clone only Bash version 5.2 locally:
+$ git clone --depth 1 --branch bash-5.2 https://git.savannah.gnu.org/git/bash.git
+Cloning into 'bash'...
+remote: Counting objects: 1474, done.
+remote: Compressing objects: 100% (1198/1198), done.
+Receiving objects:  12% (191/1474), 2.86 MiB | 20.00 KiB/s
+... some more info messages ...
 ```
 
 
