@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20251009-3
+**Last update**: 20251010-1
 
 
 ### Table of Contents
@@ -90,12 +90,27 @@ Before using **make**, one must write a file called *makefile* that describes th
 
 The content of the _makefile_ may look as follows:
 
-```bash
+```makefile
 target ... : prerequisites ...
              recipe
              ...
              ...
 ```
+
+or as follows:
+
+```makefile
+target : source1 source2 ...
+	commands to make target
+```
+
+This syntax essentially says: For *target* to be up to date, it must be newer than all of the sources. If it's not, run the commands to bring it up to date. The commands are on one or more lines that must start with TABs, and NOT with equivalent number of spaces. 
+
+
+
+TBI 20251010 Comment that make is checking only the timestamp difference between _target_ and _source_, i.e. ``touch sourceFile`` will trigger the default action, even if the file content is the same.
+
+TBI 20251010 make make silent: running make in ```--silent``` mode will do it, as will prefixing every command with ```@```  + add example from SO how to use .SILENT in _makefile_
 
 TBI 20251010 finalize this part (to I have to use TAB syntax also in this generic example?)
 
