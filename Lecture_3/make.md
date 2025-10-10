@@ -17,43 +17,91 @@
 
 
 ### 1. Introduction <a name="introduction"></a>
-The command-line utility **make** is used in the development of large-scale projects consisting of multiple source files, which have to be compiled and linked together to make one common executable file. One finds such modus operandi, for instance, at major collaborations at the Large Hadron Collider, where several hundreds of developers concurrently develop the analysis framework for a given experiment. 
+The command-line utility **make** is used in the development of large-scale projects consisting of multiple source files, which must be compiled and linked together to create a single executable file. One finds such a modus operandi, for instance, in major collaborations at the Large Hadron Collider, where several hundred developers concurrently develop the analysis framework for a given experiment. 
 
-One can see immediately one potential caveat — would it be necessary to recompile all source files, if there was a change in only one of them? This would lead to the tremendous loss of efficiency during the code development, because recompiling from scratch a large-scale project typically takes several hours, even on very powerful computers. An obvious solution (existed already in the 1970s) would be to use a **linker**: recompile only changed files, and link with previously compiled files. However, in practice this approach is error prone, because if several sources files were modified, frequently one will forget to recompile at least one of them, which will lead either to compilation errors, or pointless debugging sessions (a bug was fixed, but the code wasn't recompiled). In the past, solving this problem was accomplished with carefully written shell scripts, always specific for a project in question. Since this problem was shared among all large-scale projects, there was a need for general solution. This is precisely where **make** originated. 
+One can see immediately one potential caveat — would it be necessary to recompile all source files, if there was a change in only one of them? This would lead to a tremendous loss of efficiency during code development, as recompiling a large-scale project from scratch typically takes several hours, even on very powerful computers. An obvious solution (that existed already in the 1970s) would be to use a **linker**: recompile only changed files, and link with previously compiled files. However, in practice, this approach is error-prone, because if several source files were modified, frequently one forgets to recompile at least one of them, which leads either to compilation errors, or pointless debugging sessions (a bug was fixed, but the code wasn't recompiled). In the past, solving this problem was accomplished with carefully written shell scripts, always specific to the project in question. Since this problem was reoccuring all large-scale projects, there was a need for a general solution. This is precisely how the command-line utility **make** originated. 
 
-Historical note: The first version of **make** was developed by Stuart Feldman in April 1976, in the C programming language, after he and one of his colleagues at Bell Labs (New Jersey, US) spent in the same week hours debugging the correct source code, by simply forgetting to recompile it after the bug was fixed. Motivated by endless frustration, Stuart Feldman immediately over the weekend implemented the first version of **make**, with infamous "tab-in-column-1" syntax. The very next weekend, the second version of **make** was rewritten from scratch, but already 10+ collaborators at Bell Labs picked up the idea and started using the first version of **make** during the week &mdash; "tab-in-column-1" syntax remained in the code, so that backward compatibility is not broken.
+**Historical note**
+
+The first version of **make** was developed by Stuart Feldman in April 1976, in the C programming language, after he and one of his colleagues at Bell Labs (New Jersey, US) spent several hours in the same week debugging the correct source code, by simply forgetting to recompile it after the bug was fixed. Motivated by endless frustration, Stuart Feldman immediately implemented the first version of **make** over the weekend, with infamous "tab-in-column-1" syntax (more on this below!). The very next weekend, the second version of **make** was rewritten from scratch. However, by then, 10+ collaborators at Bell Labs had already picked up the idea and started using the first version of **make** during the week &mdash; "tab-in-column-1" syntax remained in the code, ensuring backward compatibility was not broken.
 
 There are several major implementations of **make** nowadays:
 - GNU **make** &mdash; used in this lecture
 - BSD **make**
 - Microsoft **nmake**
 
-While all implementations of **make** share same basic ideas and goals, their syntax is incompatible. 
+While all implementations of **make** share the same basic ideas and goals, their syntax is frequently incompatible.
 
-The key idea: automate checking of ‘mtime’ metadata flag (’gives the time when the file was last changed’)
+**The key idea behind 'make'**
 
-- TBI 20250906 add some example with ‘stat’ + remark that ‘atime’ flag is not reliable (I have the paragraph below)
-  - The key benefits of ‘make’
-- Compilation is as efficient as possible — only changes are re-compiled
-- Trivial errors of forgetting to recompile the changed code with fixed bugs, is completely eliminated
-  - How does ‘make’ work?
-- declarative specification language written in the ‘makefile’
+Automatic detection of source files that have been modified can be accomplished from the file's metadata, in particular from the file's _mtime_ flag. File metadata refers to any file-related information beyond its content. There are three _timestamps_ as a part of the file's metadata, with the following meaning:  
+
+* **Access (atime)** : last time a file was accessed (opened) and read without any modification   
+* **Modify (mtime)** : last time a file was modified (i.e. its content has been edited)
+* **Change (ctime)** : last time a file's metadata was changed (e.g. permissions)  
+
+These three timestamps are not overkill, in fact, they enable a lot of compelling features. For each file, its metadata can be displayed with the **stat** command:
+
+ ```bash
+ $ stat Lecture_2.md # just specify the abs. or rel. path to file as an argument
+   File: Lecture_2.md
+   Size: 97805           Blocks: 384        IO Block: 4096   regular file
+ Device: 2h/2d   Inode: 12947848928707821  Links: 1
+ Access: (0666/-rw-rw-rw-)  Uid: ( 1000/abilandz)   Gid: ( 1000/abilandz)
+ Access: 2020-04-15 21:05:26.002857000 +0200
+ Modify: 2020-04-28 11:44:53.454187100 +0200
+ Change: 2020-04-28 11:45:14.515681300 +0200
+  Birth: -
+ ```
+
+To get specifically only the _mtime_ ('Modify') flag, one can use the following syntax:
+
+```bash
+# Print time of last data modification, human-readable format:
+$ stat -c %y Lecture_2.md
+2020-04-28 11:44:53.454187100 +0200
+
+# Print time of last data modification, in seconds since Unix epoch:
+$ stat -c %Y Lecture_2.md
+1588067093
+```
+
+These flags are instantly updated for each file by the underlying operating system. This can cause a lot of stress on the system, however, and to improve overall performance and to prevent disk wear, most Linux distributions disable the _atime_ ('Access') flag from being regularly updated.
+
+The key benefits of **make**:
+
+- Compilation is as efficient as possible — only modified source files are recompiled;
+- Trivial errors of forgetting to recompile the modified source file, with important bugs fixed, is completely eliminated;
+- Solution for automation is general and it can be used for any programming language whose compiler can be run with a shell command (or more generically, for any project where some files must be updated automatically from others whenever the others change);
+- Declarative specification language written in the so-called _makefiles_.
 
 
 
-### 
+
+
+
 
 
 
 
 ### 2. Makefile <a name="makefile"></a>
 
-**TBI 20250909 I forgot from where I took this text**
-Makefiles compare the mtimes of two files against each other.  Source and target.  If the source's mtime is greater than the target's mtime, then the target needs to be rebuilt. Most Linux distributions these days are disabling or half-disabling the atime field at the file system mount-option level, because of the tremendous inefficiency and wear on disks that it creates.
+Before using **make**, one must write a file called *makefile* that describes the relationships among files in your project and provides commands for updating each file. Once the _makefile_ is written, **make** uses that information and compares the _mtime_ flags of two files against each other. In **make**'s parlance, these two files are called _source_ and _target_.  If the source's _mtime_ flag is greater than the target's _mtime_ flag, then the target needs to be rebuilt. 
+
+The content of the _makefile_ may look as follows:
+
+```bash
+target ... : prerequisites ...
+             recipe
+             ...
+             ...
+```
+
+TBI 20251010 finalize this part (to I have to use TAB syntax also in this generic example?)
 
 
 
-Example from my local Tutorials:
+TBI 20251010 improve and embellish this example:
 
 Content of _test1.C_:
 
@@ -94,7 +142,7 @@ clean :
 
 
 
-hit make + TAB + TAB ⇒ I get a list of all actions defined in the makefile in PWD ⇒ !! BEAUTIFULL !!
+hit make + TAB + TAB ⇒ I get a list of all actions defined in the makefile in PWD
 
 TBI 20250909 unify notation below with the one I used in "history" section of PH8124 
 
@@ -102,6 +150,10 @@ TBI 20250909 unify notation below with the one I used in "history" section of PH
 $ make + TAB +TAB
 all    clean  run    test1  test2
 ```
+
+
+
+
 
 
 
@@ -311,6 +363,10 @@ This is a shared library test...
 ```
 
 This becomes particularly beneficial if we have compiled our main programme against several hundreds external shared libraries. TBI 20250918 Add some more text here in conclusion
+
+
+
+
 
 
 
