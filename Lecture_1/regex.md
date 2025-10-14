@@ -1,9 +1,6 @@
-![](../Common_Figures/LinuxBashROOT_logos.png)
-
-
 # Regular expressions
 
-**Last update**: 20240929
+**Last update**: 20251014-1
 
 
 ### Table of Contents
@@ -132,9 +129,9 @@ In the end, we remark that unlike backslash ```\```, slash ```/``` is not a spec
 
 
 #### Dot ```.``` <a name="dot"></a>
-The metacharacter dot ```.``` has a special meaning only in BRE and ERE. The reason why it doesn't have any special meaning as a wildcard in globbing originates from the fact that ```.``` as a literal character is already used to denote _hidden files_ (the files whose names begin with ```.``` , like in ".bashrc", and which are not listed by default with the __ls__ command), and to separate a filename from file extension that identifies the file format (e.g. ".txt" in "someFile.txt" to identify the plain ASCII text file). 
+The metacharacter dot ```.``` has a special meaning only in BRE and ERE. The reason why it doesn't have any special meaning as a wildcard in globbing originates from the fact that ```.``` as a literal character is already used to denote _hidden files_ (the files whose names begin with ```.```, like in ".bashrc", and which are not listed by default with the __ls__ command), and to separate a filename from file extension that identifies the file format (e.g. ".txt" in "someFile.txt" to identify the plain ASCII text file). 
 
-In BRE and ERE the dot ```.``` will match any single character, except newline. The character must be present (zero occurrences do not count), and space also counts as a character. It can be thought of as a sort of "variable" in regex, in analogy with the case when a variable represents any value in an arithmetic expression. One can also say that dot ```.``` specifies a position that any character can fill. In globbing, the wildcard ```?``` has a similar meaning (see below).
+In BRE and ERE the dot ```.``` matches any single character, except newline. The character must be present (zero occurrences do not count), and space also counts as a character. It can be thought of as a sort of "variable" in regex, in analogy with the case when a variable represents any value in an arithmetic expression. One can also say that dot ```.``` specifies a position that any character can fill. In globbing, the wildcard ```?``` has a similar meaning (see below).
 
 Few simple examples when dot ```.``` is used in BRE and ERE:
 
@@ -182,7 +179,7 @@ We first illustrate with a few examples the use of the metacharacter asterisk ``
 
 __Example 1__: Regex ```A*E``` matches E, AE, BE, AAE, BAE, A LONG WAY HOME, etc. In each of these cases, there are "zero or more occurrences" of character A before E. 
 
-__Example 2__: Regex ```AB*E``` matches AE, AAE, ABE, ABBE, AAE, AAEE, AABEE, etc., because in each of these cases, there are "zero or more occurrences" of character B after character A and before E. It does not match BE or BBE, because character A is missing before "zero or more occurrences" of character B. It does not match AB or ABB, because character E is missing after "zero or more occurrences" of character B.
+__Example 2__: Regex ```AB*E``` matches AE, AAE, ABE, ABBE, AEE, AAEE, AABEE, etc., because in each of these cases, there are "zero or more occurrences" of character B after character A and before E. It does not match BE or BBE, because character A is missing before "zero or more occurrences" of character B. It does not match AB or ABB, because character E is missing after "zero or more occurrences" of character B.
 
 The metacharacter asterisk ```*``` works the same way when another metacharacter is preceding it, as it is illustrated in the next examples.  
 
@@ -190,7 +187,7 @@ __Example 3__: Regex ```A.*E``` matches AE, ACE, AIRPLANE, A LONG WAY HOME, etc.
 
 __Example 4__: Regex ```".*"``` will match any string within quotes. The span matched by it is always the longest possible.
 
-__Example 5__: Regex ```   *``` (three empty characters before ```*```) will match all lines in the text in which there are words separated by two or more empty characters, instead by default with one empty character:
+__Example 5__: Regex ```    *``` (three empty characters before ```*```) will match all lines in the text in which there are words separated by two or more empty characters, instead by default with one empty character:
 
 ```bash
 $ cat someFile
@@ -290,8 +287,8 @@ grep -v '^ *$' file
 
 A few additional standard use cases of anchors:
 
-* ```   *$``` &mdash; matches lines with one or more empty characters at the end (there have to be two or more spaces before ```*``` )
-* ```^  *``` &mdash; matches a line with one or more leading spaces (there have to be two or more spaces before ```*``` )
+* ```   *$``` &mdash; (two or more empty characters before `*`) matches lines with one or more empty characters at the end
+* ```^  *``` &mdash; matches a line with one or more leading spaces (there have to be two or more spaces before ```*```)
 * ```^.*$``` &mdash; matches the entire line
 
 
@@ -397,7 +394,7 @@ Character classes ```[ ... ]``` can be naturally combined with other metacharact
 - `[ab]c*` — matches “ab”, “abc”, “abcc”, but also "a", "b", "ac", "acc", "bc", "bcc", etc.
 - `[ab]cc*` — matches "ac", "bc", “abc”, “abcc”, “abccc”, but not  "a", "b", “ab”, etc.
 
-In the above example, asterisk ```*``` had an effect only on a single preceding character "c". But we can make asterisk ```*``` acting directly on character classes ```[ ... ]``` , when the final result is different. In combination with character classes, ```*``` matches any number of characters in that class, but also in any order:
+In the above example, asterisk ```*``` had an effect only on a single preceding character "c". But we can make asterisk ```*``` acting directly on character classes ```[ ... ]``` , and the final result will be different. In combination with character classes, ```*``` matches any number of characters in that class, but also in any order:
 
 - `[no]*` — matches "n", "nn", "nnn", "o", "oo", "ooo", "no", "nno", "noo", "on", "oon", "onn", etc. However, it will also match "abc" because that would correspond to "zero occurrences either of "n" or "o". Therefore, this is not really a very useful regex, but it's used here just to illustrated how this mechanism works.
 
@@ -585,7 +582,7 @@ $ egrep "a{0,1}" <<< "abc"
 abc
 ```
 
-Curly braces can be used in another context, to generate with shell arbitrary strings via the _brace expansion_ mechanism. If the generated strings match the existing filenames, curly braces act as a _shell wildcard_ in this context. This particular use case of curly braces was covered in detailed in [Section 5 of PH8124](https://abilandz.github.io/PH8124/Lecture_5/Lecture_5.html#code_blocks_and_brace_expansion) course, and won't be repeated here. _TBI 20240927 Or shall I repeat it nevertheless?_
+Curly braces can be used in another context, to generate with shell arbitrary strings via the _brace expansion_ mechanism. If the generated strings match the existing filenames, curly braces act as a _shell wildcard_ in this context. This particular use case of curly braces was covered in detailed in [Section 5 of PH8124](https://abilandz.github.io/PH8124/Lecture_5/Lecture_5.html#code_blocks_and_brace_expansion) course, and won't be repeated here.
 
 
 
@@ -593,7 +590,7 @@ Curly braces can be used in another context, to generate with shell arbitrary st
 
 #### Alternation operator ```|``` <a name="alternation"></a>
 
-Alternation operator ```|``` is supported and standardized only in ERE where it stands for logical ```OR``` in regex. It does not have any special meaning as a shell wildcard, because this character is already reserved to denote the important pipe mechanism in shell. Some commands, e.g. **grep** and **sed**, supports its usage also in BRE, but it has to be escaped ```\|```. Since the usage of alternation operator ```|``` in BRE is not standardized, it is not covered here in detail.
+Alternation operator ```|``` is supported and standardized only in ERE where it stands for logical ```OR``` in regex. It does not have any special meaning as a shell wildcard, because this character is already reserved to denote the important pipe mechanism in a shell. Some commands, e.g. **grep** and **sed**, supports its usage also in BRE, but it has to be escaped ```\|```. Since the usage of alternation operator ```|``` in BRE is not standardized, it is not covered here in detail.
 
 Schematically, the alternation operator ```|``` is used in ERE as follows:
 
@@ -772,14 +769,18 @@ In this section we illustrate with a few real-life examples both how regular exp
 
 __Example:__ Write a code snippet which matches strings against globs.
 
-```bash 
+The solutions is:
+
+```bash
 case $file in
     *.txt) process-as-text "$file ;;
     *.png) ... ;;
 esac
+```
 
-or
+or equivalently:
 
+```bash
 if [[ $file = *.txt ]]; then
     process-as-text "$file"
 elif [[ $file = *.png ]]; then
@@ -887,4 +888,4 @@ Further details on exceptions can be found in the POSIX standard for regular exp
    * [regex](https://man7.org/linux/man-pages/man7/regex.7.html) ( or execute locally: ```$ man 7 regex``` )
 * POSIX standard
    * [Chapter 9: "Regular Expressions"](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html)
-* Online regex checker: https://regex101.com/
+* Online regex checker: [https://regex101.com/](https://regex101.com/)
