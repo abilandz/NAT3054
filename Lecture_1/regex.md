@@ -1,6 +1,6 @@
 # Regular expressions
 
-**Last update**: 20251016-2
+**Last update**: 20251016-3
 
 
 ### Table of Contents
@@ -84,7 +84,7 @@ In the next section, we systematically enlist all metacharacters and explain the
 
 ### 2. Metacharacters <a name="metacharacters"></a>
 
-Metacharacter is a symbol, or combination of symbols, with special and non-literal meaning in regular expressions and filename expansions. Despite its peculiar name, metacharacters are present all around us. In math, we are used to using metacharacters; for instance, in the arithmetic expression ```4 * 10```, we understand that metacharacter ```*``` represents multiplication. As another example, a combination of symbols ```\n``` is a composite metacharacter and is a standard metacharacter for a new line.
+Metacharacter is a symbol, or combination of symbols, with special and non-literal meaning in regular expressions and filename expansions. Despite its peculiar name, metacharacters are present all around us. In math, we are used to using metacharacters; for instance, in the arithmetic expression ```4 * 10```, we understand that metacharacter ```*``` represents multiplication. As another example, a combination of symbols ```\n``` is a composite metacharacter and is a standard metacharacter for a new line. To avoid confusion and problems with rendering, in some examples below, an empty character ``` ``` is denoted with a symbolic &#9251; character, which is the Unicode "Open box" symbol encoded as "U+2423" (or "9251" decimal).
 
 
 
@@ -187,7 +187,7 @@ __Example 3__: Regex ```A.*E``` matches AE, ACE, AIRPLANE, A LONG WAY HOME, etc.
 
 __Example 4__: Regex ```".*"``` will match any string within quotes. The span matched by it is always the longest possible.
 
-__Example 5__: Regex ``` ___*``` (three empty characters before ```*```) will match all lines in the text in which there are words separated by two or more empty characters, instead by default with one empty character:
+__Example 5__: Regex &#9251;&#9251;&#9251;*  (three empty characters before ```*```) will match all lines in the text in which there are words separated by two or more empty characters, instead by default with one empty character:
 
 ```bash
 $ cat someFile
