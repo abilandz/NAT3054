@@ -1,6 +1,6 @@
 # Regular expressions
 
-**Last update**: 20251014-2
+**Last update**: 20251016-1
 
 
 ### Table of Contents
@@ -187,7 +187,7 @@ __Example 3__: Regex ```A.*E``` matches AE, ACE, AIRPLANE, A LONG WAY HOME, etc.
 
 __Example 4__: Regex ```".*"``` will match any string within quotes. The span matched by it is always the longest possible.
 
-__Example 5__: Regex ```    *``` (three empty characters before ```*```) will match all lines in the text in which there are words separated by two or more empty characters, instead by default with one empty character:
+__Example 5__: Regex ``` ___*``` (three empty characters before ```*```) will match all lines in the text in which there are words separated by two or more empty characters, instead by default with one empty character:
 
 ```bash
 $ cat someFile
@@ -887,5 +887,5 @@ Further details on exceptions can be found in the POSIX standard for regular exp
    * [glob](https://man7.org/linux/man-pages/man7/glob.7.html) ( or execute locally: ```$ man 7 glob``` )
    * [regex](https://man7.org/linux/man-pages/man7/regex.7.html) ( or execute locally: ```$ man 7 regex``` )
 * POSIX standard
-   * [Chapter 9: "Regular Expressions"](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html)
+   * [Chapter 9: "Regular Expressions"](https://pubs.opengroup.org/onlinepubs/9799919799/)
 * Online regex checker: [https://regex101.com/](https://regex101.com/)
