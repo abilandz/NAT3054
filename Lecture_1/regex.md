@@ -289,7 +289,7 @@ A few additional standard use cases of anchors:
 
 *  &#9251;&#9251;*$ &mdash; (two or more empty characters before `*`) matches lines with one or more empty characters at the end
 * ^&#9251;&#9251;* &mdash; matches a line with one or more leading spaces (there have to be two or more spaces before ```*```)
-* ^.*$ &mdash; matches the entire line
+* ```^.*$``` &mdash; matches the entire line
 
    
 
@@ -378,7 +378,7 @@ file_B.txt file_D.txt file_E.txt file_G.txt file_H.txt
 
 Only in globbing, the synonym for regex ```[^...]``` is ```[!...]```. But because the notation ```[!...]``` does not have any special meaning in BRE or in ERE, and to avoid confusion, we recommend the usage only of regex ```[^...]``` in any context.
 
-Finally, we need to clarify how the characters ```[``` and ```]``` themselves are treated within character classes ```[ ... ]``` . The character ```]``` as the first character within is just a character (i.e. not a metacharacter, like when it’s on any other place). The same applies to character ```[``` , as the following example illustrates:
+Finally, we need to clarify how the characters ```[``` and ```]``` themselves are treated within character classes ```[ ... ]``` . The character ```]``` as the first character within ```[ ... ]``` is just a character (i.e. not a metacharacter, like when it’s on any other place). The same applies to character ```[``` , as the following example illustrates:
 
 ```bash 
 $ grep "[]]" <<< "]"
@@ -485,9 +485,9 @@ $ egrep "ab+c" <<< "abb" # doesn't match, because "abc", "abbc", ..., doesn't ma
 ```
 This metachatacter is frequently used to search for extra spacing in the text between the words, and we illustrate the comparison with asterisk ```*``` used in ERE in the same context:
 
-- ```   +``` (exactly two spaces followed by "+") &mdash; matches all cases when between two words there are two or more space
+- &#9251;&#9251;+ (exactly two spaces followed by "+") &mdash; matches all cases when between two words there are two or more space
 
-- ```   *``` (exactly two spaces followed by "*") &mdash; matches all cases when between two words there is one or more spaces
+- &#9251;&#9251;* (exactly two spaces followed by "*") &mdash; matches all cases when between two words there is one or more spaces
 
 The metacharacter ```+``` can be combined with other metacharacters, to make a more sophisticated regex. For instance, regex ```[xy]+``` will match the case when "x" and/or "y" appear at least once, in any order:
 
@@ -580,7 +580,7 @@ $ egrep "a{0,1}" <<< "abc"
 abc
 ```
 
-Curly braces can be used in another context, to generate with shell arbitrary strings via the _brace expansion_ mechanism. If the generated strings match the existing filenames, curly braces act as a _shell wildcard_ in this context. This particular use case of curly braces was covered in detailed in [Section 5 of PH8124](https://abilandz.github.io/PH8124/Lecture_5/Lecture_5.html#code_blocks_and_brace_expansion) course, and won't be repeated here.
+Curly braces can be used in another context, to generate with shell arbitrary strings via the _brace expansion_ mechanism. If the generated strings match the existing filenames, curly braces act as a _shell wildcard_ in this context. This particular use case of curly braces was covered in details in [Section 5 of PH8124](https://abilandz.github.io/PH8124/Lecture_5/Lecture_5.html#code_blocks_and_brace_expansion) course, and won't be repeated here.
 
 
 
@@ -615,7 +615,7 @@ $ grep "cat\|dog" <<< "dog sleeps"
 dog sleeps
 ```
 
-Similarly, the regex ```UNIX|LINUX|BSD``` will match all lines which contain either string "UNIX" or "LINUX" or "BSD".
+Similarly, the regex ```UNIX|LINUX|BSD``` will match in ERE all lines which contain either string "UNIX" or "LINUX" or "BSD".
 
 The alternation operator ```|``` is not to be confused with the pipe symbol ```|```, but from the context there is no room for ambiguity. For instance, in the example below, the 1st metacharacter ```|``` is a shell pipe, the 2nd metacharacter ```|``` is alternation operator in ERE:
 
@@ -758,7 +758,7 @@ In this section we illustrate with a few real-life examples both how regular exp
 * ```[:alnum:]``` or ```[a-zA-Z0-9]``` &mdash; match any alpha-numeric character 
 * ```X?``` &mdash; match zero or one capital letter "X"
 * ```X*``` &mdash; match zero or more capital letters "X"
-* ```X+``` &mdash; match one or more capital letter "X"
+* ```X+``` &mdash; match one or more capital letters "X"
 * ```X{n}``` &mdash; match exactly n constitutive capital letters "X"
 * ```X{n,}``` &mdash; match at least n consectutive capital letters "X"
 * ```X{n,m}``` &mdash; match at least n and not more than m constitutive capital letters "X"
@@ -788,7 +788,7 @@ fi
 
 
 
-**Example:** Write a regex which will match timestamps written in one of the following 3 formats:
+**Example:** Write a regex which matches timestamps written in one of the following 3 formats:
 
 ```bash
 DD-MM-YYYY
@@ -800,7 +800,12 @@ The solution is: TBI 20240929
 
 
 
-**Example:** Write a regex that matches ORCID format — see Wikipedia entry for definition: https://en.wikipedia.org/wiki/ORCID
+**Example:** Write a regex that matches the format of ORCID ("Open Researcher and Contributor ID"), which is an alphanumeric code used to uniquely identify authors of scientific publications. In particular, ORCID use 16-characters identifiers, consisting of four group of digits 0-9, where each group is separated by a hyphen "-". The allowed range is from 0000-0001-5000-0007 to 0000-0003-5000-0001. Only the final character may be a letter "X" (the final character serves as a checksum, but let's put that aside in this exercise). For instance, example ORCID identifiers are:
+
+```bash
+0000-0002-1825-0097
+0000-0002-9079-593X
+```
 
 The solution is: TBI 20240929
 
