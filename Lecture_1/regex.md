@@ -1,6 +1,6 @@
 # Regular expressions
 
-**Last update**: 20251020-2
+**Last update**: 20251020-3
 
 
 ### Table of Contents
@@ -27,7 +27,7 @@
 	* [Non-standard](#nonstandard) ```\<``` and ```\>``` 
 	* [Corner cases and exceptions](#corner.cases.and.exceptions)
 	
-3. [Real-life examples and challenges](#real.life.examples.and.challenges)
+3. [Real-life examples, challenges and failures](#real.life.examples.challenges.and.failures)
 
 4. [Further reading](#further.reading)
 
@@ -771,8 +771,12 @@ GNU versions of **sed**, **awk** and **grep** support also ```\<``` and ``` \>``
 
 
 
-### 3. Real-life examples and challenges <a name="real.life.examples.and.challenges"></a>
-In this section we illustrate with a few real-life examples both how regular expressions can and cannot be used in practice. 
+### 3. Real-life examples, challenges, and failures <a name="real.life.examples.challenges.and.failures"></a>
+In this section we illustrate with a few real-life scenarios how regular expressions should and should not be used in practice. 
+
+
+
+#### Examples
 
 
 
@@ -789,7 +793,7 @@ In this section we illustrate with a few real-life examples both how regular exp
 
 
 
-__Example:__ Write a code snippet which matches strings against globs.
+__Example #1:__ Write a code snippet which matches strings against globs.
 
 The solutions is:
 
@@ -810,6 +814,12 @@ elif [[ $file = *.png ]]; then
 fi
 ```
 
+
+
+
+#### Challenges
+
+In this subsection, we provide several non-trivial challenges, for further practice.
 
 
 **Challenge #1:** Write a regex which matches timestamps written in one of the following 3 formats:
@@ -848,7 +858,7 @@ Note that ```8.54585e+09``` is a valid integer, but ```8.54585e+02``` is not!
 
 
 
-**Frequent failures**
+#### Frequent failures
 
 Frequent point of failure when writing a shell script is to forget that **Bash** will always by default attempt to perform wildcard expansion, i.e. it will attempt to match any glob against files in the current directory, and replace it by a list of filenames. For instance, consider the line:
 
