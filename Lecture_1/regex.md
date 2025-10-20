@@ -1,6 +1,6 @@
 # Regular expressions
 
-**Last update**: 20251016-7
+**Last update**: 20251020-1
 
 
 ### Table of Contents
@@ -226,11 +226,35 @@ __Example 8__: Write a regex that matches any formatting instruction in html fil
 grep '<.*>' someHtml
 ```
 
+**Example 9:** What happens when the asterisk ```*``` is escaped?
 
+```bash
+$ grep \*exam <<< exam # doesn't match
+# 1. shell escaped "*" and passed the pattern "*exam" to grep
+# 2. grep interpreted "*exam" as regex, there is no preceding character to "*"
+# 3. undefined result in ERE
+
+$ grep e\*xam <<< exam # does match
+exam
+# 1. shell escaped "*" and passed the pattern "e*xam" to grep
+# 2. grep interpreted "e*xam" as regex, both "xam" and "exam" match
+# 3. same behaviour in ERE
+
+$ grep '\*exam' <<< exam # doesn't match
+# 1. shell passed the pattern "\*exam" to grep
+# 2. grep escaped "*" and interpreted "*exam" as a literal string, which does not match "exam"
+# 3. same behaviour in ERE
+
+$ grep '\*exam' <<< '*exam' # does match
+*exam
+# 1. shell passed the pattern "\*exam" to grep
+# 2. grep escaped "*" and interpreted "*exam" as a literal string, which matches "*exam"
+# 3. same behaviour in ERE
+```
 
 Finally, we illustrate with a few separate examples the usage of metacharacter asterisk ```*``` as a wildcard in globbing, when it has a different meaning. When used as a wildcard, asterisk ```*``` stands for "zero or more occurrences of any characters". To clarify the difference, we state that wildcard ```*``` in globbing acts the same way as regex ```.*```  in BRE or ERE.
 
-__Example 9__: Usage of asterisk ```*``` in filename expansion.
+__Example 10__: Usage of asterisk ```*``` in filename expansion.
 
 ```bash
 $ touch file.pdf file_{0..3}.pdf
