@@ -812,7 +812,7 @@ fi
 
 
 
-**Example:** Write a regex which matches timestamps written in one of the following 3 formats:
+**Challenge #1:** Write a regex which matches timestamps written in one of the following 3 formats:
 
 ```bash
 DD-MM-YYYY
@@ -820,18 +820,16 @@ DD/MM/YYYY
 DD.MM.YYYY
 ```
 
-The solution is: TBI 20240929
+Possible valid formats include both ```01-01-2001``` and ```1-1-2001```, but not ```01-1-2001``` or ```1-01-2001``` (zero-padding has to be internally consistent). The  years span the interval ```1000..9999```. For simplicity, assume that all months have the same number of days (30), and ignore subtleties related to the existence of step years, etc. Is solution the same in BRE (test your solution using **grep**) and in ERE (test your solution using **egrep**)? 
 
 
 
-**Example:** Write a regex that matches the format of ORCID ("Open Researcher and Contributor ID"), which is an alphanumeric code used to uniquely identify authors of scientific publications. In particular, ORCID use 16-characters identifiers, consisting of four group of digits 0-9, where each group is separated by a hyphen "-". The allowed range is from 0000-0001-5000-0007 to 0000-0003-5000-0001. Only the final character may be a letter "X" (the final character serves as a checksum, but let's put that aside in this exercise). For instance, example ORCID identifiers are:
+**Challenge #2:** Write a regex that matches the format of ORCID ("Open Researcher and Contributor ID"), which is an alphanumeric code used to uniquely identify authors of scientific publications. In particular, ORCID use 16-characters identifiers, consisting of four group of digits 0-9, where each group is separated by a hyphen "-". The allowed range is from 0000-0001-5000-0007 to 0000-0003-5000-0001. Only the final character may be a letter "X" (the final character serves as a checksum, but let's put that aside in this exercise). For instance, example ORCID identifiers are:
 
 ```bash
 0000-0002-1825-0097
 0000-0002-9079-593X
 ```
-
-The solution is: TBI 20240929
 
 
 
@@ -915,4 +913,7 @@ Further details on exceptions can be found in the POSIX standard for regular exp
    * [regex](https://man7.org/linux/man-pages/man7/regex.7.html) ( or execute locally: ```$ man 7 regex``` )
 * POSIX standard
    * [Chapter 9: "Regular Expressions"](https://pubs.opengroup.org/onlinepubs/9799919799/)
+* Russ Cox's studies and writings on the implementation of regular expressions (advanced material)
+	* [Glob execution performance](https://research.swtch.com/glob)
+	* [Implementing Regular Expressions](https://swtch.com/~rsc/regexp) 	
 * Online regex checker: [https://regex101.com/](https://regex101.com/)
