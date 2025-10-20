@@ -1,6 +1,6 @@
 # Regular expressions
 
-**Last update**: 20251020-1
+**Last update**: 20251020-2
 
 
 ### Table of Contents
@@ -27,11 +27,11 @@
 	* [Non-standard](#nonstandard) ```\<``` and ```\>``` 
 	* [Corner cases and exceptions](#corner.cases.and.exceptions)
 	
-3. [Real-life examples](#real.life.examples)
+3. [Real-life examples and challenges](#real.life.examples.and.challenges)
 
 4. [Further reading](#further.reading)
 
-   
+
 
 
 
@@ -771,7 +771,7 @@ GNU versions of **sed**, **awk** and **grep** support also ```\<``` and ``` \>``
 
 
 
-### 3. Real-life examples <a name="real.life.examples"></a>
+### 3. Real-life examples and challenges <a name="real.life.examples.and.challenges"></a>
 In this section we illustrate with a few real-life examples both how regular expressions can and cannot be used in practice. 
 
 
@@ -830,6 +830,21 @@ Possible valid formats include both ```01-01-2001``` and ```1-1-2001```, but not
 0000-0002-1825-0097
 0000-0002-9079-593X
 ```
+
+
+
+**Challenge #3:**  Write down a regex which checks if integer is written in scientific notation. Possible formatting includes:
+
+```bash
+8.54585e+09
+-8.54585e+09
+8.54585E+09
+-8.54585E+09
+```
+
+Note that ```8.54585e+09``` is a valid integer, but ```8.54585e+02``` is not!
+
+
 
 
 
