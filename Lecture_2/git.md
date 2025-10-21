@@ -10,7 +10,9 @@
 
 2. [Git design and main goals](#git.design.and.main.goals)
 
-3. [Before starting: configuring Git](#before.starting.configuring.git)
+    * [The first Git repository from scratch](#the.first.git.repository.from.scratch)  		
+
+3. [Configuring Git](#configuring.git)
 
     * [Configuration variables](#configuration.variables)  		
     * [Configuration files](#configuration.files)  		
@@ -178,12 +180,9 @@ Commit identifiers (```112a046``` and ```528917c``` in the diagrams above) are n
 528917c <=> 528917c49e5dfb581a3e4cd906df86faf2f50961
 ```
 
-Of course, one does not need to memorize these cryptic commit identifiers. While it is simply impossible to memorize the full form even for a single commit, memorizing short form beyond a few commits is not easy either. 
+Of course, one does not need to memorize these cryptic commit identifiers. While it is simply impossible to memorize the full form even for a single commit, memorizing short form beyond a few commits is not easy either. And in fact, memorizing commits identifiers is not needed at all, because Git allows specifying a human-readable message when a new commit is made, with the command **git commit -m "some message"**. At any point later, both commit identifiers and the corresponding human-readable messages can be retrieved by using commands **git log** and/or **git reflog**.
 
-* TBI 20250203 mention commit messages and tags
-* TBI 20241125 mention **git log** and **git reflog**
-
-Commit identifier works both directions: one uses commit identifier to record the status of all files at a given time in the repository, and then at some pointer later when the content of files in working tree changes, one can use that same commit identifier to recover the status of all files at the time that commit was created. 
+Commit identifier works both directions: one uses commit identifier to record the status of all files at a given time in the repository, and then at some pointer later when the content of files in working tree changes, one can use that same commit identifier to recover the status of all files at the time that commit identifier was created. For simplicity, in what follows next we will refer to commit identifier simply as _commit_.
 
 
 
@@ -200,11 +199,7 @@ The branch named pointer "main" automatically advances, pointing to newer and ne
 
 Branches enable a user to work in parallel on different versions of the collection of all files in the working tree. It is possible to switch from one branch to another, i.e. from one state of all files to another state, by using Git command **git checkout**. Before switching from one branch to another, it is mandatory to commit, revert or stash all changes in the current branch, otherwise the command **git checkout** will fail. The first time this command is used a new branch is created.
 
-
-
-TBI 20250203 I could still here define **HEAD** (I have the paragraph ready below. But then, in the example below, I need also to use it in some way)
-
-
+#### The first Git repository from scratch <a name="the.first.git.repository.from.scratch"></a>
 
 All Git concepts introduced in this section are now supported with concrete step-by-step example. First, one creates a new directory and places it under Git version control system with **git init** command: 
 
@@ -226,7 +221,7 @@ No commits yet
 nothing to commit (create/copy files and use "git add" to track)
 ```
 
-In this example, Git has used "'master" as the name for the initial (default) branch. If necessary, the just-created branch can be renamed via this command:
+In this example, Git has used "master" as the name for the initial (default) branch. If necessary, the just-created branch can be renamed via this command:
 
 ```bash
 $ git branch -m main
@@ -247,7 +242,7 @@ $ touch someFile.txt
 # edit the file:
 $ echo "some text" >> someFile.txt
 
-# add the modified file to staging area:
+# add the modified file to the staging area:
 $ git add someFile.txt
 
 # make the first commit in repository for "main" branch:
@@ -280,6 +275,7 @@ The command **git branch** lists all branches in the current Git repository. The
 ```bash
 $ echo "adding some new text" >> someFile.txt
 
+# check the content of file on "devel" branch:
 $ cat someFile.txt
 someText
 adding some new text
@@ -300,6 +296,7 @@ And now comes the important point. We can now switch back to the default branch 
 $ git checkout main
 Switched to branch 'main'
 
+# check the content of file on "main" branch:
 $ cat someFile.txt
 someText
 ```
@@ -350,6 +347,12 @@ After the tests in "devel" branch were successful, all new development from that
        commit id: "change 5"
  
 ```
+
+
+
+TBC 20251021
+
+
 
 TBI 20250203 I need a code snippet for merging, only for the simplest case + point out to later section "Combining changes ..." where I discuss merging in more detail, with all merging strategies, etc.
 
@@ -437,7 +440,7 @@ TBI 20250503 do I need to say also here how to push locally created tag to remot
 
 
 
-### 3. Before starting: configuring Git <a name="before.starting.configuring.git"></a>
+### 3. Configuring Git <a name="configuring.git"></a>
 
 There are files and variables which have a special meaning to Git and which can be used to modify its default behavior. Before setting up the workflow and making the first commit in a Git repository, it is necessary to review, set or adapt some of these special files and variables, i.e. it is necessary to configure Git.
 
