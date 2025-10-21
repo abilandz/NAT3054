@@ -2,7 +2,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20251009-1
+**Last update**: 20251021-1
 
 
 ### Table of Contents
@@ -40,9 +40,9 @@
 
 
 ### 1. Introduction to version control system <a name="introduction.to.version.control.system"></a>
-When developing a source code in a particular programming language, writing a thesis, etc., one frequently encounters the requirements which deal with the specific version of that project, i.e. with the status of all of its files at a specified time. One example is creating a backup of current version of all files in the project, before progressing with a further development. Another example is a request to revert back the latest changes introduced in the project, because it turned out those changes were erronous. Frequently, one wants to be able to develop concurrently in parallel multiple versions of the same project, maintaining in parallel the main line of development and the separate line in which all new features are being tested. Finally, especially when working on a large-scale projects, it is important to set up the workflow for project development in such a way so that different individuals can collaborate on it.
+When developing a source code in a particular programming language, writing a thesis, etc., one frequently encounters the requirements which deal with the specific version of that project, i.e. with the status of all of its files at a specified time. One example is creating a backup of current version of all files in the project, before progressing with a further development. Another example is a request to revert back the latest changes introduced in the project, because it turned out those changes were erroneous. Frequently, one wants to be able to develop concurrently in parallel multiple versions of the same project, maintaining in parallel the main line of development and the separate line(s) in which all new features are being tested. Finally, especially when working on a large-scale projects, it is important to set up the workflow for project development in such a way so that different individuals can collaborate on it.
 
-All these requests can be attained with the software category dubbed _version control system_. Currentenly, by far the most popular software in this category is an open-source distributed version control system called _Git_, and in this lecture it is used exclusively.
+All these requests can be attained with the software category dubbed _version control system_. Currently, by far the most popular software in this category is an open-source distributed version control system called _Git_, and in this lecture it is used exclusively.
 
 Conceptually, after a change has been introduced in the repository (e.g. an existing file was modified or deleted, a new file was created, etc.) one can make a "named snapshot" of the current status of all files in the repository. To illustrate these steps, we start off from the terminal:
 
@@ -89,9 +89,9 @@ Schematically, the above example is illustrated with the following diagram (made
     end
 ```
 
-To each working step in this example, we have allocated a "named snapshot" to denote the specific status of all files in the repository at the time that working step was made. The version control system enables us to recover the status of the repository at a previous time simply by using a "named snapshot", or _commit identifier_ in a more technical language, that was made at that time.  
+To each working step in this example, we have allocated a "named snapshot" to denote the specific status of all files in the repository at the time that working step was made. The version control system enables us to recover the status of the repository at a previous time simply by using a "named snapshot", or _commit identifier_ in a more technical language, that was made at that time. A particular version of the source code is also called _revision_, and in Git different revisions can be retrieved through corresponding commit identifiers.
 
-Another important conceptual goal is to organize the exchange of information between different repositories. This is particularly important when two or more people collaborate on the same project. In that case, the central repository is defined, typically online on a server, and each collaborator has a copy (or _clone_) of that central repository. That situation is illustrated with the following diagram TBI 20241117 see if I can get cloud diagram representation for the central repo:
+Another important conceptual goal is to organize the exchange of information between different repositories. This is particularly important when two or more people collaborate on the same project. In that case, the central repository is defined, typically online on a server, and each collaborator has a copy (or _clone_) of that central repository. That situation is illustrated with the following diagram:
 
 ```mermaid	
 flowchart TD
@@ -106,16 +106,11 @@ flowchart TD
     central <==> local_4    
 ```
 
-For instance, when there is a change in the "Local repository 1", the owner of that local repository propagates (or _pushes_) that change in the "Central online repository", from where it can be taken (or _pulled_) into the remaining local repositories of other collaborators working on the same project. In this respect, "Central online repository" serves as a gate through which developers can exchange updates on the joint project. 
+For instance, when there is a change in the "Local repository 1", the owner of that local repository propagates (or _pushes_) that change in the "Central online repository", from where it can be taken (or _pulled_) into the remaining local repositories of other collaborators working on the same project. In this respect, "Central online repository" serves as a gate through which developers can exchange updates on the joint project. Central repositories are typically only "bare" repositories, i.e. they do not have a working tree and are used only to share changes between developers. In Git, by design each local repository is an exact copy of the central repository. To maintain central repository sane, it is important to set among developers a workflow with an authorization procedure, which typically amounts to code review and approving _pull requests_, before changes can be incorporated into the central repository.
 
-TBI 20241117 expand still:
 
-* Each local repository is an exact copy of central repository
-* Authorization to push, code review and pull request, to maintain central repository sane
-* Central repositories are typically only "bare", i.e. used only to share changes between developers
-* Revision -- a version of the source code. In Git, different revisions may be retrieved through corresponding commits.
 
- TBI 20250427 I need a bridge towards next section
+
 
 
 
