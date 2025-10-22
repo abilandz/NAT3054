@@ -2,7 +2,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20251021-1
+**Last update**: 20251022-1
 
 
 ### Table of Contents
@@ -348,45 +348,11 @@ After the tests in "devel" branch were successful, all new development from that
  
 ```
 
-
-
-TBC 20251021
-
-
-
-TBI 20250203 I need a code snippet for merging, only for the simplest case + point out to later section "Combining changes ..." where I discuss merging in more detail, with all merging strategies, etc.
-
-TBI 20241125 finalize + use the text below
-
-When cloning a repository, the default branch is the one for which the local branch is automatically created. TBI 20250203 it's too early here for cloning, move this text later
-
-A branch is a local to the repository in which that branch was created. If a local repository was cloned from remote repository, a newly created branch in a local repository by default does not have a corresponding branch in a remote repository. But if necessary, that can be achieved with remote-tracking branch   TBI 20241117 finalize, see page 7
-
-TBI 20250503 do I need to say also here how to push locally created branch to remote repository
+How such merging is performed in practice using Git commands will be discussed in detail and supported with concrete examples in later sections. 
 
 
 
-
-
- TBI 20250203 it's too early here for 'tracking branch', move later
-
-**tracking branch** : when you have an upstream branch. Allow you to use **git pull** and **git push** command directly without specifying the branch and repo. Eg. after cloning, your local master branch is created as a tracking branch for the master branch of the remote repository. TBI 20250529 I took this from Sec. 42.4
-
-TBI 20250529 for setting up tracking branches, see again Sec. 42.5
-
-
-
-**remote-tracking branch** : TBI 20250529 see again Chapter 42
-
-
-
-**HEAD** is a symbolic reference usually pointing to the branch which is currently checked out. Since the branch name is a named pointer to the latest commit on that branch, indirectly, **HEAD** usually points to the latest commit on the current branch.
-
-
-
-**detached HEAD** : If you checkout a commit ID or tag (TBI 20250427 I didn't introduce tags yet, move this after next paragraph where I introduce tags), you are in _detached HEAD_ mode state. While it is possible to make new commits in _detached HEAD_ mode state, those commits will not cause the branch pointer to automatically advance with them, and therefore committed changes in this mode are difficult to track later. For instance, commits made in _detached HEAD_ mode state are not shown with **git log** command. However, they are present in **git reflog** command. TBI 20241127 In practice, i see the opposite. If you switch to another branch, HEAD points to the new branch, i.e. it will automatically advance to a new commit TBI 20241127 check this + check what happened if I switch back to the previous branch -- am I still in DHM? 
-
-TBI 20250520 check again 41.1
+We finalize discussion on the Git design by introducing **tags**, **HEAD**, and **detached HEAD**, which are closely related to branches. 
 
 
 
@@ -423,18 +389,36 @@ gitGraph
    commit
 ```
 
-With each new commit, the branch named pointer "main" automatically advances, pointing to newer and newer commits on that branch. On the other hand, tags ```2.0.4```, ```2.0.5```, ```2.1.0```, remain fixed to commits for which they were made. Using tags it is much easier to trace back the version of the project at particular point in the past, than using commit identifiers. To checkout version of the project corresponding to particular tag, one uses simply:
+With each new commit, the branch named pointer "main" automatically advances, pointing to newer and newer commits on that branch. On the other hand, tags ```2.0.4```, ```2.0.5```, ```2.1.0```, etc., remain fixed to commits for which they were made. Using tags it is much easier to trace back the version of the project at particular point in the past, than using commit identifiers. To checkout version of the project corresponding to particular tag, one uses simply:
 
 ```bash 
 # checkout the status of the project at particular tag in the past:
 git checkout 2.0.4
 ```
 
-TBI 20250503 I need to say that now I am in "detached HEAD mode", and comment on that, see page 80
 
-TBI 20250503 Tags are not sync. on GitHub => not sure any longer what I wanted to say here
 
-TBI 20250503 do I need to say also here how to push locally created tag to remote repository
+**HEAD** is a symbolic reference usually pointing to the branch which is currently checked out. Since the branch name is a named pointer to the latest commit on that branch, indirectly, **HEAD** usually points to the latest commit on the current branch. One can see its current content directly by inspecting the content of a special file ".git/HEAD" in the repository, e.g.
+
+```bash
+# Checkout the branch "master":
+$ git checkout master
+... some additional info ...
+$ cat .git/HEAD 
+ref: refs/heads/master
+
+# Checkout the specific commit:
+$ git checkout 33f4fc7
+... some additional info ...
+$ cat .git/HEAD 
+33f4fc75e4e3382f3a6c027baa375ddebcfaf41c
+```
+
+
+
+**detached HEAD** : If you checkout a commit ID or tag, you are in _detached HEAD_ state. While it is possible to make new commits in _detached HEAD_ state, those commits will not cause the branch pointer to automatically advance with them, and therefore committed changes in this mode are difficult to track later. If you switch to another branch, **HEAD** points to that new branch, i.e. it will automatically advance to a new commit on that new branch. 
+
+
 
 
 
@@ -518,6 +502,13 @@ $ git config --global user.name "First Last" # use the real name, not the acrony
 $ git config --global user.email "someEmail@tum.de" # use the valid email address
 ```
 
+Related to this, one can prevent Git for annoyingly prompting for credentials too frequently by setting:
+
+```bash
+$ git config --global credential.helper "cache --timeout=86400" 
+# You will be prompted for credentials only once in 86400s, i.e. once per year
+```
+
 In the next section, the most important Git configuration files are addressed.
 
 
@@ -526,14 +517,14 @@ In the next section, the most important Git configuration files are addressed.
 
 #### Configuration files <a name="configuration.files"></a>
 
-In addition to the configuration variables, there are also configuration files that have a special meaning to Git. Arguably, the most frequently used configuration file is a hidden file named _.gitignore_ . In this file, all files and/or directories in the working tree that Git shall not track can be listed. It is very important to realize that this mechanism can be used only for the new files (i.e. untracked files) in the working tree, but it can not be used to stop tracking already tracked files (in this case, one has to use first **git rm --cached**, see later sections). Finally, both the creation of _.gitignore_ itself in the working tree and any changes in _.gitignore_ afterward need to be staged and committed as well, for its current content to be taken into account by Git. TBI 20241018 Check this sentence, read Sec. 19, perhaps it's not mandatory to commit, just a good practice (but beware that in the example below I add and commit it)?
+In addition to the configuration variables, there are also configuration files that have a special meaning to Git. Arguably, the most frequently used configuration file is a hidden file named _.gitignore_ . In this file, all files and/or directories in the working tree that Git shall not track can be listed. It is very important to realize that this mechanism can be used only for the new files (i.e. untracked files) in the working tree, but it can not be used to stop tracking already tracked files (in this case, one has to use first **git rm --cached**, see later sections). Finally, both the creation of _.gitignore_ itself in the working tree and any changes in _.gitignore_ afterward need to be staged and committed as well, for its current content to be taken into account by Git.
 
 Each Git repository has its own set of _.gitignore_ files, whose scope can be interpreted as follows:
 
 * _someGitRepository/.gitignore_ &mdash; When placed in the root of Git repository, the content of that _.gitignore_ file applies to the whole repository;
 * _someGitRepository/subDir/.gitignore_ &mdash; When placed in a specific subdirectory of working tree in Git repository, that _.gitignore_ file applies only to that subdirectory and below. This is rarely used in practice.
 
-As a concrete example, we consider the Git repository named "mscThesis" in which a student is using LaTeX in a file "source.tex" for writing his master's thesis:
+As a concrete example, we consider the Git repository named "mscThesis" in which a student is using LaTeX for writing his master's thesis in a file "source.tex":
 
 ```bash 
 # initialize Git repository for M.Sc. thesis project:
@@ -597,7 +588,7 @@ Untracked files:
 nothing added to commit but untracked files present (use "git add" to track)
 ```
 
-As it can be seen, the LaTeX auxiliary files "source.aux" and "source.log", although still present in the working tree, are ignored now by Git after they have been enlisted in the special configuration file ".gitignore" and after ".gitignore" was committed with that new information to the revision itself. TBI 20241018 Check this sentence, read Sec. 19, perhaps it's not mandatory to commit, just a good practice?
+As it can be seen, the LaTeX auxiliary files "source.aux" and "source.log", although still present in the working tree, are ignored now by Git after they have been enlisted in the special configuration file ".gitignore" and after ".gitignore" was committed with that new information to the revision itself.
 
 A few concluding remarks on the usage of ".gitignore":
 
@@ -614,7 +605,7 @@ A few concluding remarks on the usage of ".gitignore":
 
 * By default Git does not track empty directories. To preserve the overall design and directory structure of project in a Git repository, one typically adds dummy ".gitkeep" files (any other name would also work) in otherwise empty directories. These files are not special and their sole purpose is to populate a directory so that Git adds it to the repository from the very beginning.
 
-* When a new Git repository is initiated on GitHub (TBI 20250427 check if I mentioned GitHub by this point), it is possible to choose which files not to track from the list of predefined ".gitignore" templates. For instance, when a new repository is made on GitHub for the C++ code development, immediately when that repository is being initiated on GitHub one can choose the specifically prepared ".gitignore" template for C++, which contains the line like this:
+* When a new Git repository is initiated on GitHub (an online developer platform for code development and sharing using Git), it is possible to choose which files not to track from the list of predefined ".gitignore" templates. For instance, when a new repository is made on GitHub for the C++ code development, immediately when that repository is being initiated on GitHub one can choose the specifically prepared ".gitignore" template for C++, which contains the line like this:
 
 	```bash
 	# Prerequisites
@@ -634,21 +625,9 @@ A few concluding remarks on the usage of ".gitignore":
 	... many more lines ...
 	```
 
-TBI 20241113 Do I have to say something about GitLab in this context?
 
 
 
-
-
-* **.git/HEAD** &mdash; see to what currently the HEAD is pointing to
-
-TBI 20241015 check again 10.4 
-
-
-
-** Setting up Git credentials cache** TBI 20241006 sort this out
-
-git config --global credential.helper "cache --timeout=86400" # I will be promted for credentials only once in 86400s, i.e. once per year
 
 
 
@@ -859,6 +838,30 @@ However, much more frequently, as a central Git repository one established an on
 
 
 
+
+
+
+
+
+TBI 20241125 finalize + use the text below
+
+When cloning a repository, the default branch is the one for which the local branch is automatically created. TBI 20250203 it's too early here for cloning, move this text later
+
+A branch is a local to the repository in which that branch was created. If a local repository was cloned from remote repository, a newly created branch in a local repository by default does not have a corresponding branch in a remote repository. But if necessary, that can be achieved with remote-tracking branch   TBI 20241117 finalize, see page 7
+
+TBI 20250503 do I need to say also here how to push locally created branch to remote repository
+
+TBI 20250503 do I need to say also here how to push locally created tag to remote repository
+
+
+
+**tracking branch** : when you have an upstream branch. Allow you to use **git pull** and **git push** command directly without specifying the branch and repo. Eg. after cloning, your local master branch is created as a tracking branch for the master branch of the remote repository. TBI 20250529 I took this from Sec. 42.4
+
+TBI 20250529 for setting up tracking branches, see again Sec. 42.5
+
+
+
+**remote-tracking branch** : TBI 20250529 see again Chapter 42
 
 
 
