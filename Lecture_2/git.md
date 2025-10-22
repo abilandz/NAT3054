@@ -639,11 +639,9 @@ A few concluding remarks on the usage of ".gitignore":
 
 
 
-
-
 #### Quick setup of standalone local repository <a name="quick.setup.of.standalone.local.repository"></a>
 
-This is the simplest Git workflow, and corresponds to the case when the whole project development will take place on the same computer. Only the standalone local Git repository is needed on that computer for that project, and the Git workflow for this case can be established as follows:
+This is the simplest Git workflow, and corresponds to the case when the whole project development will take place on the same computer. Only the standalone local Git repository is needed on that computer for the project, and the Git workflow for this case can be established as follows:
 
 ```bash
 # initialize Git repository for some local directory:
@@ -652,7 +650,7 @@ $ cd someDirectory
 $ git init
 Initialized empty Git repository in /home/abilandz/someDirectory/.git/
 ```
-With the above initialization, local directory "someDirectory" will host all files of the project in question. After it was added to Git repository, in subdirectory ".git" history of all comitted changes of all files is kept. At any point later, we can recover the previous version of any file. TBI 20250114 improve the text here 
+With the above initialization, local directory "someDirectory" will host all files of the project in question. After it was added to the Git repository, in subdirectory ".git" the history of all committed changes of all files is kept. Most importantly, at any point later, we can recover any previous version of any file.
 
 The current status can be inspected with the command **git status**: 
 ```bash
@@ -703,7 +701,7 @@ Changes to be committed:
         new file:   someFile.txt
 ```
 
-If one or more files were added to the staging area by mistake, as the above message says, they can be removed simply with the command **git rm --cached**. On the other hand, if after adding a file to the staging area we still want to make some changes in that file before making the final commit, we first edit that file, and then stage it again with the **git add** command. 
+If one or more files were added to the staging area by mistake, they can be removed simply with the command **git rm --cached** as the above message says. On the other hand, if after adding a file to the staging area we still want to make some changes in that file before making the final commit, we first edit that file, and then stage it again with the **git add** command. 
 
 Finally, when no further changes for the time being are planned in the staged files, we can commit all staged files permanently to the Git repository using the **git commit** command : 
 
@@ -720,19 +718,18 @@ $ git commit -m "first commit"
 $ git status
 On branch master
 nothing to commit, working tree clean
-
 ```
 
 At any time later, we can recover the version of all tracked files in the working tree when this commit was made by using the commit identifier (```f57d8ad``` in the example above). This is the main feature of any version control system. 
 
-Since it is very difficult, if not impossible, to memorize cryptic commit identifiers for each commit, we can associate a user-friendly message by using the git commit command with the flag "-m" accompanied by that message. The message is typically a short descriptive message, which should clearly indicate what was the main new change in the code which was worth a new commit creating in the Git repository. A few examples:
+Since it is very difficult, if not impossible, to memorize cryptic commit identifiers for each commit, we can associate a user-friendly message by using the command **git commit** with the flag "-m", accompanied by some insightful message. The message is typically a short descriptive message, which should clearly indicate what was that important new change in the code which was worth making a new commit in the Git repository. A few examples:
 
 ```bash
 $ git commit -m "added new histograms for particle distributions"
 $ git commit -m "fixed bug in function Rebin()"
 ```
 
-The point is that any time later, we can trace back easily what was introduced in the project with each commit from those descriptive messages:
+The point is that any time later, we can trace back easily what was introduced in the project with each commit from those descriptive messages, for instance using **git log**:
 
 
 ```bash
@@ -744,6 +741,10 @@ Date:   Tue Jan 14 20:10:24 2025 +0100
 
     first commit
 ```
+
+
+
+TBC 20251022
 
 
 
