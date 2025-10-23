@@ -1,6 +1,6 @@
 # Regular expressions
 
-**Last update**: 20251023-1
+**Last update**: 20251023-2
 
 
 ### Table of Contents
@@ -719,13 +719,19 @@ $ egrep "(abc|def)+" <<< "abcdef" # matches, because both "abc" and "def" match 
 abcdef
 ```
 
+By following the analogy with math operations ```a(b+c)d = ab+cd```, ```a(b+c+d)e = abe+ace+ade```, etc., one can expand and interpret the compound regex  ```a(b|c)d``` as ```abd|acd```,  ```a(b|c|d)e``` as ```abe|ace|ade```, etc. For instance:
+
+```bash
+$ egrep 'a(b|c)d' <<< "abd" # matches, becase "abd" matches "abd"
+abd
+$ egrep 'a(b|c)d' <<< "acd" # matches, becase "acd" matches "acd"
+acd
+$ egrep 'a(b|c)d' <<< "abc" # doesn't match, becase neither "abd" nor "acd" match "abc"
+```
+
 The regex which matches beginning of the line or space is given elegantly by `(^| )` .
 
 Finally, we make a connection between different metacharacters &mdash; regex ```^(bat|Cat)``` is the same as ```^[bC]at```. 
-
-
-
-
 
 
 
