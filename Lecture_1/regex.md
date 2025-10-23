@@ -1,6 +1,6 @@
 # Regular expressions
 
-**Last update**: 20251020-3
+**Last update**: 20251023-1
 
 
 ### Table of Contents
@@ -282,15 +282,15 @@ The metacharacters caret (or circumflex) ```^``` and dollar ```$``` have a speci
 
 2. ```$``` matches the ending position within a string or of a line.
 
-For instance, regex ```^A``` will match the string ABCD, because character A is at the starting position, but it will not match BACD. Similarly, regex ```D$``` will match the string ABCD, because character D is at the ending position, but it will not match BADC:
+For instance, regex ```^A``` will match the string ABCD, because character A is at the starting position, but it will not match BACD. Similarly, regex ```D$``` will match the string ABCD, because character D is at the ending position, but it will not match BADC. This is demonstrated below in BRE using **grep**, but in exactly the same way it can be demonstrated using **egrep** in ERE:
 
 ```bash
-$ grep "^A" <<< "ABCD" # OK, because A is at the starting position in string
+$ grep '^A' <<< "ABCD" # OK, because A is at the starting position in string
 ABCD
-$ grep "^A" <<< "BACD" # doesn't match
-$ grep "D$" <<< "ABCD" # OK, because D is at the ending position in string
+$ grep '^A' <<< "BACD" # doesn't match
+$ grep 'D$' <<< "ABCD" # OK, because D is at the ending position in string
 ABCD
-$ grep "D$" <<< "ABDC" # doesn't match
+$ grep 'D$' <<< "ABDC" # doesn't match
 ```
 
 Classical example of using anchors ```^``` and ```$``` is to filter out blank lines from files. The special care has to be taken of whether blank line containts only a hidden new line metacharacter ```\n```, or in addition one or more empty spaces. 
@@ -311,8 +311,8 @@ grep -v '^ *$' file
 
 A few additional standard use cases of anchors:
 
-*  &#9251;&#9251;*$ &mdash; (two or more empty characters before `*`) matches lines with one or more empty characters at the end
-* ^&#9251;&#9251;* &mdash; matches a line with one or more leading spaces (there have to be two or more spaces before ```*```)
+*  &#9251;&#9251;*$ (two or more empty characters before `*$`) &mdash; matches lines with one or more empty characters at the end
+* ^&#9251;&#9251;* (two or more spaces between ```^``` and ```*```) &mdash; matches a line with one or more leading spaces
 * ```^.*$``` &mdash; matches the entire line
 
    
@@ -563,7 +563,7 @@ Regex ```{n,m}``` in ERE, or ```\{n,m\}``` in BRE, matches a range of occurrence
 Its usage is illustrated with a few examples in ERE using ```egrep```. All examples below can be cast into BRE and test with ```grep``` simply replacing notation ```{ ... }``` with ```\{ ... \}```.
 
 ```bash
-# Example usage of { } in ERE:
+# Example usage of { ... } in ERE:
 $ egrep "ab{2}c" <<< "abc" # doesnt' match, only one occurence of preceding character "b"
 $ egrep "ab{2}c" <<< "abbc" # matches, exactly two occurences of preceding character "b"
 abbc
@@ -602,6 +602,29 @@ $ egrep "a?" <<< "abc"
 abc
 $ egrep "a{0,1}" <<< "abc"
 abc
+```
+
+__Example__: On a local computer, find a file holding the English dictionary (on Ubuntu, such dictionary is in the file "/etc/dictionaries-common/words"). Write a regex which extracts only the words whose length is exactly 5 characters.
+
+```bash
+# Example path to English dictionary on a local computer:
+Dictionary=/etc/dictionaries-common/words
+
+# Check the total number of words:
+$ wc -l $Dictionary 
+103494 /etc/dictionaries-common/words
+
+# Extract only the words whose length is exactly 5 characters:
+# 1. ERE solution:
+$ egrep '^.{5}$' $Dictionary
+ABC's
+ABM's
+...
+zoo's
+zorch
+
+# 2. BRE solution:
+$ grep '^.....$' $Dictionary
 ```
 
 Curly braces can be used in another context, to generate with shell arbitrary strings via the _brace expansion_ mechanism. If the generated strings match the existing filenames, curly braces act as a _shell wildcard_ in this context. This particular use case of curly braces was covered in details in [Section 5 of PH8124](https://abilandz.github.io/PH8124/Lecture_5/Lecture_5.html#code_blocks_and_brace_expansion) course, and won't be repeated here.
@@ -855,6 +878,8 @@ Possible valid formats include both ```01-01-2001``` and ```1-1-2001```, but not
 Note that ```8.54585e+09``` is a valid integer, but ```8.54585e+02``` is not!
 
 
+
+**Challenge #4:** On a local computer, find a file holding the English dictionary (on Ubuntu, such dictionary is in the file "/etc/dictionaries-common/words"). Write down a regex which extracts only the words whose length is exactly 7 characters, do not contain apostrophe ```'``` (i.e. filter out trivial examples like "alien's", "camel's", etc.), and do not contain one or more capital letters (i.e. filter out personal names and abbreviations, etc.). 
 
 
 
