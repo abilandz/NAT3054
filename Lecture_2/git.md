@@ -2,7 +2,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20251027-3
+**Last update**: 20251027-4
 
 
 ### Table of Contents
@@ -882,7 +882,7 @@ flowchart LR
     central == pull the commit ==> local_2     
 ```
 
-* If the new development was made in a Git repository on a laptop::
+* If the new development was made in a Git repository on a laptop:
 
 ```mermaid	
 flowchart LR
