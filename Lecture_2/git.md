@@ -2,7 +2,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20251022-3
+**Last update**: 20251027-1
 
 
 ### Table of Contents
@@ -348,7 +348,7 @@ After the tests in "devel" branch were successful, all new development from that
  
 ```
 
-How such merging is performed in practice using Git commands will be discussed in detail and supported with concrete examples in later sections. 
+How such merging is performed in practice using Git commands is discussed in detail and supported with concrete examples in later section "[Combining changes: merge, rebase and cherry-pick](#combining.changes.merge.rebase.and.cherry.pick)."
 
 
 
@@ -734,37 +734,66 @@ The point is that any time later, we can trace back easily what was introduced i
 
 ```bash
 # check all commits:
-$ git log
-commit f57d8ad5db4aa54fa7bd67738b73f2e154452ac2 (HEAD -> master)
-Author: Ante <abilandz@zero>
-Date:   Tue Jan 14 20:10:24 2025 +0100
+commit 7afe0a75db243fbe05fa0c503f333528aa0c491e (HEAD -> WS2025_2026, origin/WS2025_2026)
+Author: abilandz <Ante.Bilandzic@cern.ch>
+Date:   Thu Oct 23 08:30:32 2025 +0200
 
-    first commit
+    one more examples for grouping operator regex
+
+commit 386caed493bb1613d8722a20c8d4976312821e8b
+Author: abilandz <Ante.Bilandzic@cern.ch>
+Date:   Thu Oct 23 07:57:29 2025 +0200
+
+    added few more examples for regex
+
+commit 253d8f5a3845808fb0dc7d3c75997c73143e45fc
+Author: abilandz <Ante.Bilandzic@cern.ch>
+Date:   Wed Oct 22 13:24:07 2025 +0200
+
+    finalized Sec. 4.1
+    
+... many more commits not shown ...    
 ```
 
+Alternatively, such information can be extracted also from **git reflog** command, albeit in a more condensed format:
+
+```bash
+7afe0a7 (HEAD -> WS2025_2026, origin/WS2025_2026) HEAD@{0}: commit: one more examples for grouping operator regex
+386caed HEAD@{1}: commit: added few more examples for regex
+253d8f5 HEAD@{2}: commit: finalized Sec. 4.1
+
+... many more commits not shown ... 
+```
+
+The commands **git log** and **git reflog** are not entirely equivalent, and their differences are clarified in later sections.
 
 
-TBC 20251022
 
 
 
 
 #### Quick setup of local and remote online repository <a name="quick.setup.of.local.and.remote.online.repository"></a>
 
-However, much more frequently, as a central Git repository one established an online repository, e.g. on GitHub, which is then cloned into a local repository on one or more different computers. This way, one can continuously work on the same project using a desktop computer in the office and/or a laptop at home, and in addition, always have a safe backup in the online repository itself. To establish such a workflow, it's much easier if one starts off by creating an online repository first on GitHub (the procedure for other online platforms, like GitLab, is basically the same).
+However, much more frequently, as a central repository one establishes an online repository, using online developer platforms for code development and sharing, which rely on Git. Two such very popular online platforms are [GitHub](https://github.com/) and [GitLab](https://about.gitlab.com/). In what follows next, all examples will be illustrated using GitHub, but a very similar procedure applies to GitLab as well.
 
-1. Go to [GitHub](https://github.com/) and in case you already do not have an account, create one and sign up for free
+One starts by establishing an online repository on GitHub, which is then cloned into a local repository on one or more different computers. This way, one can continuously work on the same project using a desktop computer in the office and/or a laptop at home, and in addition, always have a safe backup in the online repository itself. This is particularly beneficial when ones uses different operating systems and corresponding software to develop the same project (e.g. Linux on desktop computer and Windows on laptop) because the online Git repository takes care automatically of different line endings (```'\n'``` on Linux vs. ```'\r\n'``` on Windows, etc.).
+
+To establish such a workflow, it's much easier to start by creating an online repository first directly on GitHub and clone it locally, then to first create it locally, then move it to GitHub. Therefore, we summarize step-by-step only the former approach:
+
+1. Go to [GitHub](https://github.com/) and in case you already do not have an account, sign up for free and create one
 
 2. Make a new repository online in GitHub: 
 
-   * Click on "+" menu in bottom right corner
-   * Choose from drop-down menu "New repository"
-   * Type below the empty box marked with an asterisk * the repository name, e.g. "testRepo"
-   * Optionally add a description of what this repository is meant for, and choose whether you want this repository to be "Public" or "Private" (can be changed any time later)
-   * Choose to initialize the repository with special file "README.md". The file "README.md" can be edited either online or offline. This file is read first by default, i.e. if there are both README.md and READMe.md, the former is read. The file READMe.md is read, if there is no README.md (an educated guess), and so on. TBI 2025013 review and finalize this paragraph
-   * Choose .gitignore TBI 2025013 finalize
+   * Click on "+" menu in bottom right corner;
+   * Choose from drop-down menu "New repository";
+   * Type in the empty box marked with "Repository name" the name for your new repository, e.g. "testRepo";
+   * Optionally add a description of what this repository is meant for, and choose whether you want this repository to be "Public" or "Private" (can be changed at any time later, in case of doubt choose "Private");
+   * Choose to initialize the repository with special file "README.md". The file "README.md" can be edited either online or offline. This file is read first by default, i.e. if there are both "README.md" and "READMe.md", the former is read. The file "READMe.md" is read as an educated guess only if there is no "README.md", and so on;
+   * Choose ".gitignore" template file, which is specific to your project (if you are writing a thesis in LaTeX choose "TeX" from drop-down menu, if you are developing project in C++ in this repository choose "C++" as a template, etc.). This is important, because Git will automatically ignore and not add to the revision all auxiliary and temporary files which pop up in the repository during compilation;
+   * Optionally, add a license for your project &mdash; it's perfectly fine if you set up the repository with "No license";
+   * Finally, click "Create repository". Now you have created your first online Git repository on GitHub, which is sitting at the URL https://github.com/yourUserNameOnGitHub/testRepo .
 
-3. Clone the online repository locally by executing in the terminal (using your GitHub username, of course): 
+3. Clone the online repository "testRepo" locally, by executing in the terminal (using your GitHub username in the path below): 
 
    ```bash
    $ git clone https://github.com/abilandz/testRepo.git testRepo
@@ -776,7 +805,7 @@ However, much more frequently, as a central Git repository one established an on
    Receiving objects: 100% (3/3), done.
    ```
 
-   A few important things are automatically set after cloning: push and pull are set, and the local name for the remote repo is defaulted to "origin". You can inspect that with:
+   A few important things are automatically set after cloning: _push_ and _pull_ are set, and the local name for the remote repository is defaulted to "origin". You can inspect that with the command **git remote -v** as follows:
 
    ```bash
    $ cd testRepo
@@ -785,14 +814,16 @@ However, much more frequently, as a central Git repository one established an on
    origin  https://github.com/abilandz/testRepo.git (push)
    ```
 
-4. After both local and remote online repositories are established, one can start working. After making a change in the local repository, one needs to stage and commit that change in local repository, and finally push that commit to the online repository: 
+   After cloning, your local _master_ branch is created automatically as a **tracking branch** for the _master_ branch of the remote repository. The tracking branch allows you to use **git pull** and **git push** commands directly, without specifying either the branch names or repository paths afterward.
+
+4. After both local and remote online repositories are established, one can start working. After making a change in the local repository, one needs to stage and commit that change in the local repository, and finally push that commit to the online repository: 
 
    ```bash
    # make some change in the working tree in the local repository:
    $ echo "some text" > file.txt
    
    # stage that change:
-   $ git add file.tx
+   $ git add file.txt
    
    # commit that change:
    $ git commit -m "some change"
@@ -814,12 +845,12 @@ However, much more frequently, as a central Git repository one established an on
       27ab7b4..e47db10  master -> master
    ```
 
-   This procedure works straightforwardly only when pushing commits results in _fast-forward merge_ in the remote repository. 
+   This procedure works straightforwardly only when pushing the commits can be trivially merged into the current status of the remote repository. 
 
 5. On the other hand, to pull the new commits from online repository locally, one simply in the local repository executes:
 
    ```bash
-   # push all new commits in the remote repository into local repository:
+   # pill all new commits from the remote repository into local repository:
    $ git pull
    remote: Enumerating objects: 9, done.
    remote: Counting objects: 100% (8/8), done.
@@ -834,7 +865,35 @@ However, much more frequently, as a central Git repository one established an on
     1 file changed, 26 insertions(+), 4 deletions(-)
    ```
 
-   
+   This is relevant when one clones the same central online repository on two local computers, e.g. on desktop and laptop, and then develops a project concurrently in parallel on desktop computer and laptop, using the central online repository both to exchange information and to maintain safe online backup of the project.
+
+
+
+We summarize the workflow in this example with the following diagram:
+
+1. If the new development was made in a Git repository on a desktop computer:
+
+    ```mermaid	
+    flowchart LR
+        central["Online repository on GitHub"]
+        local_1["Git repository on desktop"]
+        local_2["Git repository on laptop"]
+        local_1 == push the commit ==> central     
+        central == pull the commit ==> local_2     
+    ```
+
+1. If the new development was made in a Git repository on a laptop::
+
+    ```mermaid	
+    flowchart LR
+        central["Online repository on GitHub"]
+        local_1["Git repository on laptop"]
+        local_2["Git repository on desktop"]
+        local_1 == push the commit ==> central     
+        central == pull the commit ==> local_2     
+    ```
+
+1. Before starting a new development either on desktop or laptop, one first executes **git pull** to integrate all changes from online repository.
 
 
 
@@ -842,41 +901,11 @@ However, much more frequently, as a central Git repository one established an on
 
 
 
-
-
-TBI 20241125 finalize + use the text below
-
-When cloning a repository, the default branch is the one for which the local branch is automatically created. TBI 20250203 it's too early here for cloning, move this text later
-
-A branch is a local to the repository in which that branch was created. If a local repository was cloned from remote repository, a newly created branch in a local repository by default does not have a corresponding branch in a remote repository. But if necessary, that can be achieved with remote-tracking branch   TBI 20241117 finalize, see page 7
-
-TBI 20250503 do I need to say also here how to push locally created branch to remote repository
-
-TBI 20250503 do I need to say also here how to push locally created tag to remote repository
-
-
-
-**tracking branch** : when you have an upstream branch. Allow you to use **git pull** and **git push** command directly without specifying the branch and repo. Eg. after cloning, your local master branch is created as a tracking branch for the master branch of the remote repository. TBI 20250529 I took this from Sec. 42.4
-
-TBI 20250529 for setting up tracking branches, see again Sec. 42.5
-
-
-
-**remote-tracking branch** : TBI 20250529 see again Chapter 42
+TBC 20251027
 
 
 
 
-
-4/ Imagine that in GitHub and locally you have master, and then locally you create a new branch. You cat propagate that branch also to GitHub via 
-
-   ***git push --set-upstream origin <branch-name> OR git push -u origin <branch-name>\*** 
-
-   Then, changes in the local master are pushed in the remote master, and changes in the local branch are pushed in the remote branch 
-
-
-
-TBI 20241208 Mention somewhere round here that online Git repository takes care automatically on different line endings, therefore it's possible to work transparently using different OS on the same project.s
 
 
 
@@ -1980,7 +2009,7 @@ Using HEAD as a reference will lists all commits across different branches, whil
 
 **git remote rename <old-name> <new-name>** &mdash; e.g. change the default name 'origin' for remote repo into something new
 
-**git remote show origin** &mdash; use to show all remote and tracking branches for origin => **BEAUTIFUL**
+**git remote show origin** &mdash; use to show all remote and tracking branches for origin
 
 **git remote update** &mdash; basically, executing 'git fetch' for all remote repositories
 
@@ -2171,6 +2200,28 @@ Dropped refs/stash@{0} (9b04bc441f665be83aef5342c762f60fbcd7fa3e)
 TBI 20241007 re-order examples in terms of importance
 
 
+
+* **How to push a newly created local branch or local tag to remote repository?**
+
+  Imagine that in GitHub and locally you have only the _master_ branch (e.g. after the initial cloning of online repository locally), and then locally you create a new branch with the name _newBranchName_. You can propagate that new branch also to GitHub by using:
+
+  ```bash 
+  git push --set-upstream origin newBranchName
+  ```
+
+  or equivalently:
+
+  ```bash 
+  git push -u origin newBranchName
+  ```
+
+  After that, changes in the local _master_ are pushed in the remote _master_, while changes in the local branch _newBranchName_ are pushed in the remote branch _newBranchName_.
+
+  
+
+  TBI 20251027 finalize this example for tag
+
+  
 
 * **How to rename branch both locally and remotely?**  TBI 20241006 finalize and validate and test this example
 
@@ -2480,4 +2531,5 @@ TBI 20250520 see again 40.2 and 40.3
 
 * _"Distributed Version Control with Git: Mastering the Git command line"_, Lars Vogel
 * Official website https://git-scm.com/doc and documentation therein
+* Online developer platforms using Git for code development and sharing: [GitHub](https://github.com/) and [GitLab](https://about.gitlab.com/)
 * All diagrams were made using [Mermaid](https://mermaid.js.org/), an open-source JavaScript-based diagramming and charting tool that generates diagrams from text-based descriptions
