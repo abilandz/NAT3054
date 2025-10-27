@@ -2,7 +2,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20251027-2
+**Last update**: 20251027-3
 
 
 ### Table of Contents
@@ -871,7 +871,7 @@ To establish such a workflow, it's much easier to start by creating an online re
 
 We summarize the workflow in this example with the following diagram:
 
-1. If the new development was made in a Git repository on a desktop computer:
+* If the new development was made in a Git repository on a desktop computer:
 
 ```mermaid	
 flowchart LR
@@ -882,7 +882,7 @@ flowchart LR
     central == pull the commit ==> local_2     
 ```
 
-1. If the new development was made in a Git repository on a laptop::
+* If the new development was made in a Git repository on a laptop::
 
 ```mermaid	
 flowchart LR
@@ -893,7 +893,7 @@ flowchart LR
     central == pull the commit ==> local_2     
 ```
 
-1. Before starting a new development either on desktop or laptop, one first executes **git pull** to integrate all changes from online repository.
+* Before starting a new development either on desktop or laptop, one first executes **git pull** to integrate all changes from online repository.
 
 
 
