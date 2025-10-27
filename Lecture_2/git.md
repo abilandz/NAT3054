@@ -2,7 +2,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20251027-1
+**Last update**: 20251027-2
 
 
 ### Table of Contents
@@ -873,25 +873,25 @@ We summarize the workflow in this example with the following diagram:
 
 1. If the new development was made in a Git repository on a desktop computer:
 
-    ```mermaid	
-    flowchart LR
-        central["Online repository on GitHub"]
-        local_1["Git repository on desktop"]
-        local_2["Git repository on laptop"]
-        local_1 == push the commit ==> central     
-        central == pull the commit ==> local_2     
-    ```
+```mermaid	
+flowchart LR
+    central["Online repository on GitHub"]
+    local_1["Git repository on desktop"]
+    local_2["Git repository on laptop"]
+    local_1 == push the commit ==> central     
+    central == pull the commit ==> local_2     
+```
 
 1. If the new development was made in a Git repository on a laptop::
 
-    ```mermaid	
-    flowchart LR
-        central["Online repository on GitHub"]
-        local_1["Git repository on laptop"]
-        local_2["Git repository on desktop"]
-        local_1 == push the commit ==> central     
-        central == pull the commit ==> local_2     
-    ```
+```mermaid	
+flowchart LR
+    central["Online repository on GitHub"]
+    local_1["Git repository on laptop"]
+    local_2["Git repository on desktop"]
+    local_1 == push the commit ==> central     
+    central == pull the commit ==> local_2     
+```
 
 1. Before starting a new development either on desktop or laptop, one first executes **git pull** to integrate all changes from online repository.
 
