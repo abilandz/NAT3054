@@ -2,7 +2,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20251027-4
+**Last update**: 20251028-1
 
 
 ### Table of Contents
@@ -774,7 +774,7 @@ The commands **git log** and **git reflog** are not entirely equivalent, and the
 
 #### Quick setup of local and remote online repository <a name="quick.setup.of.local.and.remote.online.repository"></a>
 
-However, much more frequently, as a central repository one establishes an online repository, using online developer platforms for code development and sharing, which rely on Git. Two such very popular online platforms are [GitHub](https://github.com/) and [GitLab](https://about.gitlab.com/). In what follows next, all examples will be illustrated using GitHub, but a very similar procedure applies to GitLab as well.
+However, much more frequently, as a central repository one establishes an online repository, using some of freely available online developer platforms for code development and sharing, which rely on Git. Two such very popular online platforms are [GitHub](https://github.com/) and [GitLab](https://about.gitlab.com/). In what follows next, all examples will be illustrated using GitHub, but a very similar procedure applies to GitLab as well.
 
 One starts by establishing an online repository on GitHub, which is then cloned into a local repository on one or more different computers. This way, one can continuously work on the same project using a desktop computer in the office and/or a laptop at home, and in addition, always have a safe backup in the online repository itself. This is particularly beneficial when ones uses different operating systems and corresponding software to develop the same project (e.g. Linux on desktop computer and Windows on laptop) because the online Git repository takes care automatically of different line endings (```'\n'``` on Linux vs. ```'\r\n'``` on Windows, etc.).
 
@@ -901,16 +901,146 @@ flowchart LR
 
 
 
-TBC 20251027
-
-
-
 
 
 
 
 #### Transfer <a name="transfer"></a>
-TBI 20241007 Document here how to copy files from behind the firewall using Git, instead of multi-stage scp via proxy jump, etc.
+In this case, the Git workflow is outlined which can be used to copy files from one computer to another, even if one computer is behind the firewall (in a sense that direct login to it is not possible). Such configuration frequently occurs in practice when one wants to utilize remotely some large-scale computing facility, as the following diagram illustrates:
+
+
+
+```mermaid	
+flowchart LR
+    personal["Personal computer"]
+    login["Login server"]
+    firewall["Computer behind the firewall"]
+    node_1["Working node 1"]
+    node_2["Working node 2"]
+    node_["..."]
+    node_N["Working node N"]
+    personal ==> login ==> firewall ==> node_1
+    firewall ==> node_2
+    firewall ==> node_
+    firewall ==> node_N
+```
+
+In the above configuration, one wants to copy files back and forth from "Personal computer" to "Computer behind the firewall", without being prompted each time for credentials, and bypassing entirely the "Login server". Typically, one develops the analysis code locally on a "Personal computer", then copies and compiles it on "Computer behind the firewall", and the resulting executable is then used on computers "Working node 1", "Working node 2", ... "Working node N", out of which the large-scale computing facility is built. The output of this large-scale analysis is then copied back from "Computer behind the firewall", to the "Personal computer", for the final post-processing of obtained results. 
+
+To achieve that, one creates an online repository (e.g. on [GitHub](https://github.com/), as detailed in the previous section) named "Transfer", and clones it from the terminal both on "Personal computer" and on "Computer behind the firewall":
+
+```bash
+# Execute on "Personal computer": 
+$ cd $HOME
+$ git clone https://github.com/abilandz/Transfer.git Transfer
+$ git config --global credential.helper "cache --timeout=86400" 
+
+# Login remotely, and execute on "Computer behind the firewall": 
+$ cd $HOME
+$ git clone https://github.com/abilandz/Transfer.git Transfer
+$ git config --global credential.helper "cache --timeout=86400"
+```
+
+The shell function ```Transfer``` which will automate copying back and forth from "Personal computer" to "Computer behind the firewall" using the Git repository "Transfer" may look as follows:
+
+```bash
+function Transfer
+{
+ # Example usage:
+ ## 1. Transfer --push file1 file2 # push file1 file2 to Git repository 
+ ## 2. cd SomeDir && Transfer --pull # pull new files from Git repository into SomeDir
+
+ ## a) Local variables: 
+ local GitTransferDir=$HOME/Transfer # precisely such directory must exist on both machines on which this function is used
+ local ModusOperandi=$1 # either '--push' or '--pull'
+
+ ## b) Insanity checks:
+ which git &> /dev/null || { echo  "No git installed."; return 1; }
+ # ... some more insanity checks ...
+
+ ## c) Option '--push':
+ if [[ $ModusOperandi == '--push' ]]; then
+   # Check if the Git repository 'Transfer' is up to date. 
+   # If not, pull.
+   ( cd $GitTransferDir && git pull ) &>/dev/null || { echo "pull failed"; return 1; }
+
+   # Copy requested files and dirs into Git repository 'Transfer', 
+   # and establish array of files and dirs to be commited:
+   shift 1 # the first argument is either "--pull" or "--push", strip it off
+   local ToCommit=( )
+   local FilesAndDirs=( "$@" )
+   local fad
+   for fad in "${FilesAndDirs[@]}"; do
+     [[ -f $fad ]] && cp "$fad" $GitTransferDir/ && ToCommit[${#ToCommit[*]}]="$(basename "$fad")"
+     [[ -d $fad ]] && cp -r "$fad" $GitTransferDir/ && ToCommit[${#ToCommit[*]}]="$(basename "$fad")"
+   done # for fad in "${FilesAndDirs[@]}"; do
+
+   # Add, commit and push:
+   ( 
+     cd $GitTransferDir/
+     git add "${ToCommit[@]}" || { echo "git add failed"; return 1; }
+     git commit -m 'auto transfer' || { echo "git commit failed"; return 1; }
+     git push || { echo "git push failed"; return 1; }
+   ) 
+
+ fi # if [[ $ModusOperandi == '--push' ]]; then 
+
+ ## d) Option '--pull':
+ if [[ $ModusOperandi == '--pull' ]]; then 
+   local CopyDest=$PWD
+   # Pull, get the list of files from the last commit, and copy them in the current workig dir:
+   (
+     cd $GitTransferDir/ || { echo "cd $GitTransferDir/ failed"; return 1; }
+     CurrentLastCommitID=$(git rev-parse --short HEAD) || { echo "git rev-parse --short HEAD failed"; return 1; }
+     git pull || { echo "git pull failed"; return 1; }
+     NewLastCommitID=$(git rev-parse --short HEAD) || { echo "git rev-parse --short HEAD failed"; return 1; }
+     if [[ $CurrentLastCommitID == $NewLastCommitID ]]; then 
+       echo "After git pull was executed, nothing changed in the git repo, there are no new files."
+       return 1
+     fi  
+     FilesInLastCommit=( $( git diff-tree --no-commit-id --name-only $NewLastCommitID ) )
+     local filc
+     for filc in "${FilesInLastCommit[@]}"; do
+       [[ -f $filc ]] && cp "$filc" $CopyDest/ && echo "File $filc is here."
+       [[ -d $filc ]] && cp -r "$filc" $CopyDest/ && echo "Directory $filc is here."
+     done
+   ) 
+
+ fi # if [[ $ModusOperandi == '--pull' ]]; then 
+
+ return 0;
+
+}
+```
+
+One deploys the above shell function ```Transfer``` both on "Personal computer" and "Computer behind the firewall", e.g. in the file ```~/myFunctions.sh```, and enables it permanently by adding to ```~/.bashrc``` the following lines:
+
+```bash
+source ~/myFunctions.sh
+alias tl='Transfer --pull'
+alias th='Transfer --push'
+```
+
+After that, when one wants to copy files from "Personal computer" to "Computer behind the firewall" without getting promoted for credentials, bypassing entirely the "Login server", it suffices to execute in the terminal on a  "Personal computer":
+
+```bash
+$ th file1 file2
+```
+
+And in the terminal on "Computer behind the firewall":
+
+```bash
+$ cd SomeDir # the new files will be copied into this directory
+$ tl
+```
+
+Analogously, one copies the files in the other direction. 
+
+This approach to copy files from one computer to another using Git is recommended if the size of files is not too large. Otherwise, an alternative is to use multi-stage version of **scp** via proxy jump. However, the Git approach has another important advantage &mdash; all copied files (and their different versions) are securely backup-ed in the Git repository, and can be retrieved any any time later.
+
+
+
+
 
 
 
@@ -945,9 +1075,7 @@ TBI 20241010 Text is takes from https://rick.cogley.info/post/update-your-forked
 
 
 
-To do 20250501
 
-* online repository is typically used only for synchronizing, i.e. it's a bare repository without working tree
 
 
 
