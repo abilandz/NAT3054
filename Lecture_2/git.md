@@ -2,7 +2,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20251028-1
+**Last update**: 20251028-2
 
 
 ### Table of Contents
@@ -906,7 +906,7 @@ flowchart LR
 
 
 #### Transfer <a name="transfer"></a>
-In this case, the Git workflow is outlined which can be used to copy files from one computer to another, even if one computer is behind the firewall (in a sense that direct login to it is not possible). Such configuration frequently occurs in practice when one wants to utilize remotely some large-scale computing facility, as the following diagram illustrates:
+In this case, the Git workflow is outlined which can be used to copy files from one computer to another, even if one computer is behind the firewall (in the sense that direct login to it is not possible). Such a configuration frequently occurs in practice when one wants to utilize remotely some large-scale computing facility, as the following diagram illustrates:
 
 
 
@@ -918,14 +918,16 @@ flowchart LR
     node_1["Working node 1"]
     node_2["Working node 2"]
     node_["..."]
+    node_N_1["Working node N-1"]
     node_N["Working node N"]
     personal ==> login ==> firewall ==> node_1
     firewall ==> node_2
     firewall ==> node_
+    firewall ==> node_N_1
     firewall ==> node_N
 ```
 
-In the above configuration, one wants to copy files back and forth from "Personal computer" to "Computer behind the firewall", without being prompted each time for credentials, and bypassing entirely the "Login server". Typically, one develops the analysis code locally on a "Personal computer", then copies and compiles it on "Computer behind the firewall", and the resulting executable is then used on computers "Working node 1", "Working node 2", ... "Working node N", out of which the large-scale computing facility is built. The output of this large-scale analysis is then copied back from "Computer behind the firewall", to the "Personal computer", for the final post-processing of obtained results. 
+In the above configuration, one wants to copy files back and forth from the "Personal computer" to the "Computer behind the firewall", without being prompted each time for credentials, and bypassing entirely the "Login server". Typically, one develops the analysis code locally on a "Personal computer", then copies and compiles it on "Computer behind the firewall", and the resulting executable is then used on computers "Working node 1", "Working node 2", ... "Working node N", out of which the large-scale computing facility is built. The output of this large-scale analysis is then copied back from "Computer behind the firewall" to the "Personal computer", for the final post-processing of the obtained results. 
 
 To achieve that, one creates an online repository (e.g. on [GitHub](https://github.com/), as detailed in the previous section) named "Transfer", and clones it from the terminal both on "Personal computer" and on "Computer behind the firewall":
 
@@ -1036,7 +1038,7 @@ $ tl
 
 Analogously, one copies the files in the other direction. 
 
-This approach to copy files from one computer to another using Git is recommended if the size of files is not too large. Otherwise, an alternative is to use multi-stage version of **scp** via proxy jump. However, the Git approach has another important advantage &mdash; all copied files (and their different versions) are securely backup-ed in the Git repository, and can be retrieved any any time later.
+This approach to copying files from one computer to another using Git is recommended if the size of the files is not too large. Otherwise, an alternative is to use a multi-stage version of **scp** via proxy jump. However, the Git approach has another significant advantage &mdash; all copied files (and their different versions) are securely backed-up in the Git repository, and can be retrieved at any time later.
 
 
 
