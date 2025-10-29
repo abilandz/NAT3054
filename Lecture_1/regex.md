@@ -1,6 +1,6 @@
 # Regular expressions
 
-**Last update**: 20251023-2
+**Last update**: 20251029-1
 
 
 ### Table of Contents
@@ -365,7 +365,7 @@ someFile_2.txt someFile_3.txt
 
 Inside ```[ ... ]``` the standard metacharacters loose their special meaning:
 ```bash
-$ echo '$Var' | grep '[$?]ar'
+$ echo '$Var' | grep '[$?]Var'
 $Var
 $ echo '.file' | grep '[.]file'
 .file
