@@ -2,7 +2,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20251029-1
+**Last update**: 20251029-2
 
 
 ### Table of Contents
@@ -1057,17 +1057,17 @@ This can be achieved with _forks_ and _pull requests_. Schematically, this workf
 ```mermaid
 	flowchart RL
 	subgraph Local repositories
-    l1["Clone of fork"]
+    l1["Clone of the fork"]
     end
 	subgraph Local repository
-    l2["Clone of fork"]
+    l2["Clone of the fork"]
     end
     
     subgraph Online repositories
     o1["Central repository for
     the whole collaboration"]
-    o2["Fork of central repository"]
-    o3["Fork of central repository"]
+    o2["Fork of the central repository"]
+    o3["Fork of the central repository"]
     end
     
     o2 == "pull request + approvals" ==> o1
@@ -1085,7 +1085,7 @@ Both in GitHub and GitLab, it is straightforward to establish such a workflow, a
 
 
 #### Collaborating locally <a name="collaborating.locally"></a>
-Even though in most cases of practical interest work on a collaborative project is setup up via an online developer platform using Git software (e.g. GitHub or GitLab), it is possible to setup collaborative project also using Git locally. For instance, when two or more developers have access to the same shared disk area (e.g. on a local cluster), they can set up central repository on that shared disk. We illustrate in this section all steps needed to establish such a workflow. 
+Even though in most cases of practical interest work on a collaborative project is set up up via an online developer platform using Git software (e.g. GitHub or GitLab), it is also possible to set up a collaborative project using Git locally. For instance, when two or more developers have access to the same shared disk area (e.g. on the computer from which jobs on a local batch farm can be submitted using commonly developed software), they can set up central repository on that shared disk area. For completeness' sake and in order to introduce a few additional Git-related concepts, in this section all steps needed to establish such a workflow are illustrated, even though in practice this is rarely used. 
 
 
 ```bash
@@ -1094,9 +1094,9 @@ $ git init --bare headquarter
 Initialized empty Git repository in /home/abilandz/headquarter/
 ```
 
-This is a central repository which will be used to exchange information related to the project development between various contributors. We remark that this central repository has to be bare (i.e. it has no working tree and no default remote), since it is not possible to push commits in a non-bare Git repository (TBI 20241009 check these statements)
+This is a central repository which will be used to exchange information related to the project development among all developers. We remark that this central repository has to be _bare_ (i.e. it has no working tree and no default remote repository). One can think of a bare Git repository having nothing but the .git folder inside your local working repository.
 
-From contributor's point of view, we can now proceed in two ways: "clone" and "init". First we illustrate "clone" approach for a contributor named "Marcel":
+From developer's point of view, we can now proceed in two ways: "clone" and "init". We illustrate the "clone" approach because it is easier, starting with the developer named "Marcel":
 
 ```bash
 # Clone the central bare repository into developer's repository named "Marcel": 
@@ -1147,7 +1147,7 @@ $ git branch -a
 * master
   remotes/origin/master
 
-# Another cross-check:  
+# Another way to cross-check:  
 $ git branch -vv
 * master eac42f0 [origin/master] added file README.md
 
@@ -1204,36 +1204,9 @@ Fast-forward
  1 file changed, 1 insertion(+)
 ```
 
-TBI 20241009 comment somewhere above that the special work has to be done only by the first developer. 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#### Developing in parallel on different operating systems <a name="developing.in.parallel.on.different.operating.systems"></a>
-
-TBI 20241015 See if you need to go here more in detail with respect to line ending problems -- see Sec. 11
-
-* mention that using Git can eliminate this problem completely
-* add example and workflow  with Git Desktop on Win + command line git on Linux
-
-
+TBC 20251029
 
 
 
@@ -2518,45 +2491,14 @@ TBI 20241125 Check further this SO exchange: https://stackoverflow.com/questions
 * **How to Update a fork in Github?**
 
 1. Access your forked repository on Github.
-
 2. Click “Pull Requests” on the right, then click the “New Pull Request” button.
-
 3. Github first compares the base fork with yours, and will find nothing if you made no changes, so, click “switching the base”, which will change your fork to the base, and the original to the head fork. Now you should see changes where your fork needs to play “catch up”.
-
 4. Click “Create Pull Request”, give it a name, click “Send Pull Request”.
-
 5. Click “Merge Pull Request” and “Confirm Merge”.
    Assuming you had no changes, you can then merge automatically.
    TBI 20241010 Text is takes from https://rick.cogley.info/post/update-your-forked-repository-directly-on-github/ -- review, validate and update
 
-   
 
-
-* **Difference between bare and non-bare repositories** TBI move somewhere else
-
-o bare repositories do not have working tree
-o bare repositories do not the default remote origin
-o by default after cloning, the repository is non-bare, if you want a bare one, use: git clone --bare
-o Git assumes that the bare repository will serve as the origin repository for several remote users, so it does not create the default remote origin. What this means is that basic git pull and git push operations won't work since Git assumes that without a workspace, you don't intend to commit any changes to the bare repository
-o Git commands git clone and git init both have options --bare that create repositories without an initial workspace.
-o A bare repository is nothing but the .git folder itself i.e. the contents of a bare repository is same as the contents of .git folder inside your local working repository.
-   oo Use bare repository on a remote server to allow multiple contributors to push their work.
-   oo Non-bare - The one which has working tree makes sense on the local machine of each contributor of your project.
-=> https://stackoverflow.com/questions/5540883/whats-the-practical-difference-between-a-bare-and-non-bare-repository
-
-
-
-o propagate all over that by convention the bare repos have the name extension .git, e.g. 
-
-**git init --bare central.git**
-
-o since bare repos do not have a working tree, you cannot easily create new files there
-
-o you almost always update bare repo by pushing into it. That was, also the branches in bare repo are created
-
-o you can NOT pull from brand new local bare repo
-
-o LIE : if you clone empty bare repo in this working dir, you are NOW on the branch master, as 'git branch returns' nothing. AB branches cannot exist without commits
 
 
 * **How to delete permanently the already tracked file from Git repository?**
