@@ -2,7 +2,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20251029-2
+**Last update**: 20251029-3
 
 
 ### Table of Contents
@@ -1204,9 +1204,33 @@ Fast-forward
  1 file changed, 1 insertion(+)
 ```
 
+The above workflow is summarized with the following diagram:
+
+```mermaid
+	flowchart LR
+	subgraph Local repositories
+    r1["Central bare repository"]
+    r2["Developer 1"]
+    r3["Developer 2"]
+    r4["..."]
+    r5["Developer N-1"]
+    r6["Developer N"]
+    end
+  
+    r1 <== "push + pull" ==> r2
+    r1 <== "push + pull" ==> r3
+    r1 <== "push + pull" ==> r4
+    r1 <== "push + pull" ==> r5
+    r1 <== "push + pull" ==> r6
+```
+
+
+
 
 
 TBC 20251029
+
+
 
 
 
