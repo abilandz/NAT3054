@@ -2,7 +2,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20251028-2
+**Last update**: 20251029-1
 
 
 ### Table of Contents
@@ -1044,38 +1044,41 @@ This approach to copying files from one computer to another using Git is recomme
 
 
 
+#### Collaborating online using GitHub or GitLab <a name="collaborating.online.using.github"></a>
 
+In this section, we illustrate the workflow that is frequently used in major collaborations worldwide, including those in high-energy physics. The basic requirements set upon this workflow are:
 
+* a large number of developers (typically more than 100) shall be able to develop the project on a daily basis concurrently;
+* each new commit must be reviewed and approved by an expert, and automatically tested with various test suites, before being merged into the central repository. This requirement is essential, to prevent scenarios in which an error introduced by one developer hinders the work of the rest;
+* common programming style (formatting, naming conventions, etc.).
 
+This can be achieved with _forks_ and _pull requests_. Schematically, this workflow is illustrated with the following diagram for two collaborators developing concurrently, which can be trivial generalized:
 
-#### Collaborating online using GitHub <a name="collaborating.online.using.github"></a>
+```mermaid
+	flowchart RL
+	subgraph Local repositories
+    l1["Clone of fork"]
+    end
+	subgraph Local repository
+    l2["Clone of fork"]
+    end
+    
+    subgraph Online repositories
+    o1["Central repository for
+    the whole collaboration"]
+    o2["Fork of central repository"]
+    o3["Fork of central repository"]
+    end
+    
+    o2 == "pull request + approvals" ==> o1
+    o3 == "pull request + approvals" ==> o1
+    l1 == push ==> o2
+    l2 == push ==> o3
+```
 
+Each developer first creates an online fork of the central repository, and then clones that fork locally. Each developer works directly only in a local repository. Any new commit in the local repository is pushed first to his personal online fork, and then he makes online a pull request in his fork. This is the step where the developer requests his commit to be reviewed and tested, and finally approved for merging into the central repository. 
 
-
-0/ Make a new repository online, and initialize it with README.md
-1/ Go to 'Settings' -> 'Manage access' -> 'Invite a collaborator'
-2/ Then that collaborator gets an automatical email, and needs to accept the invitation
-3/ After accepting invitation, collaborator goes to that repo, and clicks 'Fork'
-4/ Checkout the 'Fork' locally
-    git clone https://github.com/<git-user-name>/<fork-name>.git <fork-name>
-5/ Make some change locally
-6/ Push it to the 'Fork'
-7/ 'New pull request' and follow the tide
-8/ If there was a change in the central repo, 'fork' needs to by sync. Do it as follows:
-
-
-
-How to Update a Fork in Github TBI 20241010 shall I move this to howtos'
-
-1. Access your forked repository on Github.
-2. Click “Pull Requests” on the right, then click the “New Pull Request” button.
-3. Github first compares the base fork with yours, and will find nothing if you made no changes, so, click “switching the base”, which will change your fork to the base, and the original to the head fork. Now you should see changes where your fork needs to play “catch up”.
-4. Click “Create Pull Request”, give it a name, click “Send Pull Request”.
-5. Click “Merge Pull Request” and “Confirm Merge”.
-Assuming you had no changes, you can then merge automatically.
-TBI 20241010 Text is takes from https://rick.cogley.info/post/update-your-forked-repository-directly-on-github/ -- review, validate and update
-
-
+Both in GitHub and GitLab, it is straightforward to establish such a workflow, and all steps won't be detailed here. 
 
 
 
@@ -2437,39 +2440,39 @@ TBI 20241007 re-order examples in terms of importance
 
 * **How to clone all remote branches?**
 
-​	When an existing remote repository is cloned, even though it contains multiple branches, after cloning only "master" branch is available locally:
+When an existing remote repository is cloned, even though it contains multiple branches, after cloning only "master" branch is available locally:
 
-```bash
-$ git clone https://github.com/abilandz/PH8124.git PH8124
-$ cd PH8124
-$ git branch
-*master
-```
+    ```bash
+    $ git clone https://github.com/abilandz/PH8124.git PH8124
+    $ cd PH8124
+    $ git branch
+    *master
+    ```
 
 However, the remote repository on GitHub has many other branhces:
 
-```bash
-$ git branch -a
-remotes/origin/HEAD -> origin/master
-remotes/origin/SS2020
-remotes/origin/SS2021
-remotes/origin/SS2022
-remotes/origin/SS2023
-remotes/origin/SS2024
-remotes/origin/master
-```
+    ```bash
+    $ git branch -a
+    remotes/origin/HEAD -> origin/master
+    remotes/origin/SS2020
+    remotes/origin/SS2021
+    remotes/origin/SS2022
+    remotes/origin/SS2023
+    remotes/origin/SS2024
+    remotes/origin/master
+    ```
 
 To clone any of remaining remote branches locally, one has to do:
 
-```bash
-$ git checkout remotes/origin/SS2022
-$ git checkout SS2022
-Branch 'SS2022' set up to track remote branch 'SS2022' from 'origin'.
-Switched to a new branch 'SS2022'
-$ git branch
-*SS2022
-master
-```
+    ```bash
+    $ git checkout remotes/origin/SS2022
+    $ git checkout SS2022
+    Branch 'SS2022' set up to track remote branch 'SS2022' from 'origin'.
+    Switched to a new branch 'SS2022'
+    $ git branch
+    *SS2022
+    master
+    ```
 
 And so on for other remote branches.
 
@@ -2510,6 +2513,23 @@ TBI 20241125 Check further this SO exchange: https://stackoverflow.com/questions
     # or : git push --all-u origin # push all branches in one go to origin
 ```
 
+
+
+* **How to Update a fork in Github?**
+
+1. Access your forked repository on Github.
+
+2. Click “Pull Requests” on the right, then click the “New Pull Request” button.
+
+3. Github first compares the base fork with yours, and will find nothing if you made no changes, so, click “switching the base”, which will change your fork to the base, and the original to the head fork. Now you should see changes where your fork needs to play “catch up”.
+
+4. Click “Create Pull Request”, give it a name, click “Send Pull Request”.
+
+5. Click “Merge Pull Request” and “Confirm Merge”.
+   Assuming you had no changes, you can then merge automatically.
+   TBI 20241010 Text is takes from https://rick.cogley.info/post/update-your-forked-repository-directly-on-github/ -- review, validate and update
+
+   
 
 
 * **Difference between bare and non-bare repositories** TBI move somewhere else
