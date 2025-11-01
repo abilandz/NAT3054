@@ -2,7 +2,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20251029-3
+**Last update**: 20251101-1
 
 
 ### Table of Contents
@@ -1228,10 +1228,6 @@ The above workflow is summarized with the following diagram:
 
 
 
-TBC 20251029
-
-
-
 
 
 
@@ -1240,9 +1236,9 @@ TBC 20251029
 In this section, we illustrate the workflow that can be used to combine changes on two different branches. This material is relevant for two frequently encountered cases when into the current local branch one wants to incorporate changes from: 
 
 * another local branch from the same repository;
-* remote-tracking branch TBI 20250602 remote-tracking or tracking => check further
+* remote-tracking branch.
 
-This can be achieved in Git with three conceptually different strategies, by using _merge_, _rebase_ or _cherry-pick_. In what follows next we illustrate with concrete examples each of them. For clarity, we assume that changes can be combined without encountering merging conflicts. TBI 20250602 point to the section where I discuss how merging conflicts are resolved
+This can be achieved in Git using three conceptually different strategies: _merge_, _rebase,_ or _cherry-pick_. In what follows, we illustrate each of these with concrete examples. For clarity, we assume that changes can be combined without encountering merging conflicts, which have to be treated separately.
 
 ##### a) merge  <a name="merge"></a>
 There are several ways changes on different branches can be combined by using _merging_, the full overview can be found in the online documentation under [git-merge](https://git-scm.com/docs/git-merge) . While each of these ways has its own pros and cons, we discuss in detail only the two most frequently used cases: _fast-forward merge_ and a _three-way-merge_ or _ort ("Ostensibly Recursive’s Twin") merge_. 
@@ -1262,7 +1258,7 @@ There are several ways changes on different branches can be combined by using _m
        commit id: "change 3"
 ```
 
-This case corresponds to the situation when one works on the _main_ branch, then checks out the new _devel_ branch and continues experimental development on the _devel_ branch. Once development is satisfactory, all commits from the _devel_ branch can be merged into the _main_ branch. If all commits on a _devel_ branch are direct successors of HEAD on a main branch, Git performs a _fast-forward merge_ by simply moving (i.e. fast-forwarding) HEAD to the tip of the _devel_ branch which is being merged. Programmatically:
+This case corresponds to the situation where one works on the _main_ branch, then checks out the new _devel_ branch and continues experimental development on the _devel_ branch. Once development is satisfactory, all commits from the _devel_ branch can be merged into the _main_ branch. If all commits on a _devel_ branch are direct successors of HEAD on the _main_ branch, Git performs a _fast-forward merge_ by simply moving (i.e. fast-forwarding) HEAD to the tip of the _devel_ branch which is being merged. Programmatically:
 
 ```bash
 # pause the development on the 'main' branch, checkout new 'devel' branch, 
@@ -1280,7 +1276,7 @@ Updating 8442595..a31b43a
 Fast-forward
 ... summary of specific changes ...
 
-# ctd. development on the 'main' branch
+# ctd. with development on the 'main' branch
 ```
 
 Immediately after fast-forward merging is performed, both the _main_ branch and the _devel_ branch have all commits the same (check by using **git log** on either branch), and the HEAD of both branches points to the same commit ID. This is illustrated with the following diagram (corresponding to the above example):
@@ -1320,7 +1316,7 @@ Unlike in the fast-forward merge case, here after the _devel_ branch was made, f
 1. find the most recent common commit in both branches (in the above diagram and example, that would be the commit named "change 2");
 2. make a new _merge commit_ on the _main_ branch that combines all changes from two branches being merged.
 
-Diagrammatically, after _three-way-merge_ (TBI 20250602 do I still use this terminology?) is performed, we have a situation like this on the _main_ branch (TBI 20250824 I still need to add "change 5" commit below):
+Diagrammatically, immediately after _three-way-merge_ is performed, we have a situation like this on the _main_ branch:
 
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": false}} }%%
@@ -1377,10 +1373,10 @@ $ git merge devel
 Merge made by the 'ort' strategy.
 ... summary of specific changes ...
 
-# ctd. development on the 'main' branch
+# ctd. with development on the 'main' branch
 ```
 
-How to resolve merging conflicts is discussed later in TBI 20250713 where
+With this approach, merging conflicts can occur if the same file is modified in two branches in an incompatible way, and this typically needs to be resolved manually by editing the file to the final version during merging. 
 
 
 
@@ -1450,11 +1446,7 @@ flowchart RL
     devel --> commitExp1Star 
 ```
 
-TBC 20250824 add still:
 
-* comment on problems with resolving merging conflicts commit per commit
-* examples for the server https://git-scm.com/book/en/v2/Git-Branching-Rebasing
-* standard daily example including remote-tracking branch and fork
 
 
 
@@ -1486,19 +1478,21 @@ In the above example, the development is carried out concurrently on two branche
 Programmatically:
 
 ```bash
-... make some development and corresponding two commits named "change 1" and "change 2" on the 'main' branch ... 
+... make some development and corresponding two commits named ...
+... 'change 1' and 'change 2' on 'main' branch ... 
 
 # pause the development on the 'main' branch, checkout new 'devel' branch:
-$ git checkout -b devel # Reminder: flag -b is needed only when new branch is created for the first time
-... make some development and corresponding commit named "exp. change 1" on the 'devel' branch ... 
+$ git checkout -b devel # Reminder: flag -b is needed only when new branch is created
+... make some development with commits 'exp. change 1' on 'devel' branch ... 
 
-# pause the development on the 'devel' branch, checkout again the 'main' branch:
+# pause the development on 'devel' branch, checkout again 'main' branch:
 $ git checkout main
-... make some development and corresponding two commits named "change 3" and "change 4" on the 'main' branch ... 
+... make some development with two commits 'change 3' and 'change 4' on 'main' branch ... 
 
-# pause the development on the 'main' branch, and continue development on the 'devel' branch:
+# pause the development on 'main' branch, and continue development on 'devel' branch:
 $ git checkout devel
-... make some development and corresponding commits named "exp. change 2", "exp. change 3", and "exp. change 4" on 'devel' ... 
+... make some development with commits 'exp. change 2', 'exp. change 3', ...
+... and 'exp. change 4' on 'devel' ... 
 
 # inspect the status of all commits on the 'devel' branch:
 $ git log --oneline
@@ -1520,7 +1514,7 @@ $ git log --oneline
 009e81b change 1
 
 # finally, cherry-pick the changes introduced on the 'devel' branch with commit
-# named "exp. change 2" (its commit id is "3d85507", see above), and introduce
+# named 'exp. change 2' (its commit id is '3d85507', see above), and introduce
 # only those changes (i.e. cherry-pick) on the 'main' branch:
 $ git cherry-pick 3d85507
 [master 8f79132] exp. change 2
@@ -1534,39 +1528,12 @@ $ git log --oneline
 1192d2b change 2
 009e81b change 1
 
-# continue development on the 'main' branch, make new commit "change 5", etc.
+# continue development on the 'main' branch, make new commit 'change 5', etc.
 ```
 
-TBI 20250824 I am using both single and double quotes above
-
-If it turns out that the changes introduced by cherry-picking were not ready, and the whole procedure needs to be reverted, one can simply use **git cherry-pick --abort**. For instance, reusing the example above:
-
-```bash
-# inspect the status of all commits on the 'main' branch after cherry-picking:
-$ git log --oneline
-8f79132 (HEAD -> master) exp. change 2
-15e8839 change 4
-137f5e2 change 3
-1192d2b change 2
-009e81b change 1
-
-# revert changes introduced by the cherry-picked commit "exp. change 2":
-$ git cherry-pick --abort
-
-TBI 20250824 this doesn't work, I am getting only the error mesage
-
-error: no cherry-pick or revert in progress
-fatal: cherry-pick failed
-```
-
-TBI 20250824 finalize **git cherry-pick --abort** example above
 
 
 
-
-
-#### Resolving merging conflicts <a name="resolving.merging.conflicts"></a>
-TBI 20250602 this shall be the final section
 
 
 
