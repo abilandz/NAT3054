@@ -2,7 +2,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20251101-1
+**Last update**: 20251101-2
 
 
 ### Table of Contents
@@ -257,7 +257,7 @@ On branch main
 nothing to commit, working tree clean
 ```
 
-We can now continue to develop the file "someFile.txt" in two independent branches. The new branch named "devel" is made using command **git checkout**:
+We can now continue to develop the file "someFile.txt" in two independent branches. The new branch named "devel" is made using the command **git checkout -b** _newBranchName_ (newer Git versions also support **git switch -c** _newBranchName_):
 
 ```bash 
 # make new branch and switch to it:
@@ -1552,7 +1552,7 @@ where _optionsOrArguments_ are specific to particular _commandName_.
 
 The list of all **git** commands can be generated using the standard auto-complete mechanism by hitting two consecutive "TAB" after **git** at the command line:
 
-```bash
+```Bash
 $ git + TAB + TAB
 add               clang-format-10   grep              range-diff        show 
 am                clean             gui               rebase            show-branch 
@@ -1620,10 +1620,10 @@ In what follows next, we discuss in more detail only the most commonly used **gi
 
 
 
-
 #### The most commonly used Git commands <a name="the.most.commonly.used.git.commands"></a>
 
-TBI 20241005 See if you want to shorten this list, and if for commands which were removed, establish another section, "Other Git commands"?
+In the table below, we summarize the most frequently used Git commands, with an executive summary of their usage:
+
 
 | Command name      | Description |
 | :---         |    :----   |
@@ -1657,6 +1657,7 @@ TBI 20241005 See if you want to shorten this list, and if for commands which wer
 | **shortlog**   | Summarize 'git log' output |
 | **stash**   | Stash the changes in a dirty working directory away |
 | **status**   | Show the working tree status |
+| **switch**   | Switch branches |
 | **tag** | Create, list, delete or verify a tag object signed with GPG |
 
 For each of these commands, we provide an example use case in the next section.
@@ -1665,15 +1666,15 @@ For each of these commands, we provide an example use case in the next section.
 
 #### Git examples <a name="git.examples"></a>
 
-With the series of examples, sorted in alphabetic order, we illustrate now how these **git** commands can be used. They were successfully tested and validated with **git 2.34.1** version.
+With a series of examples, sorted in alphabetical order, we now illustrate how these Git commands can be used in practice. They were successfully tested and validated with **git 2.34.1** version.
 
 
 
 **A**
 
-**git add** _someFile_ &mdash; Add a file named _someFile_ from the current working tree to the stage area.
+**git add** _someFile_ &mdash; Add a file named _someFile_ from the current working tree to the staging area.
 
-**git add .** &mdash; Add all modified or new (untracked) files from the current working tree to the stage area.
+**git add .** &mdash; Add all modified or new (untracked) files from the current working tree to the staging area.
 
 
 
@@ -1681,18 +1682,18 @@ With the series of examples, sorted in alphabetic order, we illustrate now how t
 
 **git bisect** &mdash; TBI 20241006 Check the book + see https://thoughtbot.com/blog/git-bisect
 
-**git blame** _someFile_ &mdash; Inspect which commit and author modified this file on a per line basis. Works for committed and not committed yet changes. TBI 20241003 AB: Shows only the new lines, but not the removed ones => check if there is an option for this. See page 97
+**git blame** _someFile_ &mdash; Inspect which commit and author modified this file on a per-line basis, showing only lines which were modified or added. Works for committed and not committed yet changes.
 
-**git blame -L 1,3** _someFile_ &mdash; Inspect which commit and author modified this file on a per line basis, and show only lines 1 through 3. The typical output could look like this:
+**git blame -L 1,5** _someFile_ &mdash; Inspect which commit and author modified this file on a per-line basis,  showing only lines which were modified or added, and showing only lines 1 through 5. The typical output could look like this:
 
 ```bash
-$ git blame git.md -L 1,3
-b9d29d1f (abilandz 2024-10-02 09:02:57 +0200 1) ![](../Common_Figures/LinuxBashROOT_logos.png)
-b9d29d1f (abilandz 2024-10-02 09:02:57 +0200 2) 
-b9d29d1f (abilandz 2024-10-02 09:02:57 +0200 3)
+$ git blame -L 1,5 Lecture_2/git.md
+cfd0b003 (abilandz 2025-09-15 09:35:15 +0200 1) <img src="git.png" alt="drawing" width="400"/>
+46ac50dc (abilandz 2025-09-08 11:41:51 +0200 2)
+46ac50dc (abilandz 2025-09-08 11:41:51 +0200 3) # Git - a distributed version control system
+46ac50dc (abilandz 2025-09-08 11:41:51 +0200 4)
+44cd023b (abilandz 2025-11-01 08:19:41 +0100 5) **Last update**: 20251101-1
 ```
-
-TBI 20241003 I need a better example here
 
 **git branch** &mdash; List available branches in the local repository. This command works only after the first commit:
 
@@ -1702,7 +1703,7 @@ $ git branch
   master
 ```
 
-The currently enabled branch in the working tree is indicated with "*". Typically, and only as a matter of convention, the branch named "devel" captures ongoing development, gets the latest bug fixes, and is where new features appear. The "master" branch  is typically only updated for stable releases and important patches. A new addition in the "devel" branch which passed all the tests is ported to "master" branch, and when a lot of newly approved features appear in the "master" branch, the "master" is tagged into new release (see **git tag** below).
+The currently enabled branch in the working tree is indicated with "*". Typically, and only as a matter of convention, the branch named "devel" captures ongoing development, gets the latest bug fixes, and is where new features appear. The "master" branch is typically updated only for stable releases and important patches. A new addition in the "devel" branch, which passed all the tests, is ported to the "master" branch, and when a lot of newly approved features appear in the "master" branch, the "master" is tagged into a new release (see **git tag** below).
 
 **git branch -a** &mdash; List available branches both in the local repository and including the remote-tracking branches. This command works only after the first commit is made in the repository:
 
@@ -1732,8 +1733,6 @@ TBI 20241010 Clarify the meaning of above output. Check the book
 $ git push origin :someBranch
 TBI 20250529 test this example + move it better to How to's
 ```
-
-
 
 **git branch -m** _newBranchName_ &mdash; If you are on that branch you want to rename, this command will rename it into _newBranchName_.
 
@@ -1771,11 +1770,11 @@ TBI 20241010 explain meaning of "[ahead 1]" or point to the previous example
 
 **git branch** _someName_ _someHash_ &mdash; Make new branch with the name _someName_, and non-default starting point (commit ID, remote, or local branch). AB : just as previous, this is analogy: git checkout -b <some-name> <hash> TBI 20241003 check until the end + provide examples
 
-**git branch <some-branch> origin/<some-branch>** &mdash; Makes a new tracking branch, for the one existing in remote repository named "origin". This means that in the same local repository, we can have multiple tracking branches for the one remote. However, when pushing, I will then have to specify the name of remote branch explicitly, in the example construct like: git push origin HEAD:20190925 . AB: Analogy is git checkout -b <some-branch> origin/<some-branch>  TBI 20241003 check until the end + provide examples
+**git branch** _someBranch_ **origin/**_someBranch_ &mdash; Makes a new tracking branch for the one existing in the remote repository named "origin". This means that in the same local repository, we can have multiple tracking branches for the one remote. However, when pushing, I will then have to specify the name of the remote branch explicitly, in the example construct like: git push origin HEAD:20190925 . AB: Analogy is git checkout -b <some-branch> origin/<some-branch>  TBI 20241003 check until the end + provide examples
 
-**git branch --no-track <some-branch> origin/<some-branch>** &mdash; Makes a new branch, no tracking initially. TBI 20241003 check until the end + provide examples
+**git branch --no-track** _someBranch_ **origin/**_someBranch_ &mdash; Makes a new branch, no tracking initially. TBI 20241003 check until the end + provide examples
 
-**git branch -u origin/<some-branch> <some-branch>** &mdash; No tracking initially, but after this command, start tracking. TBI 20241003 check until the end + provide examples 
+**git branch -u origin/**_someBranch_ _someBranch_ &mdash; No tracking initially, but after this command, start tracking. TBI 20241003 check until the end + provide examples 
 
 ​	o **git branch -u origin/20190925_tris 20190925_tris** 
 
@@ -1804,15 +1803,15 @@ TBI 20241010 explain meaning of "[ahead 1]" or point to the previous example
 
 **git checkout** _commitID_ &mdash; This command will reset your complete working tree to the status described by this commit. After this, you are in **detached head mode (DHM)**, commits in this mode are harder to find, after you checkout another branch. It's a good practice before committing in this mode to create a new branch, to leave the DHM. For a more differential treatment of what needs to be reset either on the staging area or in the working tree, see below the usage of **git reset** _committID_ for available options.  
 
-**git checkout <commit-ID> ^ -- <file-path>** # trick to restore deleted file, using predecessors operator ^ 
+**git checkout** _commitID_ ^ -- _someFile-path_ &mdash; trick to restore deleted file, using predecessors operator ```^ ``` 
 
 TBI 20241003 finalize this description
 
 TBI 20241127 see Sec. 7.4 for the usage of parent operator ^ and ancestor operator ~ => document here or elsewhere
 
-**git checkout --orphan** _someBranchName_ &mdash; This creates new and clean branch with 0 commits, however, all inherited files from previous branch are staged! So you still need to do: **git reset --hard**, to clean up the working tree. TBI 20241003 check and finalize this description
+**git checkout --orphan** _someBranchName_ &mdash; This creates a new and clean branch with 0 commits; however, all inherited files from the previous branch are staged! So you still need to do: **git reset --hard**, to clean up the working tree. TBI 20241003 check and finalize this description
 
-**git cherry-pick <commit ID>** # TBI 20241003 check and finalize this description 
+**git cherry-pick** _commitID_ &mdash; Cherry-pick the changes introduced with the commit _commitID_ on some other branch, and introduce only those changes (therefore cherry-pick) into the current branch.
 
 **git clean** &mdash; Remove in one go all *untracked* files from the working tree (use with care, as there is no way back). If the **git** configuration variable _clean.requireForce_ is not set to false, **git clean** will refuse to clean untracked files, unless it's additionally forced with flag '-f'.
 
@@ -1843,21 +1842,32 @@ $ git clean -d
 
  \# Example 2 : **git clone** **[https://gitlab.com/abilandz/<](https://gitlab.com/abilandz/test)repo-name>.git <repo-name>**
 
-A cloned repository contains a complete history of the original repository, and after cloning, it can be used for independent development without affecting the status of the original repository.
+A cloned repository contains a complete history of the original repository, and after cloning, it can be used for independent development without affecting the original repository's status.
 
-**git commit** &mdash; TBI 20241003 not sure why I have this standalone command here
+**git commit** &mdash; . This command is typically used in conjunction with one of the options listed in the following examples.
 
 **git commit --amend** &mdash; Replace literally the last commit (and edit the commit message). TBI 20241003 add example + suggestion from the book, to use this only before pushed to the remote.
 
 **git commit --amend --reset-author** &mdash; Edit the the last commit (including the commit message), by changing the author. TBI 20241003 validate and finalize
 
-**git commit -m "<some message>"** &mdash; TBI 20241003 finalize
+**git commit -m** "_some descriptive message_" &mdash; Commit all changes permanently into the repository, accompanied by the message. The message should be written in a clear, concise, and distinct manner, summarizing the changes introduced by this particular commit. 
 
 **git commit -a <some files>** &mdash; Will commit only the modified files automatically, not the new ones. TBI 20241003 validate and document until the end
 
-**git config -l** &mdash; List the configuration variables, both local (--local) and global (--global). There is also --system . TBI 20241003 validate and document until the end
+**git config -l** &mdash; List the configuration variables, both local (flag **--local**) and global (flag **--global**). There is also a flag **--system** . TBI 20241003 validate and document until the end
 
 **git config -e** &mdash; Opens up the editor to change the configuration variables, with current settings showed automatically TBI 20241003 validate and document until the end + document how to change the default editor
+
+```bash
+$ git config -e
+[core]
+        repositoryformatversion = 0
+        filemode = true
+        bare = false
+        logallrefupdates = true
+```
+
+
 
 
 
