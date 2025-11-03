@@ -2,7 +2,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20251101-2
+**Last update**: 20251103-1
 
 
 ### Table of Contents
@@ -1178,7 +1178,7 @@ README.md  temp.log
 $ echo "some text" >> temp.log && git add temp.log && git commit -m "modified file temp.log" 
 [master 805def4] modified file temp.log
  1 file changed, 1 insertion(+)
-$ git push # this now works immediately TBI 20241009 comment why
+$ git push # this works automatically after cloning
 Enumerating objects: 5, done.
 Counting objects: 100% (5/5), done.
 Delta compression using up to 2 threads
@@ -2304,13 +2304,13 @@ Dropped refs/stash@{0} (9b04bc441f665be83aef5342c762f60fbcd7fa3e)
 
 ### 6. Git how-tos <a name="git.how.tos"></a>
 
-TBI 20241007 re-order examples in terms of importance
+In this section, some of the frequently encountered real-case scenarios are summarized in an exemplary way for their solution.
 
 
 
 * **How to push a newly created local branch or local tag to remote repository?**
 
-  Imagine that in GitHub and locally you have only the _master_ branch (e.g. after the initial cloning of online repository locally), and then locally you create a new branch with the name _newBranchName_. You can propagate that new branch also to GitHub by using:
+  Imagine that in GitHub and locally you have only the _master_ branch (e.g. after the initial cloning of online repository locally), and then locally you create a new branch with the name _newBranchName_. You can propagate that new branch to the same online repository at GitHub by using:
 
   ```bash 
   git push --set-upstream origin newBranchName
@@ -2322,27 +2322,88 @@ TBI 20241007 re-order examples in terms of importance
   git push -u origin newBranchName
   ```
 
-  After that, changes in the local _master_ are pushed in the remote _master_, while changes in the local branch _newBranchName_ are pushed in the remote branch _newBranchName_.
+  After that, changes in the local _master_ branch are pushed into the remote _master_, while changes in the local branch _newBranchName_ are pushed in the remote branch _newBranchName_.
+
+  To push a newly created local tag, e.g. with the name "v1.2.3" to the same online repository at GitHub, one needs to execute:
+
+  ```bash
+  git push origin tag v1.2.3
+  ```
 
   
 
-  TBI 20251027 finalize this example for tag
+* **How to rename branch both locally and remotely?**
 
-  
-
-* **How to rename branch both locally and remotely?**  TBI 20241006 finalize and validate and test this example
-
-  Let's assume that the name of the remote repo is _origin_, the old branch name is _old-name_, and the new branch name is _new-name_. Then, we can proceed as follows: 	
+  Let's assume that the name of the remote repository is _origin_, the old branch name is _old-name_, and the new branch name is _new-name_. Then, we can proceed as follows: 	
 
     ```bash
-    git branch -m new-name # this works if you are on a branch you want to rename, otherwise use git branch -m old-name new-name
-    git push origin :old-name new-name # Delete the old-name remote branch and push the new-name local branch.
-    git push origin -u new-name # Reset the upstream branch for the new-name local branch (AB: you have to be on the branch for this to work - check this)
+    # a) if you are on a branch you want to rename:
+    git branch -m new-name # this works , otherwise use git branch -m old-name new-name
+    
+    # b) alternatively, if you are not on a branch you want to rename:
+    git branch -m old-name new-name
+    
+    # delete the remote branch "old-name":
+    git push origin :old-name new-name 
+    ... some info lines ...
+     - [deleted]         old-name
+     * [new branch]      new-name -> new-name
+    
+    # set the upstream branch for the new local branch "new-name"
+    git push origin -u new-name
+    Branch 'new-name' set up to track remote branch 'new-nam' from 'origin'.
     ```
 
 
 
-* **How to delete commit locally, and propagate that deletion also to remote repo?** TBI 20241006 finalize and validate and test this example
+* **How to clone all remote branches?**
+
+	When an existing remote repository is cloned, even though it contains multiple branches, after cloning only the branch "master" is available locally:
+
+    ```bash
+    $ git clone https://github.com/abilandz/PH8124.git PH8124
+    $ cd PH8124
+    $ git branch
+    *master
+    ```
+
+	However, the remote repository on GitHub has many other branches, and that can be inspected by executing:
+
+    ```bash
+    $ git branch -a
+    remotes/origin/HEAD -> origin/master
+    remotes/origin/SS2020
+    remotes/origin/SS2021
+    remotes/origin/SS2022
+    remotes/origin/SS2023
+    remotes/origin/SS2024
+    remotes/origin/master
+    ```
+
+	To clone any of remaining remote branches locally, one can proceed as follows:
+
+    ```bash
+    $ git checkout remotes/origin/SS2022
+    
+    $ git checkout SS2022
+    Branch 'SS2022' set up to track remote branch 'SS2022' from 'origin'.
+    Switched to a new branch 'SS2022'
+    
+    $ git branch
+    *SS2022
+    master
+    ```
+
+	And so on for other remote branches. There is no direct way in Git to checkout all remote branches in one go, but the procedure can be simply automated with a shell script, by parsing through the output of **git branch -a**, and repeating the above procedure for each branch.
+
+
+
+TBC 20251103
+
+
+
+
+* **How to delete commit locally, and propagate that deletion also to remote repository?** TBI 20241006 finalize and validate and test this example
 
     ```bash
     # initial setup:
@@ -2361,18 +2422,26 @@ TBI 20241007 re-order examples in terms of importance
 
 
 
-* **How to checkout the specific remote branch into a clean local branch?** TBI 20241006 finalize and validate and test this example
-	Initial setup: in 'origin' there are branches 'master' and unrelated branch 'test'. Locally, only 'master', which is tracking origin/master
+
+
+* **How to checkout the specific remote branch into a clean local branch?**
+	
+  This example covers that case when in the remote repository "origin" (e.g. on GitHub) there is a default branch "master" and an independent branch named "test". After cloning that repository locally, only the default "master" branch is present in the local repository, but we would like to have locally also the branch "test", but without any previous commits on it, i.e. we would like to continue with development on a clean "test" branch.
   
+* Locally, only 'master', which is tracking origin/master
+	
     ```bash
-  # create a new branch locally, --orphan ensures there are 0 commits on this branch
-  $ git checkout --orphan test 
+  # clone the remote repository:
+  git clone https://github.com/abilandz/someRemoteRepository someRemoteRepository
   
-  # now I have the clean working tree
+  # create a new branch locally, --orphan ensures there are 0 commits on this branch:
+  $ git checkout --orphan nbr 
+  
+  # ensure that the working tree is clean"
   $ git reset --hard
   
   $ git pull origin test
-    ```
+  ```
 
 
 
@@ -2412,45 +2481,6 @@ TBI 20241007 re-order examples in terms of importance
   As can be seen from the reflogs, the command **git commit --amend** creates a new commit identifier and therefore this command shall be used only if the initial commit with the typo was still not pushed outside of the current local repository.
 
 
-* **How to clone all remote branches?**
-
-When an existing remote repository is cloned, even though it contains multiple branches, after cloning only "master" branch is available locally:
-
-    ```bash
-    $ git clone https://github.com/abilandz/PH8124.git PH8124
-    $ cd PH8124
-    $ git branch
-    *master
-    ```
-
-However, the remote repository on GitHub has many other branhces:
-
-    ```bash
-    $ git branch -a
-    remotes/origin/HEAD -> origin/master
-    remotes/origin/SS2020
-    remotes/origin/SS2021
-    remotes/origin/SS2022
-    remotes/origin/SS2023
-    remotes/origin/SS2024
-    remotes/origin/master
-    ```
-
-To clone any of remaining remote branches locally, one has to do:
-
-    ```bash
-    $ git checkout remotes/origin/SS2022
-    $ git checkout SS2022
-    Branch 'SS2022' set up to track remote branch 'SS2022' from 'origin'.
-    Switched to a new branch 'SS2022'
-    $ git branch
-    *SS2022
-    master
-    ```
-
-And so on for other remote branches.
-
-TBI 20241125 Check further this SO exchange: https://stackoverflow.com/questions/67699/how-do-i-clone-all-remote-branches
 
 
 
