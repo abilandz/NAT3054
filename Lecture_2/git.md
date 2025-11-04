@@ -2,7 +2,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20251104-1
+**Last update**: 20251104-2
 
 
 ### Table of Contents
@@ -2464,7 +2464,7 @@ In this section, some of the frequently encountered real-case scenarios are summ
 	git checkout HEAD file-1 file-2 ...
 	```
 
-​	With the above approach, modifications are not kept in the files in the working tree. 
+	With the above approach, modifications are not kept in the files in the working tree. 
 
 
 
@@ -2497,7 +2497,7 @@ In this section, some of the frequently encountered real-case scenarios are summ
   $ git checkout da7bda4 someFile
   ```
 
-	It is important to specify the file name, otherwise **git checkout** _commitID_ reverts the whole working tree to the status of this commit (and in that case, the resulting state is DETACHED HEAD).
+	It is important to specify the file name, otherwise **git checkout** _commitID_ reverts the whole working tree to the status of this commit (and in the latter case, the resulting state is DETACHED HEAD).
 
 
 
