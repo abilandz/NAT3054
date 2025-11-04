@@ -2,7 +2,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20251103-1
+**Last update**: 20251104-1
 
 
 ### Table of Contents
@@ -2395,10 +2395,152 @@ In this section, some of the frequently encountered real-case scenarios are summ
     ```
 
 	And so on for other remote branches. There is no direct way in Git to checkout all remote branches in one go, but the procedure can be simply automated with a shell script, by parsing through the output of **git branch -a**, and repeating the above procedure for each branch.
+	
+	
+
+
+* **How to clone locally only the specific branch or tag (without cloning the whole repository)?**
+
+  This functionality is needed when one wants to clone locally and compile only the specific version. The syntax is the same, either for branch or tag:
+  
+  ```bash
+  git clone --depth 1 --branch someBranchOrTagName repositoryURL
+  ```
+  
+  For instance, if one wants to download locally only the source code of Bash, version 5.2, one can use:
+  
+  ```bash
+  git clone --depth 1 --branch bash-5.2 https://git.savannah.gnu.org/git/bash.git
+  ```
 
 
 
-TBC 20251103
+
+* **How to change the commit message?**
+
+  When the commit was already made with a particular message, and if there is a typo or missing information which needs to be edited afterward in that message, that can be achieved with the command **git commit --amend** as follows:
+
+    ```bash
+  # initial commit with a typo in the commit message:
+  $ git commit -m "some wrong message"
+  
+  # change the commit message into a new one:
+  $ git commit --amend -m "new correct message"
+  
+  # check reflogs:
+  $ git reflog
+  c32b4f2 (HEAD -> master) HEAD@{0}: commit (amend): new correct message
+  04c5ba9 HEAD@{1}: commit: some wrong message
+  ...
+    
+  # check logs - only new commit is present:
+  $ git log --oneline 
+  c32b4f2 (HEAD -> master) new correct message
+    ```
+  As can be seen from the reflogs, the command **git commit --amend** creates a new commit identifier.  Therefore, this command shall be used only if the initial commit with the typo was still not pushed outside of the current local repository.
+
+
+
+* **How to unstage the staged changes?**
+
+	If files _file-1_, _file-2_, ..., were modified in the working tree and those modifications were staged with **git add** command, but later it was realized that those modifications are not ready or needed for the next commit, files can be removed from staging area:
+	
+	```Bash
+	# remove files from staging area, but keep their changes in the working tree:
+	git restore --staged file-1 file-2 ...
+	```
+
+	Alternatively, that can be achieved with:
+
+	```bash
+	# remove files from staging area, but keep their changes in the working tree:
+	git reset HEAD file-1 file-2 ...
+	```
+	
+	With the above approach, modifications are kept in the files in the working tree. If also modifications have to be removed from the working tree, one has to use **git checkout** command:
+	
+	```bash
+	# remove files from staging area and undo their changes in the working tree:
+	git checkout HEAD file-1 file-2 ...
+	```
+
+​	With the above approach, modifications are not kept in the files in the working tree. 
+
+
+
+
+* **How to revert the file to the status of latest staged (or committed) version?**
+
+  This is needed when one wants to remove all new development in a file in the working tree, and fall back to its previous version. The changes in the working tree can be reverted as follows:
+  
+  ```bash
+  git checkout -- someFile
+  ```
+  
+   If "someFile" is staged, its previous version corresponds to the staged version, otherwise, to its version in the latest commit.
+  
+  
+
+* **How to revert a file to the status of specific commit?**
+
+  This is needed when one wants to discard all changes introduced in a file with a series of commits. Typically, this happens when one or more bugs were introduced in the code with the new commits, and one wants to fall back to the version which is known to be bug-free. In that case, one can differentially enlist all commits in which that specific file was changed, and than fall back to the desired commit: 
+  
+  ```bash
+  # list all commits in which the specific file was changed: 
+  $ git log --follow --oneline -- someFile
+  ...
+  4b53a48 "another commit message"
+  da7bda4 "some commit message" 
+  
+  # restore the content of "someFile" in the working tree 
+  # to what it was after the commit "da7bda4":
+  $ git checkout da7bda4 someFile
+  ```
+
+	It is important to specify the file name, otherwise **git checkout** _commitID_ reverts the whole working tree to the status of this commit (and in that case, the resulting state is DETACHED HEAD).
+
+
+
+* **How to restore a deleted file in Git repository?**
+
+  If a tracked file was deleted, and its deletion was committed, at any point later that file can be recovered. The case is illustrated as follows:
+
+  ```bash
+  # delete a tracked file "someFile":
+  $ git rm someFile
+  
+  # stage file deletion:
+  $ git add someFile
+  
+  # commit file deletion:
+  $ git commit -m "deleted someFile"
+  ... some info messages ...
+  
+  # at some point later, we realize we need "someFile" again; 
+  # find a commit in which this file was deleted:
+  $ git log --follow --oneline -- "someFile"
+  ... list of other commits ...
+  70483d4 "deleted someFile"
+  ... list of other commits ...
+  
+  # fall back to the version of "someFile"
+  # in one commit BEFORE the commit "70483d4":
+  $ git checkout 70483d4~1 -- someFile
+  ```
+
+  In the last command above, we have used the special syntax ```commitID~N``` , which stands for the Nth commit before the specified commit _commitID_. Therefore, "70483d4~1" will point to the first commit before the commit "70483d4" was made.
+
+  
+
+  
+
+
+
+TBC 20251104
+
+
+
+
 
 
 
@@ -2445,40 +2587,9 @@ TBC 20251103
 
 
 
-* **How to clone locally only the specific branch or tag (without cloning the whole repository)?**
 
-  This functionality is needed when one wants to download locally only the specific version. The syntax is the same, either for branch or tag:
-  
-  ```bash
-  git clone --depth 1 --branch someBranchOrTagName repositoryURL
-  ```
-  
-  For instance, if one wants to download locally only the source code of Bash, version 5.2, one case use:
-  
-  ```bash
-  git clone --depth 1 --branch bash-5.2 https://git.savannah.gnu.org/git/bash.git
-  ```
-  
-  
 
-* **How to change the commit message?**
-
-  When the commit was already made with a particular message, and if there is a typo or missing information which needs to be edited afterward in that message, that can be achieved with the command **git commit --amend** as follows:
-
-    ```bash
-    # initial commit with a typo in the commit message:
-    $ git commit -m "some wrong message"
   
-    # change the commit message into a new one:
-    $ git commit --amend -m "new correct message"
-  
-    # check reflogs:
-    $ git reflog
-    c32b4f2 (HEAD -> master) HEAD@{0}: commit (amend): new correct message
-    04c5ba9 HEAD@{1}: commit: some wrong message
-    ...
-    ```
-  As can be seen from the reflogs, the command **git commit --amend** creates a new commit identifier and therefore this command shall be used only if the initial commit with the typo was still not pushed outside of the current local repository.
 
 
 
@@ -2549,55 +2660,7 @@ o check if I can use **git rm** to remove file both locally and in a remote trac
 
 
 
-* **How to unstage the staged changes?**
 
-	If files _file-1_, _file-2_, ..., were modified in the working tree and those modifications were staged with **git add** command, but later it was realized that those modifications are not ready or needed for the next commit, files can be removed from staging area:
-	
-	```bash
-	# remove files from staging area, but keep their changes in the working tree:
-	git reset HEAD file-1 file-2 ...
-	```
-
-	The modifications are kept in the files in the working tree. If also the modifications have to be removed from the working tree, one has to use **git checkout** command:
-
-	```bash
-	# remove files from staging area and undo their changes in the working tree:
-	git checkout file-1 file-2 ...
-	```
-
-​	TBI 20250507 validate + check if I need HEAD in the command above + check if this works for more than 1 file + check what happens with dirs  (see page 110). 
-
-​	TBI 20250512 see again Sec. 36.5, and see if I need that
-
-
-* **How to revert the file to the status of latest staged (or committed) version?**
-
-  The changes in the working tree can be reverted as follows:
-  
-  ```bash
-  git checkout -- <file-or-dir> # if nothing is staged, it will be reverted to the latest committed version
-  ```
-  
-  ​	TBI 20241007 finalize + add the actual printout, if any
-
-
-
-* **How to revert the specified file to the status of some previous commit?**
-
-  ```bash
-  # check the documentation of all commits, for more details, use 'git log'
-  $ git reflog 
-  d56a6c5 (HEAD -> master) HEAD@{0}: commit: aaaa added
-  4a454dc HEAD@{1}: commit: aaa added
-  6f2efba HEAD@{2}: commit: aa added
-  7ccc767 HEAD@{3}: checkout: moving from test to master
-  273c87f (test) HEAD@{4}: commit: update in file1
-  
-  # this restores the content of <filename> in the working tree to what it was after commit <commit-ID>
-  $ git checkout <commit-ID> <filename> 
-  # Remark 0: Only the specified files are affected with this action
-  # Remark 1: Without specifying the file name, git checkout <commit-ID> reverts the whole working tree to the status of this commit, but i am now in DETACHED HEAD MODE
-  ```
 
   TBI 20241007 finalize 
 
@@ -2645,8 +2708,7 @@ TBI 20250503 see page 80, sec 27.8 but add this only after I check that it works
   git log --author abilandz --author someOtherName # add --oneline for condensed output
   ```
 
-* **How to restore a deleted file in Git repository?**
-TBI 20250520 see again 40.2 and 40.3
+  
 
 
 
