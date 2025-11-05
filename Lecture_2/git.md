@@ -251,6 +251,9 @@ $ git commit -m "first commit"
  1 file changed, 1 insertion(+)
  create mode 100644 someFile.txt 
 
+# Remark: "100644" stands for "Regular non-executable file" 
+#         "100755" stands for "Regular executable file", etc. 
+
 # check the status:
 $ git status
 On branch main
@@ -478,12 +481,14 @@ For instance, by default Git is typically configured to use **nano** editor inte
 
 ```bash
 # set default Git editor to "gedit":
-$ git config --global core.editor "gedit"
+$ git config --global core.editor "gedit -w"
 
 # check if the change was propagated:
 $ git config --global --list
 core.editor=gedit
 ```
+
+The flag "-w" is important, because Git now will wait until the commit message is written in the custom editor, and the file holding that message is closed (without that flag, there will be an error message "_Aborting commit due to empty commit message._").  
 
 To unset some variable at "global" level, e.g. in this example "core.editor", the following syntax can be used:
 
@@ -588,22 +593,22 @@ Untracked files:
 nothing added to commit but untracked files present (use "git add" to track)
 ```
 
-As it can be seen, the LaTeX auxiliary files "source.aux" and "source.log", although still present in the working tree, are ignored now by Git after they have been enlisted in the special configuration file ".gitignore" and after ".gitignore" was committed with that new information to the revision itself.
+As it can be seen, the LaTeX auxiliary files "source.aux" and "source.log", although still present in the working tree, are ignored now by Git after they have been enlisted in the special configuration file ".gitignore", and after ".gitignore" was committed with that new information to the revision itself.
 
 A few concluding remarks on the usage of ".gitignore":
 
 * Comments are supported in ".gitignore" and they start with "#" (similar as in Bash);
 
-* It is not necessary to enlist all files and/or directories using the full name, because a certain number of wildcards are supported by Git. For instance, to ignore files "someFile_1.log", "anotherFile_2.log" and "alsoThisFile.log", one can add to ".gitignore" only the pattern "\*.log", where the metacharacter ```*``` matches any sequence of characters except a slash ```/``` (a detailed explanation of Git metacharacters which can be used in ".gitignore" can be found online under section [Pattern Format](https://git-scm.com/docs/gitignore) in the official documentation.
+* It is not necessary to enlist all files and/or directories using the full names, because a certain number of wildcards are supported by Git. For instance, to ignore files named "someFile_1.log", "anotherFile_2.log" and "alsoThisFile.log", one can add to ".gitignore" only the pattern "\*.log", where the metacharacter ```*``` matches any sequence of characters except a slash ```/``` (a detailed explanation of Git metacharacters which can be used in ".gitignore" can be found online under section [Pattern Format](https://git-scm.com/docs/gitignore) in the official documentation;
 
-* To ignore all files in a specific directory, use the directory name followed by a slash "/". For instance, if there is a directory named "temp" in the working tree, all files in that directory can be ignored at once with the following lines added to ".gitignore"
+* To ignore all files in a specific directory, use the directory name followed by a slash "/". For instance, if there is a directory named "temp" in the working tree, all files in that directory can be ignored at once with the following lines added to ".gitignore":
 
   ```bash	
   # ignore all files in "temp" dir:
   temp/
   ```
 
-* By default Git does not track empty directories. To preserve the overall design and directory structure of project in a Git repository, one typically adds dummy ".gitkeep" files (any other name would also work) in otherwise empty directories. These files are not special and their sole purpose is to populate a directory so that Git adds it to the repository from the very beginning.
+* By default Git does not track empty directories. To preserve the overall design and directory structure of project in a Git repository, one typically adds dummy ".gitkeep" files (any other name would also work) in otherwise empty directories. These files are not special and their sole purpose is to populate a directory so that Git adds it to the repository from the very beginning;
 
 * When a new Git repository is initiated on GitHub (an online developer platform for code development and sharing using Git), it is possible to choose which files not to track from the list of predefined ".gitignore" templates. For instance, when a new repository is made on GitHub for the C++ code development, immediately when that repository is being initiated on GitHub one can choose the specifically prepared ".gitignore" template for C++, which contains the line like this:
 
@@ -624,6 +629,35 @@ A few concluding remarks on the usage of ".gitignore":
 	
 	... many more lines ...
 	```
+	
+	On the other hand, predefined ".gitignore" template for LaTeX looks like this on GitHub:
+	
+	```bash
+	## Core latex/pdflatex auxiliary files:
+	*.aux
+	*.lof
+	*.log
+	*.lot
+	*.fls
+	*.out
+	*.toc
+	*.fmt
+	*.fot
+	*.cb
+	*.cb2
+	.*.lb
+	
+	## Intermediate documents:
+	*.dvi
+	*.xdv
+	*-converted-to.*
+	
+	... many more lines ...
+	```
+	
+	Clearly, it is rather impractical writing such lengthy and detailed ".gitignore" files from scratch, therefore the usage of predefined templates is recommended.
+	
+	
 
 
 
