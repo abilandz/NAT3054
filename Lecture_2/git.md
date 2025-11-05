@@ -2,7 +2,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20251105-4
+**Last update**: 20251105-5
 
 
 ### Table of Contents
@@ -600,7 +600,7 @@ A few concluding remarks on the usage of ".gitignore":
 
 * Comments are supported in ".gitignore" and they start with "#" (similar as in Bash);
 
-* It is not necessary to enlist all files and/or directories using the full names, because a certain number of wildcards are supported by Git. For instance, to ignore files named "someFile_1.log", "anotherFile_2.log" and "alsoThisFile.log", one can add to ".gitignore" only the pattern "\*.log", where the metacharacter ```*``` matches any sequence of characters except a slash ```/``` (a detailed explanation of Git metacharacters which can be used in ".gitignore" can be found online under section [Pattern Format](https://git-scm.com/docs/gitignore) in the official documentation;
+* It is not necessary to enlist all files and/or directories using the full names, because a certain number of wildcards are supported by Git. For instance, to ignore files named "someFile_1.log", "anotherFile_2.log" and "alsoThisFile.log", one can add to ".gitignore" only the pattern "\*.log", where the metacharacter ```*``` matches any sequence of characters except a slash ```/``` (a detailed explanation of Git metacharacters which can be used in ".gitignore" can be found online under section [Pattern Format](https://git-scm.com/docs/gitignore) in the official documentation);
 
 * To ignore all files in a specific directory, use the directory name followed by a slash "/". For instance, if there is a directory named "temp" in the working tree, all files in that directory can be ignored at once with the following lines added to ".gitignore":
 
@@ -611,7 +611,7 @@ A few concluding remarks on the usage of ".gitignore":
 
 * By default Git does not track empty directories. To preserve the overall design and directory structure of project in a Git repository, one typically adds dummy ".gitkeep" files (any other name would also work) in otherwise empty directories. These files are not special and their sole purpose is to populate a directory so that Git adds it to the repository from the very beginning;
 
-* When a new Git repository is initiated on GitHub (an online developer platform for code development and sharing using Git), it is possible to choose which files not to track from the list of predefined ".gitignore" templates. For instance, when a new repository is made on GitHub for the C++ code development, immediately when that repository is being initiated on GitHub one can choose the specifically prepared ".gitignore" template for C++, which contains the line like this:
+* When a new Git repository is initiated on [GitHub](https://github.com) (an online developer platform for code development and sharing using Git), it is possible to choose which files not to track from the list of predefined ".gitignore" templates. For instance, when a new repository is made on GitHub for the C++ code development, immediately when that repository is being initiated on GitHub one can choose the specifically prepared ".gitignore" template for C++, which contains the line like this:
 
 	```bash
 	# Prerequisites
