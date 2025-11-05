@@ -2,7 +2,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20251105-3
+**Last update**: 20251105-4
 
 
 ### Table of Contents
@@ -485,10 +485,11 @@ $ git config --global core.editor "gedit -w"
 
 # check if the change was propagated:
 $ git config --global --list
-core.editor=gedit
+core.editor=gedit -w
+... more settings ...
 ```
 
-The flag "-w" is important, because Git now will wait until the commit message is written in the custom editor, and the file holding that message is closed (without that flag, there will be an error message "_Aborting commit due to empty commit message._").  
+The flag "-w" is important, because Git now will wait until the commit message is written in the custom editor, and the file holding that message is closed in that editor (without that flag, there will be an error message "_Aborting commit due to empty commit message._"). 
 
 To unset some variable at "global" level, e.g. in this example "core.editor", the following syntax can be used:
 
