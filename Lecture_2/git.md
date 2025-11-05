@@ -1954,8 +1954,26 @@ TBI 20250529 add diagram for both cases
 
 **G**
 
-**git grep TBI**   &mdash; Print lines matching a pattern TBI 2024105 finalize . Clarify why to use this one, and not the standard **grep**
+**git grep** &mdash; Print lines matching a pattern. The main differences compared to the standard **grep** are:
 
+* by default, it searches recursively in all files tracked by Git in the current working tree (untracked files are ignored);
+* it can perform search in the working tree corresponding to another branch or some previous commit of the current branch, without a need to checkout first that branch or commit.
+
+```bash
+# search resursively for "somePattern" in all tracked files
+# in the current working tree:
+$ git grep "somePattern"
+
+# search resursively for "somePattern" in all tracked files
+# in the working tree of previous commit of current branch:
+$ git grep "somePattern" HEAD~1
+
+# search resursively for "somePattern" in all tracked files
+# in the working tree of branch named "devel":
+$ git grep "somePattern" devel
+```
+
+Most of the options supported by standard **grep** work in the same way for **git grep** (e.g. flag "-E" to support syntax for "Extended Regular Expressions", etc.).
 
 
 
@@ -2564,185 +2582,13 @@ In this section, some of the frequently encountered real-case scenarios are summ
 
   In the last command above, we have used the special syntax ```commitID~N``` , which stands for the Nth commit before the specified commit _commitID_. Therefore, "70483d4~1" will point to the first commit before the commit "70483d4" was made.
 
-  
 
-  
 
 
 
-TBC 20251104
 
 
 
-
-
-
-
-
-* **How to delete commit locally, and propagate that deletion also to remote repository?** TBI 20241006 finalize and validate and test this example
-
-    ```bash
-    # initial setup:
-    $ git log --pretty=oneline --abbrev-commit
-    f80109c (origin/master, master) update .... Sat Apr 11 10:21:54 CEST 2020
-    094026f (HEAD) update .... Sat Apr 11 10:21:42 CEST 2020
-    ab51558 update .... Sat Apr 11 10:21:36 CEST 2020
-    ```
-
-	and now I want to delete the commit f80109c and rebase to the previous commit, and propagate that deletion to remote. Do:
-
-    ```bash
-    $ git rebase -i 094026f HEAD~2
-    # Successfully rebased and updated detached HEAD.
-    ```
-
-
-
-
-
-* **How to checkout the specific remote branch into a clean local branch?**
-	
-  This example covers that case when in the remote repository "origin" (e.g. on GitHub) there is a default branch "master" and an independent branch named "test". After cloning that repository locally, only the default "master" branch is present in the local repository, but we would like to have locally also the branch "test", but without any previous commits on it, i.e. we would like to continue with development on a clean "test" branch.
-  
-* Locally, only 'master', which is tracking origin/master
-	
-    ```bash
-  # clone the remote repository:
-  git clone https://github.com/abilandz/someRemoteRepository someRemoteRepository
-  
-  # create a new branch locally, --orphan ensures there are 0 commits on this branch:
-  $ git checkout --orphan nbr 
-  
-  # ensure that the working tree is clean"
-  $ git reset --hard
-  
-  $ git pull origin test
-  ```
-
-
-
-
-
-  
-
-
-
-
-
-* **How to move local bare repo which is tracked locally to GitHub, and continue to track from the same local repo?** TBI 20241006 finalize and validate and test this example
-
-
-```bash
-  # make locally central repo
-  $ git init --bare HQ 
-  # make tracking repo
-  $ git clone HQ tracking
-  $ cd tracking
-  $ touch file1 && git add file1 && git commit -m "added file1"
-  # so now in HQ you have something non-trivial
-  $ git push 
-  $ cd ../HQ
-  
-    # now go to GitHub, and make a new repo "HQ". 
-    # Do NOT initialize it with the README.md files, etc!!
-    $ git remote add origin https://github.com/abilandz/HQ.git
-    # push the master of local bare repo in the new one on GitHub
-    $ git push -u origin master 
-    $ cd ../tracking
-
-    # stop tracking what you are tracking by now, i.e. ../HQ
-    $ git remote remove origin 
-    
-    # add new remote
-    $ git remote add origin https://github.com/abilandz/HQ.git
-    
-    # push local bare repo in the new one on GitHub. 
-    # This also set the pull protocol, but not vice versa 
-    $ git push -u origin master 
-    # or : git push --all-u origin # push all branches in one go to origin
-```
-
-
-
-* **How to Update a fork in Github?**
-
-1. Access your forked repository on Github.
-2. Click “Pull Requests” on the right, then click the “New Pull Request” button.
-3. Github first compares the base fork with yours, and will find nothing if you made no changes, so, click “switching the base”, which will change your fork to the base, and the original to the head fork. Now you should see changes where your fork needs to play “catch up”.
-4. Click “Create Pull Request”, give it a name, click “Send Pull Request”.
-5. Click “Merge Pull Request” and “Confirm Merge”.
-   Assuming you had no changes, you can then merge automatically.
-   TBI 20241010 Text is takes from https://rick.cogley.info/post/update-your-forked-repository-directly-on-github/ -- review, validate and update
-
-
-
-
-* **How to delete permanently the already tracked file from Git repository?**
-
-TBI 202504228 See section 17
-o check if I can use **git rm** to remove file both locally and in a remote tracking repo 
-
-
-* **How to change something in the git configuration (e.g. email address?)**
-
-    ```bash
-    $ git config --global -e # open up the editor to change global parameters
-    $ git config --local -e # open up the editor to change local parameters
-    ```
-
-​	TBI 20241007 finalize
-
-
-
-
-
-  TBI 20241007 finalize 
-
-
-
-* **How to create and set brand new local branch to track already existing remote branch?**
-
-  ```bash
-  git branch <new-local-branch-name> origin/<already-existing-remote-branch-name>
-  ```
-
-  TBI 20241007 finalize 
-
-  
-
-* **How to set an already existing local branch to track an already existing remote branch?**
-
-  ```bash
-  # If you wanted to make 'testName22' track 'origin/testName3', do this:
-  $ git branch -d origin/testName3 # not really 100% sure what is happening here, as after this, I can still see testName3 in GitHub?
-  
-  $ git branch --set-upstream-to origin/testName3 # --track shall be equivalent to  --set-upstream-to AB check further
-  ```
-
-  TBI 20241007 finalize 
-
-
-
-* **How to prevent being prompted for credentials at each push?**
-
-  TBI 20241016 Add here how to define "credential.helper" variable globally.
-  
-  
-
-* See Sec. 7.4 and 7.5 for .. and ... operators, and add examples from there TBI 20241127
-
-
-* **How to delete tags locally and in remote repositories?**
-TBI 20250503 see page 80, sec 27.8 but add this only after I check that it works
-
-* **How to show all commits of specified author(s) in a given repository?**
-
-  ```bash
-  # show all commits of specified author(s):
-  git log --author abilandz --author someOtherName # add --oneline for condensed output
-  ```
-
-  
 
 
 
