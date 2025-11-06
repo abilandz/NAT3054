@@ -2,7 +2,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20251105-5
+**Last update**: 20251106-1
 
 
 ### Table of Contents
@@ -512,7 +512,7 @@ Related to this, one can prevent Git for annoyingly prompting for credentials to
 
 ```bash
 $ git config --global credential.helper "cache --timeout=86400" 
-# You will be prompted for credentials only once in 86400s, i.e. once per year
+# You will be prompted for credentials only once in 86400s, i.e. once per day
 ```
 
 In the next section, the most important Git configuration files are addressed.
