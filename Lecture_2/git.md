@@ -2,7 +2,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20251113-1
+**Last update**: 20251113-3
 
 
 ### Table of Contents
@@ -1814,7 +1814,7 @@ cfd0b003 (abilandz 2025-09-15 09:35:15 +0200 1) <img src="git.png" alt="drawing"
 44cd023b (abilandz 2025-11-01 08:19:41 +0100 5) **Last update**: 20251101-1
 ```
 
-**git branch** &mdash; List available branches in the local repository. This command works only after the first commit:
+**git branch** &mdash; List available branches in the local repository. This command works only after the first commit was made:
 
 ```bash
 $ git branch
@@ -1928,11 +1928,25 @@ TBI 20241003 finalize this description
 
 TBI 20241127 see Sec. 7.4 for the usage of parent operator ^ and ancestor operator ~ => document here or elsewhere
 
-**git checkout --orphan** _someBranchName_ &mdash; This creates a new and clean branch with 0 commits; however, all inherited files from the previous branch are staged! So you still need to do: **git reset --hard**, to clean up the working tree. TBI 20241003 check and finalize this description
+**git checkout --orphan** _someBranchName_ &mdash; This creates a new and clean branch with zero commits. However, all inherited files from the previous branch are in the working tree and are automatically staged upon this initial checkout. To clean up the working tree, additionally **git reset --hard** has to be executed:
+
+```bash
+# Make a new branch with zero commits and empty working tree:
+$ git checkout --orphan testBranch
+Switched to a new branch 'testBranch'
+
+$ git reset --hard
+$ git status
+On branch testBranch
+
+No commits yet
+
+nothing to commit (create/copy files and use "git add" to track)
+```
 
 **git cherry-pick** _commitID_ &mdash; Cherry-pick the changes introduced with the commit _commitID_ on some other branch, and introduce only those changes (therefore cherry-pick) into the current branch.
 
-**git clean** &mdash; Remove in one go all *untracked* files from the working tree (use with care, as there is no way back). If the **git** configuration variable _clean.requireForce_ is not set to false, **git clean** will refuse to clean untracked files, unless it's additionally forced with flag '-f'.
+**git clean** &mdash; Remove in one go all *untracked* files from the working tree (use with care, as there is no way back). If the **git** configuration variable _clean.requireForce_ is not set to false, **git clean** will refuse to clean untracked files, unless it is additionally forced with flag "-f".
 
 ```bash
 # remove all untracked files:
@@ -1955,15 +1969,22 @@ $ git clean -d
 ... 
 ```
 
-**git clone** **<abs-or-relative-or-URL-path-to-original-repo> <abs-or-relative-path-to-new-repo>**
+**git clone** _abs-or-relative-or-URL-path-to-original-repository_ _abs-or-relative-path-to-new-repository_
 
- \# Example 1 : git clone https://github.com/abilandz/Bash_Starterkit.git Bash_Starterkit
+```bash
+# Example 1: Clone repository from GitHub locally:  
+git clone https://github.com/abilandz/Bash_Starterkit.git Bash_Starterkit
 
- \# Example 2 : **git clone** **[https://gitlab.com/abilandz/<](https://gitlab.com/abilandz/test)repo-name>.git <repo-name>**
+# Example 2: Clone repository from GitLab locally:
+git clone https://gitlab.com/abilandz/someName.git someName
+
+# Example 3: Clone local repository into another local repository:
+git clone /scratch/git/centralRepository $HOME/myRepository 
+```
 
 A cloned repository contains a complete history of the original repository, and after cloning, it can be used for independent development without affecting the original repository's status.
 
-**git commit** &mdash; . This command is typically used in conjunction with one of the options listed in the following examples.
+**git commit** &mdash; This command is typically used in conjunction with one of the options listed in the following examples.
 
 **git commit --amend** &mdash; Replace literally the last commit (and edit the commit message). TBI 20241003 add example + suggestion from the book, to use this only before pushed to the remote.
 
@@ -2064,15 +2085,14 @@ Most of the options supported by standard **grep** work in the same way for **gi
 
 **H**
 
-**git help**  &mdash; TBI 2024105 finalize
+**git help**  &mdash; To obtain a help for specific command, use either:
 
-  a) git <command> help # if within the repo
+* git help _someCommand_ 
 
-  b) man git-<command> # anywhere 
+* man git-_someCommand_
 
+For instance, for Git's command **init**, either **git help init** or **man git-init** will provide the identical information for its usage.
 
-
-**I**
 
 **git init** &mdash; Add current working directory under revision control.
 
