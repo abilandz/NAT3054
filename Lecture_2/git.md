@@ -1436,7 +1436,7 @@ Date:   Thu Nov 13 08:08:26 2025 +0100
 
     change 4
     
-... more info related to previous commits ...    
+... info related to the previous commits ...    
 ```
 
 It can be seen clearly that the "merge commit" was obtained after merging two commits on two different branches, commit "ae36502" from the _main_ branch and commit "cd97227" from the _devel_ branch.
@@ -1489,6 +1489,60 @@ flowchart RL
     commitExp1Star["diff of exp. change 1 vs change 2 applied on top of change 3"]
     main --> commit3 --> commit2 --> commit1
     devel --> commitExp1Star --> commit3
+```
+
+Additional insights can be obtained from **git log** executed on the _devel_ branch:
+
+```bash
+$ git log
+commit cb9ed9e697d640bd2adaa18fef1826c71f0519a0 (HEAD -> devel)
+Author: abilandz <Ante.Bilandzic@cern.ch>
+Date:   Thu Nov 13 08:36:43 2025 +0100
+
+    exp. change 1
+
+commit 634abec945f4d99de4b656fe972fbe0c1bfcc9cf (main)
+Author: abilandz <Ante.Bilandzic@cern.ch>
+Date:   Thu Nov 13 08:37:14 2025 +0100
+
+    change 3
+
+commit d97309ad49f450c071bceb0dc3e470bdc277eeeb
+Author: abilandz <Ante.Bilandzic@cern.ch>
+Date:   Thu Nov 13 08:35:26 2025 +0100
+
+    change 2
+
+commit a669a76ae904ea8195b9924e9ca4d0938ed9db7c
+Author: abilandz <Ante.Bilandzic@cern.ch>
+Date:   Thu Nov 13 08:35:21 2025 +0100
+
+    change 1
+
+```
+
+On the other hand, nothing changed after the above rebasing on the _main_ branch:
+
+```bash
+$ git log
+commit 634abec945f4d99de4b656fe972fbe0c1bfcc9cf (HEAD -> main)
+Author: abilandz <Ante.Bilandzic@cern.ch>
+Date:   Thu Nov 13 08:37:14 2025 +0100
+
+    change 3
+
+commit d97309ad49f450c071bceb0dc3e470bdc277eeeb
+Author: abilandz <Ante.Bilandzic@cern.ch>
+Date:   Thu Nov 13 08:35:26 2025 +0100
+
+    change 2
+
+commit a669a76ae904ea8195b9924e9ca4d0938ed9db7c
+Author: abilandz <Ante.Bilandzic@cern.ch>
+Date:   Thu Nov 13 08:35:21 2025 +0100
+
+    change 1
+
 ```
 
 Since we were working on the _devel_ branch and rebased it on the _main_ branch, after rebasing only the _devel_ branch was changed. To change correspondingly also the _main_ branch, we can use the standard _fast-forward merge_ technique:
@@ -1593,7 +1647,7 @@ $ git log --oneline
 1192d2b change 2
 009e81b change 1
 
-# continue development on the 'main' branch, make new commit 'change 5', etc.
+# ctd. development on the 'main' branch, make new commit 'change 5', etc.
 ```
 
 
