@@ -2,7 +2,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20251106-1
+**Last update**: 20251113-1
 
 
 ### Table of Contents
@@ -1087,7 +1087,7 @@ In this section, we illustrate the workflow that is frequently used in major col
 * each new commit must be reviewed and approved by an expert, and automatically tested with various test suites, before being merged into the central repository. This requirement is essential, to prevent scenarios in which an error introduced by one developer hinders the work of the rest;
 * common programming style (formatting, naming conventions, etc.).
 
-This can be achieved with _forks_ and _pull requests_. Schematically, this workflow is illustrated with the following diagram for two collaborators developing concurrently, which can be trivial generalized:
+This can be achieved with _forks_ and _pull requests_. Schematically, this workflow is illustrated with the following diagram for two collaborators developing concurrently, which can be trivially generalized:
 
 ```mermaid
 	flowchart RL
@@ -1111,7 +1111,7 @@ This can be achieved with _forks_ and _pull requests_. Schematically, this workf
     l2 == push ==> o3
 ```
 
-Each developer first creates an online fork of the central repository, and then clones that fork locally. Each developer works directly only in a local repository. Any new commit in the local repository is pushed first to his personal online fork, and then he makes online a pull request in his fork. This is the step where the developer requests his commit to be reviewed and tested, and finally approved for merging into the central repository. 
+Each developer first creates an online fork of the central repository, and then clones that fork locally. Each developer works directly only in a local repository. Any new commit in the local repository is pushed first to developer's personal online fork, and then the developer makes online a pull request in this fork. This is the step where the developer's commits in this pull request are reviewed and tested, before finally being approved for merging into the central repository. 
 
 Both in GitHub and GitLab, it is straightforward to establish such a workflow, and all steps won't be detailed here. 
 
@@ -1129,7 +1129,7 @@ $ git init --bare headquarter
 Initialized empty Git repository in /home/abilandz/headquarter/
 ```
 
-This is a central repository which will be used to exchange information related to the project development among all developers. We remark that this central repository has to be _bare_ (i.e. it has no working tree and no default remote repository). One can think of a bare Git repository having nothing but the .git folder inside your local working repository.
+This is a central repository which will be used to exchange information related to the project development among all developers. We remark that this central repository has to be _bare_ (i.e. it has no working tree and no default remote repository). One can think of a bare Git repository having nothing but the ".git" folder inside your local working repository.
 
 From developer's point of view, we can now proceed in two ways: "clone" and "init". We illustrate the "clone" approach because it is easier, starting with the developer named "Marcel":
 
@@ -1166,7 +1166,7 @@ $ git branch
 * master
 
 # By this point, it is still not clear which local branch is tracking which remote branch.
-# Therefore, as you push, you need to set the upstream config:
+# Therefore, as you push, you need to set the upstream branch:
 $ git push --set-upstream origin master
 Enumerating objects: 3, done.
 Counting objects: 100% (3/3), done.
@@ -1175,7 +1175,8 @@ Total 3 (delta 0), reused 0 (delta 0)
 To /home/abilandz/headquarter
  * [new branch]      master -> master
 Branch 'master' set up to track remote branch 'master' from 'origin'.
-# After this step, the local branch you are currently on (by default "master"), is tracking the "master" branch in the remote repository named "origin". 
+# After this step, the local branch you are currently on (by default "master") 
+# is tracking the "master" branch in the remote repository named "origin". 
 
 # Cross-check:
 $ git branch -a
@@ -1297,7 +1298,7 @@ This case corresponds to the situation where one works on the _main_ branch, the
 
 ```bash
 # pause the development on the 'main' branch, checkout new 'devel' branch, 
-# and continue with experimental development the 'devel' branch:
+# and continue with experimental development on the 'devel' branch:
 $ git checkout -b devel
 
 ... make some development and corresponding few commits on branch 'devel' ...
@@ -1410,6 +1411,35 @@ Merge made by the 'ort' strategy.
 
 # ctd. with development on the 'main' branch
 ```
+
+More details can be revealed with **git log** executed on the _main_ branch:
+
+```bash
+# Execute on the 'main' branch:
+$ git log
+commit 64c7d6b941d88e00fd0481fe297900cf9f83205c (HEAD -> main)
+Merge: ae36502 cd97227
+Author: abilandz <Ante.Bilandzic@cern.ch>
+Date:   Thu Nov 13 08:09:25 2025 +0100
+
+    Merge branch 'devel'
+
+commit cd9722724013c4253bbf63e6d03c5e6ddc8f413b (devel)
+Author: abilandz <Ante.Bilandzic@cern.ch>
+Date:   Thu Nov 13 08:08:43 2025 +0100
+
+    exp. change 2
+
+commit ae3650205f06ce6f97f20ac1a95ae60b2e54bd76
+Author: abilandz <Ante.Bilandzic@cern.ch>
+Date:   Thu Nov 13 08:08:26 2025 +0100
+
+    change 4
+    
+... more info related to previous commits ...    
+```
+
+It can be seen clearly that the "merge commit" was obtained after merging two commits on two different branches, commit "ae36502" from the _main_ branch and commit "cd97227" from the _devel_ branch.
 
 With this approach, merging conflicts can occur if the same file is modified in two branches in an incompatible way, and this typically needs to be resolved manually by editing the file to the final version during merging. 
 
