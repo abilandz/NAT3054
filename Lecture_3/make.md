@@ -387,7 +387,7 @@ Variables are defined and later used in the _makefile_ with the following syntax
 ```makefile
 someVariable = "Hello World"
 hello :
-        echo $(someVariable)
+	echo $(someVariable)
 ```
 
 After executing:
@@ -397,6 +397,10 @@ $ make hello
 echo "Hello World"
 Hello World
 ```
+
+Variable names are case-sensitive, and can be any sequence of characters not containing ```:```, ```#```, ```=```, or whitespace. An exception are variables beginning with ```.``` and an uppercase letter, which can have a special meaning to **make** itself (e.g. special variable ```.RECIPEPREFIX```).
+
+
 
 The wildcard characters that can be used in a _makefile_ are ```*```, ```?``` and ```[ ... ]```, with the same meaning as in the Bash shell. For instance:
 
