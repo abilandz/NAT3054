@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20251115-1
+**Last update**: 20251115-2
 
 
 ### Table of Contents
@@ -420,23 +420,23 @@ clean:
 
 ### 3. Shared libraries <a name="shared.libraries"></a>
 
-Libraries are pre-existing code that is compiled and ready to use. When a logically distinct set of functions is available, it is helpful to build a library from that set of functions so that the same source code doesn't have to be copied in the current project and recompiled all the time. If a bug fix or new feature has to be implemented in a given function, this has to be done only in one place. There are two types of libraries:
+Libraries are pre-existing code that is compiled and ready to use. When a logically distinct set of functions is available, it is helpful to build a library from that set of functions, so that the same source code doesn't have to be copied into the current project and recompiled repeatedly. If a bug fix or new feature needs to be implemented in a given function, it must be done only in one place. There are two types of libraries:
 
 - _static_ &mdash; the actual library is placed in the final program during compilation;
 - _shared_ &mdash; only a reference to the library is placed inside the final program (i.e. program is _linked_ with a library).
 
-A static library is commonly stored in a file with an extension ```.a```, while a shared library in a file with ```.so``` extension. The main disadvantage of static libraries is the code bloat and the resulting waste of disk space, because the very same code with pre-compiled functions appears in different programs. In addition, if a change is introduced in a static library, all programs using that library must be recompiled. On the other hand, programs linked with shared libraries do not need to be recompiled when changes are introduced in those libraries &mdash; only the libraries need to be recompiled. When it comes to performance, programs using static libraries will run slightly faster, because all the symbols in the library are already resolved at compile time (with shared libraries, they need to be resolved at run time). Once compiled, programs using static libraries no longer depend on those libraries, which removes the external dependency on library version (this is particularly relevant when a major upgrade of the underlying operating system is performed, during which most libraries are updated to a newer version). In what follows next, we focus on shared libraries, using as an example code written in C/C++ programming language, and compiled via the open-source **gcc** compiler (originally, _GNU C Compiler_, lated renamed into _GNU Compiler Collection_).
+A static library is commonly stored in a file with the extension ```.a```, while a shared library is stored in a file with the ```.so``` extension. The main disadvantage of static libraries is code bloat and the resulting waste of disk space, as the same code with pre-compiled functions appears in multiple programs. In addition, if a change is introduced in a static library, all programs using that library must be recompiled. On the other hand, programs linked with shared libraries do not need to be recompiled when changes are introduced in those libraries &mdash; only the libraries themselves need to be recompiled. When it comes to performance, programs using static libraries will run slightly faster, because all the symbols in the library are already resolved at compile time (with shared libraries, they need to be resolved at run time). Once compiled, programs using static libraries no longer depend on those libraries, which removes the external dependency on library version (this is particularly relevant when a major upgrade of the underlying operating system is performed, during which most libraries are updated to a newer version). In what follows next, we focus on shared libraries, using as an example code written in the C/C++ programming language, and compiled using the open-source **gcc** compiler (originally, _GNU C Compiler_, later renamed into _GNU Compiler Collection_).
 
 The stages needed in the project development utilizing shared libraries can be delineated as follows:
 
 1. _Source code_ &mdash; the standard code development from scratch.
-2. _Preprocessor_ &mdash; this stage deals with all the preprocessor directives, to programmatically modify the source code and make it ready for compilation. For instance, in the C/C++ programming language, this step amounts to processing all lines in the source code that start with a ```#```, such as ```#define```, ```#include```, etc. If in the source code there is a line in the preamble ```#include <someHeaderFile.h>```, the preprocessor will literally inline the content of the header file ```someHeaderFile.h``` into that source code. No code compilation occurs at this stage, only programmatic manipulation of source code via the preprocessor. 
-3. _Compilation_ &mdash; once the source file has been preprocessed, the compilation takes place over the modified source code. In the C/C++ programming language, at this stage, the **gcc** compiler turns the source code from ```.c``` or ```.cxx``` files into an ```.o``` (object) files. An object file contains machine code specific to the underlying hardware, and it's ready to be included via linking in a final executable (but typically cannot be executed directly).
-4. _Linking_ &mdash; at this stage all of the object files and shared libraries are linked together to make the final executable, that is ready to run. The executable can be started in the terminal from the shell, and is then handed off to the loader.
-5. _Loading_ &mdash; this stage happens when the program starts up. The program is scanned for references to shared libraries, and any references found are resolved and the shared libraries are mapped into the program. This way, only at runtime, different programs re-use exactly the same pre-compiled code stored in the shared libraries. TBI 20250916 improve the wording further here
-6. _Build_ &mdash; All stages above put together.
+2. _Preprocessor_ &mdash; this stage deals with all the preprocessor directives, to programmatically modify the source code and prepare it for compilation. For instance, in the C/C++ programming language, this step involves processing all lines in the source code that start with a ```#```, such as ```#define```, ```#include```, etc. If the source code contains a line in the preamble ```#include <someHeaderFile.h>```, the preprocessor will literally inline the content of the header file ```someHeaderFile.h``` into that source code. No code compilation occurs at this stage, only programmatic manipulation of source code via the preprocessor. 
+3. _Compilation_ &mdash; once the source file has been preprocessed, the compilation takes place over the modified source code. In the C/C++ programming language, at this stage, the **gcc** compiler turns the source code from ```.c``` or ```.cxx``` files into an ```.o``` (object) files. An object file contains machine code specific to the underlying hardware, and it is ready to be included via linking in a final executable (but typically cannot be executed directly).
+4. _Linking_ &mdash; at this stage, all of the object files and shared libraries are linked together to make the final executable, which is ready to run. The executable can be started in the terminal from the shell, and is then handed off to the loader.
+5. _Loading_ &mdash; this stage happens when the program starts up. The program is scanned for references to shared libraries, and any references found are resolved; the shared libraries are then mapped into the program. This way, only at runtime, different programs re-use exactly the same pre-compiled code stored in the shared libraries.
+6. _Build_ &mdash; All stages above combined.
 
-All stages above are now illustrated with a simple example, in which a shared library is made for some functions, and then used afterward in a program. TBI 20250916 improve the wording further here
+All stages above are now illustrated with a simple example, in which a shared library is created for specific functions and then used in a program afterward.
 
 
 
@@ -463,7 +463,7 @@ void Bye() {
 }
 ```
 
-We had to add a line ```#include <stdio.h>```, so that we can use a function **printf** from the standard library ```stdio.h```. With the notation ```< ... >``` we indicate that this header will be taken from one of the standard locations in the filesystem where header files are stored (typically, ```/usr/include```). On the other hand, with notation ```" ... "``` we indicate that the header file is taken from the current working directory. In case of a doubt, we can always specify instead in the source code the full path to the header file. 
+We had to add a line ```#include <stdio.h>```, so that we can use the function **printf** from the standard library ```stdio.h```. With the notation ```< ... >``` we indicate that this header will be taken from one of the standard locations in the filesystem where header files are stored (typically, ```/usr/include```). On the other hand, with the notation ```" ... "```, we indicate that the header file is located in the current working directory. In case of doubt, we can always specify the full path to the header file in the source code instead. 
 
 Finally, the main program (executable) is in the file ```test.cxx```, and it is implemented as follows:
 
@@ -479,7 +479,7 @@ int main() {
 }
 ```
 
-In this exercise, we will make a library for functions implemented in ```functions.cxx```, and demonstrate how to use that library in the executable **test** obtained after compiling ```test.cxx```. TBI 20251009 shall I move this sentence before the code block?
+In this exercise, we will make a library for functions implemented in ```functions.cxx```, and demonstrate how to use that library in the executable **test** obtained after compiling ```test.cxx```.
 
 
 
@@ -500,7 +500,7 @@ $ ls
 functions.cxx  functions.h  functions.o 
 ```
 
-The compilation step produced a new object file named _functions.o_, which contains the machine (or binary) code, and whose content cannot be inspected with the standard editors (if curious, try nevertheless **cat functions.o** &mdash; you will get mostly incomprehensible sequence of non-printable characters on the screen).
+The compilation step produced a new object file named _functions.o_, which contains the machine (or binary) code, and whose content cannot be inspected with the standard editors (if curious, try nevertheless **cat functions.o** &mdash; you will get a mostly incomprehensible sequence of non-printable characters on the screen).
 
 
 
@@ -544,11 +544,12 @@ We got a compilation error, because the linker **ld** does not know where to fin
 Since our shared library _libfunctions.so_ is in the current working directory, we can disclose its location to **gcc** with the option **-L $PWD**:
 
 ```bash
-# Compile and link, telling gcc that the shared library "libfunctions.so" is in PWD:
+# Compile and link, telling gcc that the shared library
+# "libfunctions.so" is in PWD:
 gcc -L $PWD -Wall -o test test.cxx -l functions
 ```
 
-We have now successfully linked our executable **test** with the pre-compiled shared library _libfunctions.so.
+We have now successfully linked our executable **test** with the pre-compiled shared library _libfunctions.so_.
 
 
 
@@ -623,9 +624,43 @@ This is a shared library test...
  Hasta la vista! 
 ```
 
-This becomes particularly beneficial if we have compiled our main programme against several hundreds external shared libraries. TBI 20250918 Add some more text here in conclusion
+This becomes particularly beneficial if we have compiled our main programme against many external shared libraries.
 
+Finally, all the above steps are automated with the following example _makefile_:
 
+```bash
+workDir = ${PWD}
+
+test : test.cxx
+        gcc -L $(workDir) -Wall -o test test.cxx -l functions
+
+fun : functions.o
+
+functions.o : functions.cxx functions.h
+        gcc -c -Wall -Werror -fpic functions.cxx
+        gcc -shared -o libfunctions.so functions.o
+        gcc -L $(workDir) -Wall -o test test.cxx -l functions
+        export LD_LIBRARY_PATH=$(workDir):${LD_LIBRARY_PATH}
+        ls -alt functions*
+
+all : functions.o test
+
+clean :
+        cd $(workDir) && rm *.o
+
+run :
+        ./test
+```
+
+With such _makefile_, we can simply execute:
+
+```bash
+make all
+```
+
+If the source code of either 'functions.cxx' or 'functions.h' has been changed, **make** will automatically go through all steps needed to build a share library 'libfunctions.so', but the executable **test** won't be recompiled, because there were no changes in 'test.cxx'.
+
+Vice versa, if there were changes only in the 'test.cxx', the executable **test** will be recompiled from scratch, but the same precompiled shared library 'libfunctions.so' will be used and linked at runtime, since there were no changes in neither 'functions.cxx' nor 'functions.h', 
 
 
 
