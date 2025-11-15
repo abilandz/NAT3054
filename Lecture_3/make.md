@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20251011-8
+**Last update**: 20251115-1
 
 
 ### Table of Contents
@@ -19,7 +19,7 @@
 ### 1. Introduction <a name="introduction"></a>
 The command-line utility **make** is used in the development of large-scale projects consisting of multiple source files, which must be compiled and linked together to create a single executable file. One finds such a modus operandi, for instance, in major collaborations at the Large Hadron Collider, where several hundred developers concurrently develop the analysis framework for a given experiment. 
 
-One can see immediately one potential caveat — would it be necessary to recompile all source files, if there was a change in only one of them? This would lead to a tremendous loss of efficiency during code development, as recompiling a large-scale project from scratch typically takes several hours, even on very powerful computers. An obvious solution (that existed already in the 1970s) would be to use a **linker**: recompile only changed files, and link with previously compiled files. However, in practice, this approach is error-prone, because if several source files were modified, frequently one forgets to recompile at least one of them, which leads either to compilation errors, or pointless debugging sessions (a bug was fixed, but the code wasn't recompiled). In the past, solving this problem was accomplished with carefully written shell scripts, always specific to the project in question. Since this problem was reoccuring all large-scale projects, there was a need for a general solution. This is precisely how the command-line utility **make** originated. 
+One can immediately see a potential caveat — would it be necessary to recompile all source files if there were a change in only one of them? This would result in a significant loss of efficiency during code development, as recompiling a large-scale project from scratch typically takes several hours, even on the most powerful computers. An obvious solution (that existed already in the 1970s) would be to use a **linker**: recompile only changed files, and link with previously compiled files. However, in practice, this approach is error-prone because if several source files are modified, it is frequently forgotten to recompile at least one of them, which leads to either compilation errors or pointless debugging sessions (a bug is fixed, but the code is not recompiled). In the past, solving this problem was accomplished through carefully written shell scripts, which were always specific to the project in question. Since this problem was recurring in all large-scale projects, there was a need for a general solution. This is precisely how the command-line utility **make** originated. 
 
 **Historical note**
 
@@ -34,13 +34,13 @@ While all implementations of **make** share the same basic ideas and goals, thei
 
 **The key idea behind 'make'**
 
-Automatic detection of source files that have been modified can be accomplished from the file's metadata, in particular from the file's _mtime_ flag. File metadata refers to any file-related information beyond its content. There are three _timestamps_ as a part of the file's metadata, with the following meaning:  
+Automatic detection of source files that have been modified can be accomplished by examining the file's metadata, particularly the file's _mtime_ flag. File metadata refers to any information related to a file beyond its content. There are three _timestamps_ as a part of the file's metadata, with the following meaning:  
 
 * **Access (atime)** : last time a file was accessed (opened) and read without any modification   
 * **Modify (mtime)** : last time a file was modified (i.e. its content has been edited)
-* **Change (ctime)** : last time a file's metadata was changed (e.g. permissions)  
+* **Change (ctime)** : last time a file's metadata was changed (e.g. file's permissions)  
 
-These three timestamps are not overkill, in fact, they enable a lot of compelling features. For each file, its metadata can be displayed with the **stat** command:
+These three timestamps are not overkill &mdash; in fact, they enable many compelling features. For each file, its metadata can be displayed with the **stat** command:
 
  ```bash
  $ stat Lecture_2.md # just specify the abs. or rel. path to file as an argument
@@ -57,7 +57,7 @@ These three timestamps are not overkill, in fact, they enable a lot of compellin
 To get specifically only the _mtime_ ('Modify') flag, one can use the following syntax:
 
 ```bash
-# Print time of last data modification, human-readable format:
+# Print time of last data modification, in human-readable format:
 $ stat -c %y Lecture_2.md
 2020-04-28 11:44:53.454187100 +0200
 
@@ -71,7 +71,7 @@ These flags are instantly updated for each file by the underlying operating syst
 The key benefits of **make**:
 
 - Compilation is as efficient as possible — only modified source files are recompiled;
-- Trivial errors of forgetting to recompile the modified source file, with important bugs fixed, is completely eliminated;
+- Trivial errors of forgetting to recompile the modified source file (for instance, files with important bugs fixed) are completely eliminated;
 - Solution for automation is general and it can be used for any programming language whose compiler can be run with a shell command (or more generically, for any project where some files must be updated automatically from others whenever the others change);
 - Declarative specification language written in the so-called _makefiles_.
 
@@ -86,7 +86,7 @@ The key benefits of **make**:
 
 ### 2. Makefile <a name="makefile"></a>
 
-Before using **make**, one must write a file called *makefile* that describes the relationships among files in your project and provides commands for updating each file. Once the _makefile_ is written, **make** uses that information and compares the _mtime_ flags of two files against each other. In **make**'s parlance, these two files are called _source_ and _target_.  If the source's _mtime_ flag is greater than the target's _mtime_ flag, then the target needs to be rebuilt. 
+Before using **make**, one must write a file called *makefile* that describes the relationships among files in your project and provides commands for updating each file. Once the _makefile_ is written, **make** uses that information and compares the modification time _mtime_ flags of two files against each other. In **make**'s parlance, these two files are called _source_ and _target_. If the _source_'s _mtime_ flag is greater than the _target_'s _mtime_ flag (i.e., the _source_ was modified more recently than the _target_), then the _target_ needs to be rebuilt. 
 
 The content of the _makefile_ may look as follows:
 
@@ -95,16 +95,16 @@ target : source1 source2 ...
 	commands to make target (a.k.a. recipes for this target)
 ```
 
-This syntax essentially says: For the *target* to be up to date, it must be newer than all the _source_ files 'source1', 'source2', etc. If it's not, run the specified commands to bring the _target_ up to date. The commands are specified on one or more lines that must start with TABs, and NOT with equivalent number of spaces. This is the infamous "tab-in-column-1" syntax, introduced with the very first version of **make**, and it remained afterward to preserve backward compatibility for the original users, who started using **make** within days of its initial release.
+This syntax essentially says: For the *target* to be up to date, it must be newer than all the _source_ files 'source1', 'source2', etc. If it is not, run the specified commands to bring the _target_ up to date. The commands are specified on one or more lines that must start with TABs (not with equivalent number of spaces &mdash; this is a common mistake!). This is the infamous "tab-in-column-1" syntax, introduced with the very first version of **make**, and it remained afterward to preserve backward compatibility for the original users, who started using **make** within days of its initial release.
 
-A _target_ is usually the name of a file generated by **make** when it automatically recompiles all specified source files that have changed. However, it can also represent an _action_ that **make** will carry out directly. In that case, _source_ does not need to be specified, and the typical syntax of a _makefile_ may look as follows:
+A _target_ is usually the name of a file generated by **make** when it automatically recompiles all specified source files that have changed. However, it can also represent an _action_ that **make** will carry out directly. In that case, the _source_ does not need to be specified, and the typical syntax of a _makefile_ may look as follows:
 
 ```makefile
 action : 
 	commands executed for this action (a.k.a. recipes for this action)
 ```
 
-By default, when make looks for the _makefile_, **GNU make** tries the following names, with the following precedence: 'GNUmakefile', 'makefile' or 'Makefile'. In practice, you should call your _makefile_ either 'makefile' or 'Makefile', but if necessary, the custom name can be used with **make -f customMakeFile** or **make --file customMakeFile**. In what follows next, the content of _makefile_ is stored fir simplicity in the file named 'makefile'. 
+By default, when **make** looks for the _makefile_, the **GNU** version of **make** tries the following names, with the following precedence: 'GNUmakefile', 'makefile' or 'Makefile'. In practice, you should call your _makefile_ either 'makefile' or 'Makefile', but if necessary, a custom name can be used with **make -f customMakeFile** or **make --file customMakeFile**. In what follows next, the content of _makefile_ is stored for simplicity in the file named 'makefile'. 
 
 As it is customary, we can start with the 'Hello World' example for **make**, by having the following content in the _makefile_:
 
@@ -130,7 +130,7 @@ $ cat makefile
 hello : 
 	echo "Hello World"
 	date
-	
+
 $ make hello
 echo "Hello World"
 Hello World
@@ -259,7 +259,7 @@ ls -alt test1
 -rwxr-xr-x 1 abilandz abilandz 15960 Oct 11 15:51 test1
 ```
 
-As we can see from the above printout, **make** is printing both the commands and the output of those commands. We can silent the printout of commands by using the flag ```--silent```:
+As we can see from the above printout, **make** is printing both the commands and the output of those commands. We can silent the printout of commands by using the flag ```--silent``` or its shorter version ``-s``:
 
 ```bash
 $ touch test1.C
@@ -286,9 +286,9 @@ compilation of test1 succeeded
 -rwxr-xr-x 1 abilandz abilandz 15960 Oct 11 15:53 test1
 ```
 
-The line ```ls -alt test1``` is no longer shown in the printout, because we have silenced it by prepending ```@``` in front of it in the _makefile_.
+The line ```ls -alt test1``` is no longer shown in the printout, only its output, because we have silenced it by prepending ```@``` in front of it in the _makefile_.
 
-To compile both 'test1.C' and 'test2.C' we proceed as follows:
+To compile both 'test1.C' and 'test2.C', we proceed as follows:
 
 ```bash
 $ touch test1.C test2.C
@@ -313,7 +313,7 @@ ls -alt test1
 -rwxr-xr-x 1 abilandz abilandz 15960 Oct 11 15:55 test1
 ```
 
-As we can see, only the object file 'test1' was recompiled, because only the _mtime_ flag of the source code 'test1.C' has changed, and **make** has figured that out automatically!
+As we can see, only the object file 'test1' was recompiled, because only the _mtime_ flag of the source code 'test1.C' has changed, and **make** has automatically determined this — this is the main benefit of using **make**.
 
 Now we change the _mtime_ flag only of test2.C:
 
@@ -326,7 +326,7 @@ ls -alt test2
 -rwxr-xr-x 1 abilandz abilandz 15960 Oct 11 15:56 test2
 ```
 
-In this case, only the object file 'test2' was recompiled, because only the _mtime_ flag of source code 'test2.C' has changed.
+In this case, only the object file 'test2' was recompiled, because only the _mtime_ flag of the source code 'test2.C' has changed.
 
 We have implemented two additional actions in the makefile: **run** and **clean**. For the action **run**, we have in the _makefile_ the following definition:
 
@@ -346,7 +346,7 @@ $ make run
  Hi there, from test2! Compilation time was: on Oct 11 2025 at 15:56:38
 ```
 
-And finally, to clean up the intermediate object file,s we have implemented the action **clean** in the _makefile_ via the following definition:
+And finally, to clean up the compiled object files, we have implemented the action **clean** in the _makefile_ via the following definition:
 
 ```makef
 clean :
@@ -373,7 +373,7 @@ Finally, one can list all implemented actions in the _makefile_ by executing **m
 
 ```bash
 $ make + TAB +TAB
-all    clean  run    test1  test2
+all    clean    run    test1    test2
 ```
 
 
