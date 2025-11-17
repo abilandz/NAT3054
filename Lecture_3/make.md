@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20251117-1
+**Last update**: 20251117-2
 
 
 ### Table of Contents
@@ -741,6 +741,114 @@ $ sudo make install
 ```
 
 TBI 20251117 repeat this exercise on 'blast', including  2 'sudo' steps, or concurently install in a customg dir, then add that custom dir with higher priority to ```PATH``` in the standard way
+
+
+
+#### CMakeList.txt
+
+As it is customarily, we start with "Hello World!" example also for **cmake**. For that sake, the following C/C++ code snippet is used in the file "hello.cpp"
+
+```c++
+#include <stdio.h>
+int main() {
+  printf("\n Hello World! \n\n");
+  return 0;
+}
+```
+
+The directory structure of the project is organized as follows:
+
+```bash
+$ mkdir someProject
+$ mkdir someProject/src # directory for source code 
+```
+
+In the subdirectory "someProject/src" we place the above source code in the file "hello.cpp", while in the top directory "someProject" we place the **cmake** configuration file _CMakeList.txt_ with the following content:
+
+```cmake
+# Set the oldest 'cmake' version with which the project can be built:
+cmake_minimum_required(VERSION 3.22)
+
+# Project name:
+project(HelloWorld)
+
+# Create a target:
+add_executable(hello)
+
+target_sources(hello
+ PRIVATE
+  src/hello.cxx
+)
+```
+
+The command **cmake_minimum_required()** will check what is the version of currently installed **cmake**, and it that version is older that the one specified in the config file, the following error message will be printed:
+
+```cmake
+CMake Error at CMakeLists.txt:3 (cmake_minimum_required):
+  CMake 3.23 or higher is required.  You are running version 3.22.1
+```
+
+This can happen in fact frequently when running remotely on large-scale computing facilities, on which software it not updated too frequently. In that case, one need to install the custom **cmake** version from source in the personal home directory, as it was explained in the previous section.
+
+The **project()** command is also mandatory, and it tells **cmake** that what follows is the definition of software project, and will instruct **cmake** to perform various checks for the settings in the current environment (most importantly, whether the needed compilers are available).
+
+The command **add_executable()** defines the final executable of the project, obtained by compiling the specified source files.
+
+Finally, the command **target_sources()** specify all source files to be used when building an executable, specified with **add_executable()** command.
+
+Given the above content of the configuration file _CMakeList.txt_, we can proceed configuring **cmake** by executing:
+
+```bash
+$ cd someProject
+$ cmake -B build
+-- The C compiler identification is GNU 11.4.0
+-- The CXX compiler identification is GNU 11.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/abilandz/CMAKE/hello/buildDir
+```
+
+The flag ```-B``` instructs **cmake** to make a new subdirectory named "build" in the current project as the directory to generate and store files during the build process. In general, this is an important step to keep the source tree in the subdirectory "src" clean.
+
+If we now inspect the content of "buildDir", we find the following:
+
+```bash
+$ ls buildDir
+CMakeCache.txt  CMakeFiles  cmake_install.cmake  Makefile
+```
+
+As we can see, **cmake** generated automatically a lot of files related to the build process, most importantly the _Makefile_ was generated automatically.
+
+Finally, we can build the project:
+
+```bash
+$ cd someProject
+$ cmake --build build
+[ 50%] Building CXX object CMakeFiles/hello.dir/src/hello.cxx.o
+[100%] Linking CXX executable hello
+[100%] Built target hello
+```
+
+Executable **hello** was built successfully, and is ready to be run:
+
+```bash
+$ ./build/hello 
+
+ Hello World! 
+
+```
+
+
 
 
 
