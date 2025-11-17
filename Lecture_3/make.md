@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20251115-2
+**Last update**: 20251117-1
 
 
 ### Table of Contents
@@ -10,7 +10,8 @@
 1. [Introduction](#introduction)
 2. [Makefile](#makefile)
 3. [Shared libraries](#shared.libraries)
-4. [References](#references)
+4. [The final step: **cmake**](#the.final.step.cmake)
+5. [References](#references)
 
 
 
@@ -668,8 +669,137 @@ Vice versa, if there were changes only in the 'test.cxx', the executable **test*
 
 
 
-### 4. References <a name="references"></a>
+
+
+
+### 4. The final step: **cmake** <a name="the.final.step.cmake"></a>
+
+CMake ('cross-platform make') is an advanced software development tool which is used primarily to automate the creation of configuration files for standard native build tools, e.g. _makefile_'s for **make**. It was released first time in 2000 by **Kitware, Inc.**, a technology company headquartered in Clifton Park, New York, and initially focusing mostly on 3D biomedical imaging of human body. 
+
+By default, **cmake** is not installed on most of Linux distributions. To install the currently supported version for a given Linux distribution, one can proceed by using the standard packaging tools, e.g. **apt-get** on Ubuntu:
+
+```bash
+# Install cmake as a root:
+$ sudo apt-get install cmake
+
+# Check your custom cmake version:
+cmake version 3.22.1
+
+CMake suite maintained and supported by Kitware (kitware.com/cmake).
+```
+
+In a rare case when the custom **cmake** version needs to be compiled (e.g. when the newer version is required than the one currently available), one proceeds as follows:
+
+```bash
+# In case you have admin privilages, uninstall the default outdated version 
+# provided by Linux package manager and its configuration. 
+# Othwerwise, skip this step:
+$ sudo apt-get remove --purge --auto-remove cmake
+
+# Download the custom version, e.g. 3.23.1:
+$ mkdir ~/temp && cd ~/temp 
+$ wget https://cmake.org/files/v3.23/cmake-3.23.1.tar.gz
+
+# Decompress the downloaded tarball:
+$ tar -xzvf cmake-3.23.1.tar.gz
+$ cd cmake-3.23.1
+
+# Configure:
+$ ./bootstrap
+---------------------------------------------
+CMake 3.23.1, Copyright 2000-2022 Kitware, Inc. and Contributors
+Found GNU toolchain
+C compiler on this system is: gcc 
+... many more lines ...
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/abilandz/temp/cmake-3.23.1
+---------------------------------------------
+CMake has bootstrapped.  Now run gmake.
+abilandz@napalm:~/temp/cmake-3.23.1$ 
+
+# Compile cmake using e.g. 4 CPUs:
+$ gmake -j 4 
+[  0%] Building C object Source/kwsys/CMakeFiles/cmsys_c.dir/ProcessUNIX.c.o
+[  0%] Building C object Source/kwsys/CMakeFiles/cmsys.dir/ProcessUNIX.c.o
+[  1%] Building CXX object Utilities/std/CMakeFiles/cmstd.dir/cm/bits/fs_path.cxx.o
+[  2%] Building C object Utilities/KWIML/test/CMakeFiles/kwiml_test.dir/test.c.o
+... many more lines ...
+[100%] Building CXX object Tests/CMakeLib/CMakeFiles/CMakeLibTests.dir/testCMExtAlgorithm.cxx.o
+[100%] Linking CXX executable CMakeLibTests
+[100%] Built target CMakeLibTests
+
+# Check your custom cmake version:
+$ ./bin/cmake --version
+cmake version 3.23.1
+
+CMake suite maintained and supported by Kitware (kitware.com/cmake).
+
+# Finally, execute only in case you have admin privilages.
+# Othwerwise, skip this step:
+$ sudo make install
+```
+
+TBI 20251117 repeat this exercise on 'blast', including  2 'sudo' steps, or concurently install in a customg dir, then add that custom dir with higher priority to ```PATH``` in the standard way
+
+
+
+#### Example: Compiling ROOT from source with cmake
+
+In this example it is demonstrated how the ROOT v6.32.06 can be built from source using **cmake**.  
+
+```bash
+# Make a directory where ROOT source code will be downloaded:
+$ RootDir=$HOME/ROOT_v6-32-06
+$ mkdir $RootDir && cd $RootDir
+
+# Checkout the desired ROOT version:
+$ git clone https://github.com/root-project/root.git
+Cloning into 'root'...
+remote: Enumerating objects: 1060392, done.
+remote: Counting objects: 100% (1315/1315), done.
+remote: Compressing objects: 100% (702/702), done.
+remote: Total 1060392 (delta 886), reused 616 (delta 613), pack-reused 1059077 (from 3)
+Receiving objects: 100% (1060392/1060392), 1.41 GiB | 39.94 MiB/s, done.
+Resolving deltas: 100% (772069/772069), done.
+Updating files: 100% (31068/31068), done.
+
+$ cd root
+$ git checkout v6-32-06
+Updating files: 100% (22591/22591), done.
+Note: switching to 'v6-32-06'.
+... more information ...
+
+# Make a build directory:
+$ cd .. && mkdir build && cd build
+
+# Configure with cmake before starting compilation:
+$ cmake ../root
+-- The C compiler identification is GNU 11.4.0
+-- The CXX compiler identification is GNU 11.4.0
+-- Detecting C compiler ABI info
+... more information ...
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/abilandz/ROOT_v6-32-06/build
+
+# Finally, start building using e.g. 4 CPUs:
+$ cmake --build . -- -j 4
+[  0%] Creating directories for 'AFTERIMAGE'
+[  0%] Creating directories for 'VDT'
+[  0%] Creating directories for 'OPENUI5'
+... many more lines ...
+```
+
+
+
+
+
+
+### 5. References <a name="references"></a>
 * _"UNIX A History and a Memoir"_, Brian Kernighan
   * Section TBI 20250909:
 * "GNU make" Manual is available at this [link](https://www.gnu.org/software/make/)
+* ["CMake Tutorial"](https://cmake.org/cmake/help/latest/guide/tutorial/index.html)
+* "Mastering CMake Textbook" &mdash; an open source version is available at this [link](https://cmake.org/cmake/help/book/mastering-cmake/)
 * Online resources on shared libraries can be found at this [link](https://www.cprogramming.com/tutorial/shared-libraries-linux-gcc.html )
