@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20251117-2
+**Last update**: 20251118-1
 
 
 ### Table of Contents
@@ -688,16 +688,16 @@ cmake version 3.22.1
 CMake suite maintained and supported by Kitware (kitware.com/cmake).
 ```
 
-In a rare case when the custom **cmake** version needs to be compiled (e.g. when the newer version is required than the one currently available), one proceeds as follows:
+In a case when the custom **cmake** version needs to be compiled (e.g. when the newer version is required than the one currently shipped by default with a given Linux distribution), one proceeds as follows:
 
 ```bash
-# In case you have admin privilages, uninstall the default outdated version 
-# provided by Linux package manager and its configuration. 
+# In case you have admin privilages, uninstall the default outdated 
+# version which was shipped by the Linux package manager. 
 # Othwerwise, skip this step:
 $ sudo apt-get remove --purge --auto-remove cmake
 
-# Download the custom version, e.g. 3.23.1:
-$ mkdir ~/temp && cd ~/temp 
+# Download the custom version, e.g. 3.23.1 in some directory:
+$ mkdir $HOME/cmake && cd $HOME/cmake
 $ wget https://cmake.org/files/v3.23/cmake-3.23.1.tar.gz
 
 # Decompress the downloaded tarball:
@@ -710,21 +710,24 @@ $ ./bootstrap
 CMake 3.23.1, Copyright 2000-2022 Kitware, Inc. and Contributors
 Found GNU toolchain
 C compiler on this system is: gcc 
+
 ... many more lines ...
+
 -- Configuring done
 -- Generating done
--- Build files have been written to: /home/abilandz/temp/cmake-3.23.1
+-- Build files have been written to: /home/abilandz/cmake/cmake-3.23.1
 ---------------------------------------------
-CMake has bootstrapped.  Now run gmake.
-abilandz@napalm:~/temp/cmake-3.23.1$ 
+CMake has bootstrapped.  Now run make.
 
 # Compile cmake using e.g. 4 CPUs:
-$ gmake -j 4 
+$ make -j 4
 [  0%] Building C object Source/kwsys/CMakeFiles/cmsys_c.dir/ProcessUNIX.c.o
 [  0%] Building C object Source/kwsys/CMakeFiles/cmsys.dir/ProcessUNIX.c.o
 [  1%] Building CXX object Utilities/std/CMakeFiles/cmstd.dir/cm/bits/fs_path.cxx.o
 [  2%] Building C object Utilities/KWIML/test/CMakeFiles/kwiml_test.dir/test.c.o
+
 ... many more lines ...
+
 [100%] Building CXX object Tests/CMakeLib/CMakeFiles/CMakeLibTests.dir/testCMExtAlgorithm.cxx.o
 [100%] Linking CXX executable CMakeLibTests
 [100%] Built target CMakeLibTests
@@ -735,18 +738,34 @@ cmake version 3.23.1
 
 CMake suite maintained and supported by Kitware (kitware.com/cmake).
 
-# Finally, execute only in case you have admin privilages.
-# Othwerwise, skip this step:
+# a) In case you have admin privilages, execute the command below,
+# othwerwise, skip this step:
 $ sudo make install
+
+# b) If you do not have admin privilages, simply add new 
+# install directory to PATH with higher precedence:
+$ export PATH=$HOME/cmake/cmake-3.23.1/bin:$PATH
+$ which cmake
+/home/abilandz/cmake/cmake-3.23.1/bin/cmake
+
+# In case the path to old version is still hashed by Bash 
+# for quicker access, simply execute (this step is harmless in any case):
+$ hash -d cmake
+
+# Check which version of cmake is now the default one:
+$ cmake --version
+cmake version 3.23.1
+
+CMake suite maintained and supported by Kitware (kitware.com/cmake).
 ```
 
-TBI 20251117 repeat this exercise on 'blast', including  2 'sudo' steps, or concurently install in a customg dir, then add that custom dir with higher priority to ```PATH``` in the standard way
+
 
 
 
 #### CMakeList.txt
 
-As it is customarily, we start with "Hello World!" example also for **cmake**. For that sake, the following C/C++ code snippet is used in the file "hello.cpp"
+As it is customarily, we start with the "Hello World!" example also for **cmake**. For that sake, the following C/C++ code snippet is used in the file "hello.cpp"
 
 ```c++
 #include <stdio.h>
@@ -760,10 +779,10 @@ The directory structure of the project is organized as follows:
 
 ```bash
 $ mkdir someProject
-$ mkdir someProject/src # directory for source code 
+$ mkdir someProject/src # subdirectory for source code 
 ```
 
-In the subdirectory "someProject/src" we place the above source code in the file "hello.cpp", while in the top directory "someProject" we place the **cmake** configuration file _CMakeList.txt_ with the following content:
+In the subdirectory "someProject/src" we place the above source code in the file "hello.cpp", while in the top directory "someProject" we place the **cmake** configuration file _CMakeList.txt_ (or "CML" file for short) with the following content:
 
 ```cmake
 # Set the oldest 'cmake' version with which the project can be built:
@@ -776,12 +795,12 @@ project(HelloWorld)
 add_executable(hello)
 
 target_sources(hello
- PRIVATE
-  src/hello.cxx
+  PRIVATE
+    src/hello.cxx
 )
 ```
 
-The command **cmake_minimum_required()** will check what is the version of currently installed **cmake**, and it that version is older that the one specified in the config file, the following error message will be printed:
+The command **cmake_minimum_required()** will check what is the version of currently installed **cmake**, and it that version is older that the one specified in the config file as a bare minimum to build the project, the following error message will be printed:
 
 ```cmake
 CMake Error at CMakeLists.txt:3 (cmake_minimum_required):
@@ -792,9 +811,9 @@ This can happen in fact frequently when running remotely on large-scale computin
 
 The **project()** command is also mandatory, and it tells **cmake** that what follows is the definition of software project, and will instruct **cmake** to perform various checks for the settings in the current environment (most importantly, whether the needed compilers are available).
 
-The command **add_executable()** defines the final executable of the project, obtained by compiling the specified source files.
+The command **add_executable()** defines the _target_ to be built, for instance the final executable of the project, obtained by compiling the specified source files.
 
-Finally, the command **target_sources()** specify all source files to be used when building an executable, specified with **add_executable()** command.
+Finally, the command **target_sources()** specify all source files to be used when building an executable, which has to be already defined with the **add_executable()** command. The _scope keyword_ **PRIVATE** in the body of the command **target_sources()** indicates that specified source files belong only to the executable "hello" in this example.
 
 Given the above content of the configuration file _CMakeList.txt_, we can proceed configuring **cmake** by executing:
 
@@ -815,21 +834,21 @@ $ cmake -B build
 -- Detecting CXX compile features - done
 -- Configuring done
 -- Generating done
--- Build files have been written to: /home/abilandz/CMAKE/hello/buildDir
+-- Build files have been written to: /home/abilandz/someProject/build
 ```
 
 The flag ```-B``` instructs **cmake** to make a new subdirectory named "build" in the current project as the directory to generate and store files during the build process. In general, this is an important step to keep the source tree in the subdirectory "src" clean.
 
-If we now inspect the content of "buildDir", we find the following:
+If we now inspect the content of "build", we find the following:
 
 ```bash
-$ ls buildDir
+$ ls build
 CMakeCache.txt  CMakeFiles  cmake_install.cmake  Makefile
 ```
 
-As we can see, **cmake** generated automatically a lot of files related to the build process, most importantly the _Makefile_ was generated automatically.
+As we can see, **cmake** generated automatically a lot of files related to the build process &mdash; most importantly, the _Makefile_ was generated automatically.
 
-Finally, we can build the project:
+Finally, we can build the project, and we have to use the same "build" subdirectory as in the previous configuration step:
 
 ```bash
 $ cd someProject
