@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20251119-1
+**Last update**: 20251119-2
 
 
 ### Table of Contents
@@ -674,7 +674,7 @@ Vice versa, if there were changes only in the 'test.cxx', the executable **test*
 
 ### 4. The final step: **cmake** <a name="the.final.step.cmake"></a>
 
-CMake ('cross-platform make') is an advanced software development tool which is used primarily to automate the creation of configuration files for standard native build tools, e.g. of _makefile_'s for **make**. It was released first time in 2000 by **Kitware, Inc.**, a technology company headquartered in Clifton Park, New York, and initially focusing mostly on 3D biomedical imaging of human body. 
+CMake ('cross-platform make') is an advanced software development tool which is used primarily to automate the creation of configuration files for standard native build tools, e.g. _makefiles_ for **make**. It was released for the first time in 2000 by Kitware, Inc., a technology company headquartered in Clifton Park, New York, and initially focusing mostly on 3D biomedical imaging of the human body. 
 
 
 
@@ -693,10 +693,10 @@ cmake version 3.22.1
 CMake suite maintained and supported by Kitware (kitware.com/cmake).
 ```
 
-In a case when the custom **cmake** version needs to be compiled (e.g. when the newer version is required than the one currently shipped by default with a given Linux distribution), one proceeds as follows:
+In a case when the custom **cmake** version needs to be compiled (e.g. when a newer version is required than the one currently shipped by default on a given Linux distribution), one proceeds as follows:
 
 ```bash
-# In case you have admin privilages, uninstall the default outdated 
+# In case you have admin privileges, uninstall the default outdated 
 # version which was shipped by the Linux package manager. 
 # Othwerwise, skip this step:
 $ sudo apt-get remove --purge --auto-remove cmake
@@ -768,7 +768,7 @@ CMake suite maintained and supported by Kitware (kitware.com/cmake).
 
 #### Building a standalone executable
 
-As it is customarily, we start with the "Hello World!" example also for **cmake**. For that sake, the following C/C++ code snippet is used in the file "hello.cpp":
+As is customary, we start with the "Hello World!" example also for **cmake**. For that sake, the following C/C++ code snippet is used in the file "hello.cpp":
 
 ```c++
 #include <stdio.h>
@@ -785,7 +785,7 @@ $ mkdir someProject
 $ mkdir someProject/src # subdirectory for source code 
 ```
 
-In the subdirectory "someProject/src" we place the above source code in the file "hello.cpp", while in the top directory "someProject" we place the **cmake** configuration file _CMakeList.txt_ (or "CML" file for short) with the following content:
+In the subdirectory "someProject/src", we place the above source code in the file "hello.cpp", while in the top directory "someProject", we place the **cmake** configuration file _CMakeList.txt_ (or "CML" file for short) with the following content:
 
 ```cmake
 # Set the oldest 'cmake' version with which the project can be built:
@@ -803,22 +803,22 @@ target_sources(hello
 )
 ```
 
-The command **cmake_minimum_required()** is mandatory, and it will check what is the version of currently installed **cmake**. If that version is older than the one specified in the configuration file as a bare minimum to build the project, the following error message will be printed:
+The command **cmake_minimum_required()** is mandatory, and it will check the version of the currently installed **cmake**. If that version is older than the one specified in the configuration file as a bare minimum to build the project, the following error message will be printed:
 
 ```cmake
 CMake Error at CMakeLists.txt:3 (cmake_minimum_required):
   CMake 3.23 or higher is required.  You are running version 3.22.1
 ```
 
-This can happen in fact frequently when running remotely on large-scale computing facilities, on which software it not updated too frequently. In that case, one needs to install the custom **cmake** version from source in the personal home directory, as it was explained in the previous section.
+This can happen, in fact, frequently when running remotely on large-scale computing facilities, on which software is not updated too frequently. In that case, one needs to install the custom **cmake** version from source in the personal home directory, as explained in the previous section.
 
-The **project()** command is also mandatory, and it tells **cmake** that what follows is the definition of software project. In addition, it will steer **cmake** to perform various checks for the settings in the current environment (most importantly, whether the needed compilers are available, etc.).
+The **project()** command is also mandatory, and it tells **cmake** that what follows is the definition of a software project. In addition, it will steer **cmake** to perform various checks for the settings in the current environment (most importantly, whether the needed compilers are available, etc.).
 
-The command **add_executable()** defines the _target_ to be built, for instance the final executable of the project, obtained by compiling the specified source files.
+The command **add_executable()** defines the _target_ to be built, for instance, the final executable of the project, which is obtained by compiling the specified source files.
 
-Finally, the command **target_sources()** specifies all source files to be used when building an executable, which was already defined in the configuration file with the **add_executable()** command. The _scope keyword_ **PRIVATE** in the body of the command **target_sources()** indicates that specified source files belong only to the executable "hello" in this example.
+Finally, the command **target_sources()** specifies all source files to be used when building an executable, which was already defined in the configuration file with the **add_executable()** command. The _scope keyword_ **PRIVATE** in the body of the command **target_sources()** indicates that the specified source files belong only to the executable "hello" in this example.
 
-Given the above content of the configuration file _CMakeList.txt_, we can proceed configuring **cmake** by executing:
+Given the above content of the configuration file _CMakeList.txt_, we can proceed with configuring **cmake** by executing:
 
 ```bash
 $ cd someProject
@@ -851,7 +851,7 @@ CMakeCache.txt  CMakeFiles  cmake_install.cmake  Makefile
 
 As we can see, **cmake** generated automatically a lot of files related to the build process &mdash; most importantly, the _Makefile_ was generated automatically.
 
-Finally, we can build the project, and we have to use the same "build" subdirectory as the command argument as in the previous configuration step:
+Finally, we can build the project, and we have to use the same "build" subdirectory as the command argument, as in the previous configuration step:
 
 ```bash
 $ cd someProject
