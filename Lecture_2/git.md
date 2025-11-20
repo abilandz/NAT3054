@@ -2,7 +2,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20251120-1
+**Last update**: 20251120-2
 
 
 ### Table of Contents
@@ -2019,7 +2019,9 @@ $ git config -e
 
 
 
-**git diff** _branch_1_ _branch_2_ &mdash; Show differences between two branches. For each file which differs in _branch_1_ and _branch_2_, the detailed line by line summary of its differences in two branches is shown. Only commited changes are taken into account (i.e. modified files in the working tree which are only staged are ignored). 
+**git diff** _branch_1_ _branch_2_ &mdash; Show differences between two branches. For each file which differs in _branch_1_ and _branch_2_, the detailed line by line summary of its differences in two branches is shown. Only commited changes are taken into account (i.e. modified files in the working tree which are only staged are ignored).
+
+**git diff** _branch_1_ _branch_2_ -- _someFile_ &mdash; Show differences for a particular file named _someFile_, between its versions on branches named _branch_1_ and _branch_2_.  
 
 **git diff** _commit_1_ _commit_2_ &mdash; Show differences between two commits. For each file which differs in _commit_1_ and _commit_2_, the detailed line by line summary of its differences in two commits is shown. TBI 20241014 sync with the previous one
 
