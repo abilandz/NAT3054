@@ -2,7 +2,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20251113-3
+**Last update**: 20251120-1
 
 
 ### Table of Contents
@@ -1903,6 +1903,8 @@ TBI 20241010 explain meaning of "[ahead 1]" or point to the previous example
 
 **C**
 
+
+
 **git checkout** _someBranch_ &mdash; In order to start working on the branch, we need to checkout that branch first. After checkout, HEAD points to the last commit in _someBranch_, and the files in the working tree are set to the state of that last commit. Two important remarks:
 
  *  Use with care, because **git checkout** deletes the unstaged and uncommitted changes of tracked files in the working tree, and it is not possible to restore deletion of those changes via **git**; TBI 20241011 I cannot reproduce this one, in the test I am doing locally, modifed files are carried over in the checked out branch
@@ -2009,9 +2011,10 @@ $ git config -e
 
 
 
-
-
 **D**
+
+
+
 **git diff** _branch_1_ _branch_2_ &mdash; Show differences between two branches. For each file which differs in _branch_1_ and _branch_2_, the detailed line by line summary of its differences in two branches is shown. Only commited changes are taken into account (i.e. modified files in the working tree which are only staged are ignored). 
 
 **git diff** _commit_1_ _commit_2_ &mdash; Show differences between two commits. For each file which differs in _commit_1_ and _commit_2_, the detailed line by line summary of its differences in two commits is shown. TBI 20241014 sync with the previous one
@@ -2040,6 +2043,8 @@ $ git config -e
 
 **F**
 
+
+
 **git fetch** &mdash; Update remote-tracking branches in a local repository, but without affecting the content of local branches. In other words, this command updates the local copy of branches stored in a remote repository, but without changing the files in the local working tree. After running this command, you typically get the following message after executing **git status**: 
 
 ```bash
@@ -2059,6 +2064,8 @@ TBI 20250529 add diagram for both cases
 
 
 **G**
+
+
 
 **git grep** &mdash; Print lines matching a pattern. The main differences compared to the standard **grep** are:
 
