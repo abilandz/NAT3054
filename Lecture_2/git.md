@@ -1791,6 +1791,8 @@ With a series of examples, sorted in alphabetical order, we now illustrate how t
 
 **A**
 
+
+
 **git add** _someFile_ &mdash; Add a file named _someFile_ from the current working tree to the staging area.
 
 **git add .** &mdash; Add all modified or new (untracked) files from the current working tree to the staging area.
@@ -1798,6 +1800,8 @@ With a series of examples, sorted in alphabetical order, we now illustrate how t
 
 
 **B**
+
+
 
 **git bisect** &mdash; TBI 20241006 Check the book + see https://thoughtbot.com/blog/git-bisect
 
@@ -2023,7 +2027,7 @@ $ git config -e
 
 **git diff** <branch> origin/<some-other-branch> &mdash; this also works # AB test further
 
-**git diff  HEAD~1 HEAD** &mdash; Show differences introduced in the last commit.
+**git diff HEAD~1 HEAD** &mdash; Show differences introduced in the last commit.
 
 **git diff HEAD~5..HEAD** &mdash;  Show differences TBI 20250305 validate + generalize this example
 
@@ -2034,8 +2038,6 @@ $ git config -e
 **git diff origin/master** -- _file_1_ _file_2_ ... &mdash; If you are on a "master" branch, show differences for the specified files in the working tree, and their corresponding  versions in the remote-tracking branch "master". TBI 20241014 finalize + provide example + check if I can compare files from one branch locally and another branch + see this SO thread https://stackoverflow.com/questions/21101572/difference-between-file-in-local-repository-and-origin 
 
 **git diff --cached** &mdash; Use to see the differences which are already staged, i.e. basically changes that are ready to be committed. However, this command cannot be used to see the changes in the working tree that are ready to be staged.
-
-**git diff --name-only --cached** &mdash; Tou get the changes between the index (a.k.a. stage area) and your last commit and Show only names of changed files. TBI 20241004 What is this
 
 **git diff-tree --name-only -r _commitID_** &mdash; Show only names of all files which changed in commit identifier _commitID_
 
@@ -2092,6 +2094,8 @@ Most of the options supported by standard **grep** work in the same way for **gi
 
 **H**
 
+
+
 **git help**  &mdash; To obtain a help for specific command, use either:
 
 * git help _someCommand_ 
@@ -2099,6 +2103,12 @@ Most of the options supported by standard **grep** work in the same way for **gi
 * man git-_someCommand_
 
 For instance, for Git's command **init**, either **git help init** or **man git-init** will provide the identical information for its usage.
+
+
+
+**I**
+
+
 
 
 **git init** &mdash; Add current working directory under revision control.
@@ -2151,6 +2161,8 @@ nothing to commit (create/copy files and use "git add" to track)
 
 **L**
 
+
+
 **git log** &mdash; Shows the history of repository, but only what concerns its current branch, i.e. list of commits. TBI 20241004 check and validate
 
 **git log --abbrev-commit** &mdash; Same as previous, just use shorthand commit values (the first 7 characters).
@@ -2181,8 +2193,9 @@ nothing to commit (create/copy files and use "git add" to track)
 
 
 
-
 **M**
+
+
 
 **git merge** &mdash; How to combine changes done on two different branches? TBI 20241004
 
@@ -2196,7 +2209,10 @@ nothing to commit (create/copy files and use "git add" to track)
 **git mv TBI** &mdash; TBI 20241005 finalize this one 
 
 
-**P** TBI 20241004 basically, all in "P" I need to review and finalize
+
+**P**
+
+
 
 **git pull** &mdash; Propagate new commits available in the remote repository into the local repository. Basically, the combination of **git fetch** + **git rebase** OR **git fetch** + **git merge** (depending on your local configuration). Typically, if merge commits are avoided for pulling, pulling corresponds to fetch + rebase.
 
@@ -2232,17 +2248,18 @@ nothing to commit (create/copy files and use "git add" to track)
 
 
 
-**R** TBI 20241004 basically, all in "P" I need to review and finalize
+**R**
+
+
 
 **git rebase** &mdash; Rebase local branch based on the latest fetch
+
 ```bash
      Example:
      1/ git checkout master # switch to particular branch
      2/ git fetch # update remote-tracking branches
      3/ git rebase origin/master # if you are fine with the changes, rebase
 ```
-
-
 
 **git reflog** &mdash; Lists the history of all commits, using either HEAD (default) or the branch name as the reference. It lists also the commits which were removed. When you reset the branch pointer to some older commit ID, **git log** does not show the new commits, but **git reflog** does. It's usage is illustrated with the following two examples:
 
@@ -2267,8 +2284,6 @@ c3eeded someBranchName@{2}: commit: minor update
 ```
 
 Using HEAD as a reference will lists all commits across different branches, while using branch name as a reference will lists only the commits made on that branch.
-
-
 
 **git remote** &mdash; just prints the chosen name of remote repo
 
@@ -2343,9 +2358,9 @@ git revert someCommitID
 
 
 
-
-
 **S**
+
+
 
 **git shortlog** &mdash; summarizes the 'git log' output. It groups all commits by the author (alphabetically by default), and it includes the first line of the commit message. This command gives a nice summary of who the most productive developers were in the repository.
 
