@@ -949,6 +949,8 @@ add_subdirectory(test)
 add_subdirectory(mySharedLibrary)
 ```
 
+If some "CMakeLists.txt" files are located in subdirectories of the project, the **add_subdirectory()** command will incorporate them when **cmake** is executed for the main "CMakeLists.txt" file. The relative paths used in "CMakeLists.txt" in the subdirectory are relative to that subdirectory.
+
 The content of "test/CMakeLists.txt" is:
 
 ```cmake
