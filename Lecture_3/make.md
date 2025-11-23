@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20251119-2
+**Last update**: 20251123-1
 
 
 ### Table of Contents
@@ -486,7 +486,7 @@ In this exercise, we will make a library for functions implemented in ```functio
 
 **Step 2: Compilation**
 
-For compilation of the source code, we use the **gcc** compiler, and we have to compile using the flag ```-fpic``` to create position independent code (this flag is mandatory for shared libraries, because the generated machine code will not be dependent on a specific address in memory, which is important when several shared libraries are loaded simultaneously in the memory):
+For compilation of the source code, we use the **gcc** compiler, and we have to compile using the flag ```-fpic``` to create position-independent code (this flag is mandatory for shared libraries, because the generated machine code will not be dependent on a specific address in memory, which is important when several shared libraries are loaded simultaneously in the memory):
 
 ```bash
 # Check the content of current working directory:
@@ -674,13 +674,13 @@ Vice versa, if there were changes only in the 'test.cxx', the executable **test*
 
 ### 4. The final step: **cmake** <a name="the.final.step.cmake"></a>
 
-CMake ('cross-platform make') is an advanced software development tool which is used primarily to automate the creation of configuration files for standard native build tools, e.g. _makefiles_ for **make**. It was released for the first time in 2000 by Kitware, Inc., a technology company headquartered in Clifton Park, New York, and initially focusing mostly on 3D biomedical imaging of the human body. 
+CMake ('cross-platform make') is an advanced software development tool used primarily to automate the creation of configuration files for standard native build tools, such as _makefiles_ for the **make**. It was first released in 2000 by Kitware, Inc., a technology company headquartered in Clifton Park, New York, with an initial focus on 3D biomedical imaging of the human body. 
 
 
 
 #### Installing cmake
 
-By default, **cmake** is not installed on Linux distributions. To install the currently supported version for a given Linux distribution, one can proceed by using the standard packaging tools for that distribution, e.g. **apt-get** on Ubuntu:
+By default, **cmake** is not installed on most Linux distributions. To install the currently supported version for a given Linux distribution, one can proceed by using CMakethe standard packaging tools for that distribution, e.g. **apt-get** on Ubuntu:
 
 ```bash
 # Install cmake as a root:
@@ -768,7 +768,7 @@ CMake suite maintained and supported by Kitware (kitware.com/cmake).
 
 #### Building a standalone executable
 
-As is customary, we start with the "Hello World!" example also for **cmake**. For that sake, the following C/C++ code snippet is used in the file "hello.cpp":
+As is customary, we start with the "Hello World!" example also for **cmake**. For that sake, the following C/C++ code snippet is used in the file "hello.cxx":
 
 ```c++
 #include <stdio.h>
@@ -785,7 +785,7 @@ $ mkdir someProject
 $ mkdir someProject/src # subdirectory for source code 
 ```
 
-In the subdirectory "someProject/src", we place the above source code in the file "hello.cpp", while in the top directory "someProject", we place the **cmake** configuration file _CMakeList.txt_ (or "CML" file for short) with the following content:
+In the subdirectory "someProject/src", we place the above source code in the file "hello.cpp", while in the top directory "someProject", we place the **cmake** configuration file _CMakeLists.txt_ (or "CML" file for short) with the following content:
 
 ```cmake
 # Set the oldest 'cmake' version with which the project can be built:
@@ -810,15 +810,15 @@ CMake Error at CMakeLists.txt:3 (cmake_minimum_required):
   CMake 3.23 or higher is required.  You are running version 3.22.1
 ```
 
-This can happen, in fact, frequently when running remotely on large-scale computing facilities, on which software is not updated too frequently. In that case, one needs to install the custom **cmake** version from source in the personal home directory, as explained in the previous section.
+This can happen frequently, in fact, when running remotely on large-scale computing facilities, on which software is not updated too regularly. In that case, one needs to install the custom **cmake** version from source in the personal home directory, as explained in the previous section.
 
-The **project()** command is also mandatory, and it tells **cmake** that what follows is the definition of a software project. In addition, it will steer **cmake** to perform various checks for the settings in the current environment (most importantly, whether the needed compilers are available, etc.).
+The **project()** command is also mandatory, and it tells **cmake** that what follows is the definition of a software project. In addition, it will steer **cmake** to perform various checks on the settings in the current environment (most notably, whether the necessary compilers are available, etc.).
 
 The command **add_executable()** defines the _target_ to be built, for instance, the final executable of the project, which is obtained by compiling the specified source files.
 
-Finally, the command **target_sources()** specifies all source files to be used when building an executable, which was already defined in the configuration file with the **add_executable()** command. The _scope keyword_ **PRIVATE** in the body of the command **target_sources()** indicates that the specified source files belong only to the executable "hello" in this example.
+Finally, the command **target_sources()** specifies all source files to be used when building an executable, which was already defined in the configuration file with the **add_executable()** command. The _scope keyword_ **PRIVATE** in the body of the command **target_sources()** indicates that the specified source files belong only to the executable "hello" in this example (i.e. they are not shared or inherited).
 
-Given the above content of the configuration file _CMakeList.txt_, we can proceed with configuring **cmake** by executing:
+Given the above content of the configuration file _CMakeLists.txt_, we can proceed with configuring **cmake** by executing:
 
 ```bash
 $ cd someProject
@@ -849,7 +849,7 @@ $ ls build
 CMakeCache.txt  CMakeFiles  cmake_install.cmake  Makefile
 ```
 
-As we can see, **cmake** generated automatically a lot of files related to the build process &mdash; most importantly, the _Makefile_ was generated automatically.
+As we can see, **cmake** generates automatically a lot of files related to the build process &mdash; most importantly, the _Makefile_ is generated automatically.
 
 Finally, we can build the project, and we have to use the same "build" subdirectory as the command argument, as in the previous configuration step:
 
@@ -870,19 +870,156 @@ $ ./build/hello
 
 ```
 
-
+In the next section, we cover more elaborate examples of using **cmake**, which show its full power.
 
 
 
 #### Building a shared library
 
+To build a library using **cmake**, we have to introduce a new command, namely **add_library()**.
+
+TBI 20251123 finalize this example
+
+
+
+#### Building a project
+
+Finally, we demonstrate how the full-scale project consisting of the main executable and shared libraries can be built using **cmake**. To facilitate the procedure, we reuse the same project as in the previous sections, which was built by using **make**.
+
+The project is structured as follows:
+
+```
+├── CMakeLists.txt
+│   ├── test
+│       ├── CMakeLists.txt
+│       ├── test.cxx
+│   ├── mySharedLibrary
+│       ├── CMakeLists.txt
+│       ├── functions.cxx
+│       ├── functions.h
+```
+
+The source code of the main executable is in the file "test.cxx", and it will use at run time the shared library from the folder "mySharedLibrary". 
+
+The content of "test.cxx" is as follows:
+
+```C++
+#include <stdio.h>
+#include "mySharedLibrary/functions.h"
+
+int main() {
+  puts("This is a shared library test...");
+  Hello();
+  Bye();
+  return 0;
+}
+```
+
+The content of "functions.h" is:
+
+```c++
+void Hello();
+void Bye();
+```
+
+Finally, the content of "functions.cxx" is:
+
+```c++
+#include <stdio.h>
+#include "functions.h"
+
+void Hello() {
+  printf("\n Hello, how is life? \n");
+}
+void Bye() {
+  printf("\n See you later! \n");
+}
+```
+
+In this project, we have 3 configuration files "CMakeLists.txt", with the following content:
+
+```cmake
+# Set the oldest 'cmake' version with which the project can be built:
+cmake_minimum_required(VERSION 3.22)
+
+# Project name:
+project(someProjectName)
+
+add_subdirectory(test)
+add_subdirectory(mySharedLibrary)
+```
+
+The content of "test/CMakeLists.txt" is:
+
+```cmake
+add_executable(test test.cxx)
+target_link_libraries(test PUBLIC mySharedLibrary)
+```
+
+Finally, the content of "mySharedLibrary/CMakeLists.txt" is:
+
+```cmake
+add_library(
+    mySharedLibrary SHARED
+    functions.h
+    functions.cxx
+)
+
+add_compile_definitions(LIBRARY_EXPORTS)
+target_include_directories(mySharedLibrary PUBLIC "${PROJECT_SOURCE_DIR}")
+```
+
+TBI 20251123 add explanation of all new commands in CML files
+
+Given the above structure and content of all files, the project can be readily built with:
+
+```bash
+$ cmake -B build
+-- The C compiler identification is GNU 11.4.0
+-- The CXX compiler identification is GNU 11.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/abilandz/NAT3054/cmake/project/build
+
+$ cmake --build build
+[ 25%] Building CXX object mySharedLibrary/CMakeFiles/mySharedLibrary.dir/functions.cxx.o
+[ 50%] Linking CXX shared library libmySharedLibrary.so
+[ 50%] Built target mySharedLibrary
+[ 75%] Building CXX object test/CMakeFiles/test.dir/test.cxx.o
+[100%] Linking CXX executable test
+[100%] Built target test
+```
+
+Executable is in the build directory, and can be run as follows:
+
+```bash
+$ ./build/test/test
+This is a shared library test...
+
+ Hello, how is life?
+
+ See you later!
+```
+
+TBI 20251123 add a statement that changing either executable or libraries, will only rebuild them differentially. Also, commend that more work is needed in CML, to move executables and shared libraries into common places (e.g. /bin or /lib folder/, etc.()
 
 
 
 
-#### Example: Compiling ROOT from source with cmake
 
-In this example it is demonstrated how the ROOT v6.32.06 can be built from source using **cmake**.  
+#### Compiling ROOT from source with cmake
+
+In this example, it is demonstrated how the ROOT v6.32.06 can be built from source using **cmake**.  
 
 ```bash
 # Make a directory where ROOT source code will be downloaded:
