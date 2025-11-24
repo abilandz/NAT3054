@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20251123-1
+**Last update**: 20251124-1
 
 
 ### Table of Contents
@@ -680,11 +680,11 @@ CMake ('cross-platform make') is an advanced software development tool used prim
 
 #### Installing cmake
 
-By default, **cmake** is not installed on most Linux distributions. To install the currently supported version for a given Linux distribution, one can proceed by using CMakethe standard packaging tools for that distribution, e.g. **apt-get** on Ubuntu:
+By default, **cmake** is not installed on Linux distributions. To install the currently supported version for a given Linux distribution, one can proceed by using the standard packaging tools for that distribution, e.g. **apt** on Ubuntu:
 
 ```bash
 # Install cmake as a root:
-$ sudo apt-get install cmake
+$ sudo apt install cmake
 
 # Check your cmake version:
 $ cmake --version
@@ -699,7 +699,7 @@ In a case when the custom **cmake** version needs to be compiled (e.g. when a ne
 # In case you have admin privileges, uninstall the default outdated 
 # version which was shipped by the Linux package manager. 
 # Othwerwise, skip this step:
-$ sudo apt-get remove --purge --auto-remove cmake
+$ sudo apt remove --purge --auto-remove cmake
 
 # Download the custom version, e.g. 3.23.1 in some directory:
 $ mkdir $HOME/cmake && cd $HOME/cmake
@@ -778,14 +778,23 @@ int main() {
 }
 ```
 
-The directory structure of the project is organized as follows:
+The directory structure of the project named "someProject" is organized as follows:
+
+```
+├── someProject
+│   ├── CMakeLists.txt
+│   ├── src
+│       ├── hello.cxx
+```
+
+Therefore, we proceed as follows:
 
 ```bash
 $ mkdir someProject
 $ mkdir someProject/src # subdirectory for source code 
 ```
 
-In the subdirectory "someProject/src", we place the above source code in the file "hello.cpp", while in the top directory "someProject", we place the **cmake** configuration file _CMakeLists.txt_ (or "CML" file for short) with the following content:
+In the subdirectory "someProject/src", we place the above source code saved in the file "hello.cxx", while in the top directory "someProject", we place the **cmake** configuration file _CMakeLists.txt_ (or "CML" file for short) with the following content:
 
 ```cmake
 # Set the oldest 'cmake' version with which the project can be built:
@@ -812,7 +821,7 @@ CMake Error at CMakeLists.txt:3 (cmake_minimum_required):
 
 This can happen frequently, in fact, when running remotely on large-scale computing facilities, on which software is not updated too regularly. In that case, one needs to install the custom **cmake** version from source in the personal home directory, as explained in the previous section.
 
-The **project()** command is also mandatory, and it tells **cmake** that what follows is the definition of a software project. In addition, it will steer **cmake** to perform various checks on the settings in the current environment (most notably, whether the necessary compilers are available, etc.).
+The command **project()** is also mandatory, and it tells **cmake** that what follows is the definition of a software project. In addition, it will steer **cmake** to perform various checks on the settings in the current environment (most notably, whether the necessary compilers are available, etc.).
 
 The command **add_executable()** defines the _target_ to be built, for instance, the final executable of the project, which is obtained by compiling the specified source files.
 
@@ -870,7 +879,7 @@ $ ./build/hello
 
 ```
 
-In the next section, we cover more elaborate examples of using **cmake**, which show its full power.
+In the next section, we cover more elaborate examples of using **cmake**, which will demonstrate its full power.
 
 
 
@@ -889,7 +898,8 @@ Finally, we demonstrate how the full-scale project consisting of the main execut
 The project is structured as follows:
 
 ```
-├── CMakeLists.txt
+├── someProject
+│   ├── CMakeLists.txt
 │   ├── test
 │       ├── CMakeLists.txt
 │       ├── test.cxx
@@ -899,9 +909,9 @@ The project is structured as follows:
 │       ├── functions.h
 ```
 
-The source code of the main executable is in the file "test.cxx", and it will use at run time the shared library from the folder "mySharedLibrary". 
+The source code of the main executable is in the file "test.cxx", and it will use at run time the shared library from the directory "mySharedLibrary". 
 
-The content of "test.cxx" is as follows:
+The content of "test.cxx" is slightly modified:
 
 ```C++
 #include <stdio.h>
@@ -915,14 +925,14 @@ int main() {
 }
 ```
 
-The content of "functions.h" is:
+The source code of functions to be compiled in a shared library are stored in subdirectory "mySharedLibrary". The file "functions.h" is a header file and contains only declarations:
 
 ```c++
 void Hello();
 void Bye();
 ```
 
-Finally, the content of "functions.cxx" is:
+On the other hand, the implementation of all functions is in the file "functions.cxx":
 
 ```c++
 #include <stdio.h>
