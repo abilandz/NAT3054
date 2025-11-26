@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20251124-1
+**Last update**: 20251126-1
 
 
 ### Table of Contents
@@ -20,11 +20,11 @@
 ### 1. Introduction <a name="introduction"></a>
 The command-line utility **make** is used in the development of large-scale projects consisting of multiple source files, which must be compiled and linked together to create a single executable file. One finds such a modus operandi, for instance, in major collaborations at the Large Hadron Collider, where several hundred developers concurrently develop the analysis framework for a given experiment. 
 
-One can immediately see a potential caveat — would it be necessary to recompile all source files if there were a change in only one of them? This would result in a significant loss of efficiency during code development, as recompiling a large-scale project from scratch typically takes several hours, even on the most powerful computers. An obvious solution (that existed already in the 1970s) would be to use a **linker**: recompile only changed files, and link with previously compiled files. However, in practice, this approach is error-prone because if several source files are modified, it is frequently forgotten to recompile at least one of them, which leads to either compilation errors or pointless debugging sessions (a bug is fixed, but the code is not recompiled). In the past, solving this problem was accomplished through carefully written shell scripts, which were always specific to the project in question. Since this problem was recurring in all large-scale projects, there was a need for a general solution. This is precisely how the command-line utility **make** originated. 
+One can immediately see a potential caveat — would it be necessary to recompile all source files if there were a change in only one of them? This would result in a significant loss of efficiency during code development, as recompiling a large-scale project from scratch typically takes several hours, even on the most powerful computers. An obvious solution (that existed already in the 1970s) would be to use a **linker**: recompile only the changed files, and link with the previously compiled files. However, in practice, this approach is error-prone because if several source files are modified, it is frequently forgotten to recompile at least one of them, which leads to either compilation errors or pointless debugging sessions (a bug is fixed, but the code is not recompiled). In the past, solving this problem was accomplished through carefully written shell scripts, which were always specific to the project in question. Since this problem was recurring in all large-scale projects, there was a need for a general solution. This is precisely how the command-line utility **make** originated. 
 
 **Historical note**
 
-The first version of **make** was developed by Stuart Feldman in April 1976, in the C programming language, after he and one of his colleagues at Bell Labs (New Jersey, US) spent several hours in the same week debugging the correct source code, by simply forgetting to recompile it after the bug was fixed. Motivated by endless frustration, Stuart Feldman immediately implemented the first version of **make** over the weekend, with infamous "tab-in-column-1" syntax (more on this below!). The very next weekend, the second version of **make** was rewritten from scratch. However, by then, 10+ collaborators at Bell Labs had already picked up the idea and started using the first version of **make** during the week &mdash; "tab-in-column-1" syntax remained in the code, ensuring backward compatibility was not broken.
+The first version of **make** was developed by Stuart Feldman in April 1976, in the C programming language, after he and one of his colleagues at Bell Labs (New Jersey, US) spent several hours in the same week debugging the correct source code, by simply forgetting to recompile it after the bug was fixed. Motivated by endless frustration, Stuart Feldman immediately implemented the first version of **make** over the weekend, featuring the infamous "tab-in-column-1" syntax (more on this below!). The very next weekend, the second version of **make** was rewritten from scratch. However, by then, 10+ collaborators at Bell Labs had already picked up the idea and started using the first version of **make** during the week &mdash; "tab-in-column-1" syntax remained in the code, ensuring backward compatibility was not broken.
 
 There are several major implementations of **make** nowadays:
 - GNU **make** &mdash; used in this lecture
@@ -44,7 +44,7 @@ Automatic detection of source files that have been modified can be accomplished 
 These three timestamps are not overkill &mdash; in fact, they enable many compelling features. For each file, its metadata can be displayed with the **stat** command:
 
  ```bash
- $ stat Lecture_2.md # just specify the abs. or rel. path to file as an argument
+ $ stat Lecture_2.md # specify the abs. or rel. path to file as an argument
    File: Lecture_2.md
    Size: 97805           Blocks: 384        IO Block: 4096   regular file
  Device: 2h/2d   Inode: 12947848928707821  Links: 1
@@ -67,13 +67,13 @@ $ stat -c %Y Lecture_2.md
 1588067093
 ```
 
-These flags are instantly updated for each file by the underlying operating system. This can cause a lot of stress on the system, however, and to improve overall performance and to prevent disk wear, most Linux distributions disable the _atime_ ('Access') flag from being regularly updated.
+These flags are instantly updated for each file by the underlying operating system. This can cause significant stress on the system, however, and to improve overall performance and to prevent disk wear, most Linux distributions disable the _atime_ ('Access') flag from being regularly updated.
 
 The key benefits of **make**:
 
 - Compilation is as efficient as possible — only modified source files are recompiled;
 - Trivial errors of forgetting to recompile the modified source file (for instance, files with important bugs fixed) are completely eliminated;
-- Solution for automation is general and it can be used for any programming language whose compiler can be run with a shell command (or more generically, for any project where some files must be updated automatically from others whenever the others change);
+- Solution for automation is general, and it can be used for any programming language whose compiler can be run with a shell command (or more generically, for any project where some files must be updated automatically from others whenever the others change);
 - Declarative specification language written in the so-called _makefiles_.
 
 
@@ -96,16 +96,16 @@ target : source1 source2 ...
 	commands to make target (a.k.a. recipes for this target)
 ```
 
-This syntax essentially says: For the *target* to be up to date, it must be newer than all the _source_ files 'source1', 'source2', etc. If it is not, run the specified commands to bring the _target_ up to date. The commands are specified on one or more lines that must start with TABs (not with equivalent number of spaces &mdash; this is a common mistake!). This is the infamous "tab-in-column-1" syntax, introduced with the very first version of **make**, and it remained afterward to preserve backward compatibility for the original users, who started using **make** within days of its initial release.
+This syntax essentially says: For the *target* to be up to date, it must be newer than all the _source_ files 'source1', 'source2', etc. If it is not, run the specified commands to bring the _target_ up to date. The commands are specified on one or more lines that must start with TABs (not with an equivalent number of spaces &mdash; this is a common mistake!). This is the infamous "tab-in-column-1" syntax, introduced with the very first version of **make**, and it remained afterward to preserve backward compatibility for the original users, who started using **make** within days of its initial release.
 
-A _target_ is usually the name of a file generated by **make** when it automatically recompiles all specified source files that have changed. However, it can also represent an _action_ that **make** will carry out directly. In that case, the _source_ does not need to be specified, and the typical syntax of a _makefile_ may look as follows:
+A _target_ is usually the name of a file generated by **make** when it automatically recompiles all specified source files that have changed. However, it can also represent an _action_ that **make** will be carried out directly. In that case, the _source_ does not need to be specified, and the typical syntax of a _makefile_ may look as follows:
 
 ```makefile
 action : 
 	commands executed for this action (a.k.a. recipes for this action)
 ```
 
-By default, when **make** looks for the _makefile_, the **GNU** version of **make** tries the following names, with the following precedence: 'GNUmakefile', 'makefile' or 'Makefile'. In practice, you should call your _makefile_ either 'makefile' or 'Makefile', but if necessary, a custom name can be used with **make -f customMakeFile** or **make --file customMakeFile**. In what follows next, the content of _makefile_ is stored for simplicity in the file named 'makefile'. 
+By default, when **make** looks for the _makefile_, the **GNU** version of **make** tries the following names, with the following precedence: 'GNUmakefile', 'makefile' or 'Makefile'. In practice, you should call your _makefile_ either 'makefile' or 'Makefile'. However, if necessary, a custom name can be used with **make -f customMakeFile** or **make --file customMakeFile**. In what follows next, the content of the _makefile_ is stored for simplicity in the file named 'makefile'. 
 
 As it is customary, we can start with the 'Hello World' example for **make**, by having the following content in the _makefile_:
 
@@ -115,7 +115,7 @@ hello :
 	echo "Hello World"
 ```
 
-If we are in the same directory where this _makefile_ was saved, we execute simply:
+If we are in the same directory where this _makefile_ was saved, we execute:
 
 ```bash
 $ make hello
@@ -177,7 +177,7 @@ We now demonstrate how to, in a real-case scenario, write a _makefile_ and use *
 #include <stdio.h>
 int main()
 {
- printf("\n Hi there, from test1! Compilation time was: on %s at %s \n", __DATE__, __TIME__);
+ printf("\n Hi from test1! Compilation time was: on %s at %s \n", __DATE__, __TIME__);
  return 0;
 }
 ```
@@ -188,7 +188,7 @@ The content of 'test2.C' is:
 #include <stdio.h>
 int main()
 {
- printf("\n Hi there, from test2! Compilation time was: on %s at %s \n", __DATE__, __TIME__);
+ printf("\n Hi from test2! Compilation time was: on %s at %s \n", __DATE__, __TIME__);
  return 0;
 }
 ```
@@ -342,9 +342,9 @@ That means:
 $ make run
 ./test1 && ./test2
 
- Hi there, from test1! Compilation time was: on Oct 11 2025 at 15:55:33
+ Hi from test1! Compilation time was: on Oct 11 2025 at 15:55:33
 
- Hi there, from test2! Compilation time was: on Oct 11 2025 at 15:56:38
+ Hi from test2! Compilation time was: on Oct 11 2025 at 15:56:38
 ```
 
 And finally, to clean up the compiled object files, we have implemented the action **clean** in the _makefile_ via the following definition:
@@ -424,7 +424,7 @@ clean:
 Libraries are pre-existing code that is compiled and ready to use. When a logically distinct set of functions is available, it is helpful to build a library from that set of functions, so that the same source code doesn't have to be copied into the current project and recompiled repeatedly. If a bug fix or new feature needs to be implemented in a given function, it must be done only in one place. There are two types of libraries:
 
 - _static_ &mdash; the actual library is placed in the final program during compilation;
-- _shared_ &mdash; only a reference to the library is placed inside the final program (i.e. program is _linked_ with a library).
+- _shared_ &mdash; only a reference to the library is placed inside the final program (i.e. the program is _linked_ with a library).
 
 A static library is commonly stored in a file with the extension ```.a```, while a shared library is stored in a file with the ```.so``` extension. The main disadvantage of static libraries is code bloat and the resulting waste of disk space, as the same code with pre-compiled functions appears in multiple programs. In addition, if a change is introduced in a static library, all programs using that library must be recompiled. On the other hand, programs linked with shared libraries do not need to be recompiled when changes are introduced in those libraries &mdash; only the libraries themselves need to be recompiled. When it comes to performance, programs using static libraries will run slightly faster, because all the symbols in the library are already resolved at compile time (with shared libraries, they need to be resolved at run time). Once compiled, programs using static libraries no longer depend on those libraries, which removes the external dependency on library version (this is particularly relevant when a major upgrade of the underlying operating system is performed, during which most libraries are updated to a newer version). In what follows next, we focus on shared libraries, using as an example code written in the C/C++ programming language, and compiled using the open-source **gcc** compiler (originally, _GNU C Compiler_, later renamed into _GNU Compiler Collection_).
 
