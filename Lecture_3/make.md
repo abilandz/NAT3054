@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20251126-1
+**Last update**: 20251127-1
 
 
 ### Table of Contents
@@ -680,7 +680,7 @@ CMake ('cross-platform make') is an advanced software development tool used prim
 
 #### Installing cmake
 
-By default, **cmake** is not installed on Linux distributions. To install the currently supported version for a given Linux distribution, one can proceed by using the standard packaging tools for that distribution, e.g. **apt** on Ubuntu:
+By default, **cmake** is not installed on Linux distributions. To install the currently supported version for a given Linux distribution, one can proceed by using the standard packaging tools for that distribution, e.g. **apt** ("Advanced Package Tool") on Ubuntu:
 
 ```bash
 # Install cmake as a root:
@@ -766,6 +766,8 @@ CMake suite maintained and supported by Kitware (kitware.com/cmake).
 
 
 
+
+
 #### Building a standalone executable
 
 As is customary, we start with the "Hello World!" example also for **cmake**. For that sake, the following C/C++ code snippet is used in the file "hello.cxx":
@@ -806,6 +808,7 @@ project(HelloWorld)
 # Define a target:
 add_executable(hello)
 
+# Specify all source files needed to build the target:
 target_sources(hello
   PRIVATE
     src/hello.cxx
@@ -851,7 +854,7 @@ $ cmake -B build
 
 The flag ```-B``` instructs **cmake** to make a new subdirectory named "build" in the current project as the directory to generate and store files during the build process. In general, this is an important step to keep the source tree in the subdirectory "src" clean.
 
-If we now inspect the content of "build", we find the following:
+If we now inspect the content of "build" directory, we find the following:
 
 ```bash
 $ ls build
@@ -860,7 +863,7 @@ CMakeCache.txt  CMakeFiles  cmake_install.cmake  Makefile
 
 As we can see, **cmake** generates automatically a lot of files related to the build process &mdash; most importantly, the _Makefile_ is generated automatically.
 
-Finally, we can build the project, and we have to use the same "build" subdirectory as the command argument, as in the previous configuration step:
+Finally, we can build the project, and we have to use the same "build" directory as the command argument, as in the previous configuration step:
 
 ```bash
 $ cd someProject
@@ -883,11 +886,120 @@ In the next section, we cover more elaborate examples of using **cmake**, which 
 
 
 
+
+
 #### Building a shared library
 
-To build a library using **cmake**, we have to introduce a new command, namely **add_library()**.
+To build a shared library using **cmake**, we structure the project in the following way:
 
-TBI 20251123 finalize this example
+```
+├── library
+│   ├── CMakeLists.txt
+│   ├── src
+│       ├── hello.h
+│       ├── hello.cxx
+│       ├── bye.h
+│       ├── bye.cxx
+```
+
+The content of configuration file "CMakeLists.txt" is now as follows:
+
+```cmake
+# Set the oldest 'cmake' version with which the project can be built:
+cmake_minimum_required(VERSION 3.22)
+
+# Project name:
+project(ExampleSharedLibrary)
+
+# Define a target:
+add_library(MyFunctions SHARED)
+
+# Specify all source files needed to build the library:
+target_sources(MyFunctions
+  PRIVATE
+    src/hello.cxx
+    src/bye.cxx
+  PUBLIC
+    src/hello.h
+    src/bye.h
+)
+```
+
+We have to introduce one new command, namely **add_library()**, instead of **add_executable()**. The content of all source files is:
+
+```bash
+$ cat hello.h
+void Hello();
+
+$ cat hello.cxx
+#include <stdio.h>
+#include "hello.h"
+
+void Hello() {
+  printf("\n Hello, how is life? \n");
+}
+
+$ cat bye.h
+void Bye();
+
+$ cat bye.cxx
+#include <stdio.h>
+#include "bye.h"
+
+void Bye() {
+  printf("\n See you later! \n");
+}
+```
+
+Building of shared library is straightforward:
+
+```bash
+$ cd library
+$ cmake -B build
+-- The C compiler identification is GNU 11.4.0
+-- The CXX compiler identification is GNU 11.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/abilandz/CMAKE/library/build
+
+$ cmake --build build
+[ 33%] Building CXX object CMakeFiles/MyFunctions.dir/src/hello.cxx.o
+[ 66%] Building CXX object CMakeFiles/MyFunctions.dir/src/bye.cxx.o
+[100%] Linking CXX shared library libMyFunctions.so
+[100%] Built target MyFunctions
+```
+
+We can find the shared library "libMyFunctions.so" within the "build" directory:
+
+```bash
+$ ls build
+CMakeCache.txt  CMakeFiles  cmake_install.cmake  libMyFunctions.so  Makefile
+```
+
+If we now change the code in only one file, e.g. "bye.cxx", only that file will be recompiled when the whole library is rebuilt:
+
+```bash
+$ cd library
+$ touch src/bye.cxx
+$ cmake --build build
+[ 33%] Building CXX object CMakeFiles/MyFunctions.dir/src/bye.cxx.o
+[ 66%] Linking CXX shared library libMyFunctions.so
+[100%] Built target MyFunctions
+```
+
+
+
+
 
 
 
@@ -911,7 +1023,7 @@ The project is structured as follows:
 
 The source code of the main executable is in the file "test.cxx", and it will use at run time the shared library from the directory "mySharedLibrary". 
 
-The content of "test.cxx" is slightly modified:
+The content of "test.cxx" looks now as follows:
 
 ```C++
 #include <stdio.h>
@@ -946,7 +1058,7 @@ void Bye() {
 }
 ```
 
-In this project, we have 3 configuration files "CMakeLists.txt", with the following content:
+In this project, we have 3 configuration files "CMakeLists.txt". The content of the main "CMakeLists.txt" file in the top-level directory is:
 
 ```cmake
 # Set the oldest 'cmake' version with which the project can be built:
@@ -959,7 +1071,7 @@ add_subdirectory(test)
 add_subdirectory(mySharedLibrary)
 ```
 
-If some "CMakeLists.txt" files are located in subdirectories of the project, the **add_subdirectory()** command will incorporate them when **cmake** is executed for the main "CMakeLists.txt" file. The relative paths used in "CMakeLists.txt" in the subdirectory are relative to that subdirectory.
+If some "CMakeLists.txt" files are located in subdirectories of the project, the **add_subdirectory()** command will incorporate them when **cmake** is executed for the main "CMakeLists.txt" file. The relative paths used in "CMakeLists.txt" file in a subdirectory are relative to that subdirectory.
 
 The content of "test/CMakeLists.txt" is:
 
@@ -967,6 +1079,8 @@ The content of "test/CMakeLists.txt" is:
 add_executable(test test.cxx)
 target_link_libraries(test PUBLIC mySharedLibrary)
 ```
+
+The command **target_link_libraries()** specifies shared libraries which are used in the linking stage during a compilation of a target.
 
 Finally, the content of "mySharedLibrary/CMakeLists.txt" is:
 
@@ -976,12 +1090,10 @@ add_library(
     functions.h
     functions.cxx
 )
-
-add_compile_definitions(LIBRARY_EXPORTS)
 target_include_directories(mySharedLibrary PUBLIC "${PROJECT_SOURCE_DIR}")
 ```
 
-TBI 20251123 add explanation of all new commands in CML files
+The command **target_include_directories()** specifies include directories to use when compiling a given target. The internal variable ```PROJECT_SOURCE_DIR``` is set when the command **project()** is called in the main "CMakeLists.txt" file, and in this example it will be set to the path of "someProject" directory.
 
 Given the above structure and content of all files, the project can be readily built with:
 
@@ -1023,7 +1135,7 @@ This is a shared library test...
  See you later!
 ```
 
-TBI 20251123 add a statement that changing either executable or libraries, will only rebuild them differentially. Also, commend that more work is needed in CML, to move executables and shared libraries into common places (e.g. /bin or /lib folder/, etc.()
+Changing the source code either of executable or libraries will only recompile them differentially.
 
 
 
