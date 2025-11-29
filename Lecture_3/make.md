@@ -674,9 +674,11 @@ Vice versa, if there were changes only in the 'test.cxx', the executable **test*
 
 ### 4. The final step: **cmake** <a name="the.final.step.cmake"></a>
 
-CMake ('cross-platform make') is an advanced software development tool used primarily to automate the creation of configuration files for standard native build tools, such as _makefiles_ for the **make**. It was first released in 2000 by Kitware, Inc., a technology company headquartered in Clifton Park, New York, with an initial focus on 3D biomedical imaging of the human body. 
+CMake ('cross-platform make') is an advanced software development tool used primarily to automate the creation of configuration files for standard native build tools, such as _makefiles_ for **make**. It was originally designed by Bill Hoffman and released in 2000 by Kitware, Inc., a technology company headquartered in Clifton Park, New York, with an initial focus on 3D biomedical imaging of the human body. 
 
+As its name suggests, CMake is cross-platform, meaning it can be used transparently to build projects in an automated manner on various underlying operating systems, including Linux, Windows, and macOS. By default, CMake assumes that the project is written in C or C++, but upon reconfiguration, it can build projects written in other languages as well, including TBI 20251130 
 
+CMake consists of five native executables: **cmake**, **ctest**, **cpack**, **cmake-gui**, and **ccmake**. In this lecture only **cmake** is covered in detail, and therefore CMake and **cmake** in what follows next will be used interchangeably.
 
 #### Installing cmake
 
@@ -765,6 +767,81 @@ CMake suite maintained and supported by Kitware (kitware.com/cmake).
 ```
 
 
+
+
+
+#### Executive summary of cmake design
+
+Conceptually, when building a project, **cmake** goes through three different stages:
+
+1. _Configuration_:
+   * collects all details about the underlying environment (e.g. which compilers are available for the languages **cmake** supports);
+   * performs simple tests (e.g. whether a simple program can be compiled with found compilers);
+   * parses through the mandatory configuration file "CMakeLists.txt" (written in **cmake**'s native language!), and executes it line-by-line;
+   * all gathered information is stored in a new output directory, the _build tree_, which is used in the generation stage (e.g. paths to found compilers are stored permanently within the _build tree_ in a file called "CMakeCache.txt"). 
+2. _Generation_ &mdash; at this stage, **cmake** generates for the current environment automatically the suitable configuration files for native build tools (e.g. _makefiles_ for **make**). 
+3. _Building_ &mdash; build tools (e.g. **make**) are run to produce the final executables or libraries for this project. 
+
+Diagrammatically:
+
+```mermaid
+	flowchart LR
+ 	subgraph Project 
+    wt4["sourceTree/
+    CMakeLists.txt
+    buildTree/finalExecutable
+    buildTree/Makefile
+    buildTree/CMakeCache.txt
+    buildTree/...
+    "]
+    end
+
+	subgraph Project 
+    wt3["sourceTree/
+    CMakeLists.txt
+    buildTree/Makefile
+    buildTree/CMakeCache.txt
+    buildTree/..."] -- "Building" --> wt4
+    end
+
+	subgraph Project 
+    wt2["sourceTree/
+    CMakeLists.txt
+    buildTree/CMakeCache.txt
+    buildTree/...
+    "] -- "Generation" --> wt3
+    end
+
+	subgraph Project 
+    wt1["sourceTree/
+    CMakeLists.txt"] -- "Configuration" --> wt2
+    
+    end
+```
+
+TBI 20251130 improve further the diagram above
+
+Configuration and generation stages are accomplished by executing:
+
+```bash
+cmake -B buildTree -S sourceTree
+```
+
+where "sourceTree" is the name of a directory in which the source code of the project is placed (the most frequent naming convention is simply "src"), and "buildTree" is a name (the most frequent naming convention is simply "build") of new directory created by **cmake** in which the output of configuration and generation stage is stored (e.g. the file "CMakeCache.txt" and _makefiles_ for **make**, etc.). 
+
+The final building stage commences by executing:
+
+```bash
+cmake --build buildTree
+```
+
+The name or path of "buildTree" must be the same as in the previous step. If the build succeeded, the final executable will be in the "buildTree", and can be immediately tested with:
+
+```bash
+./buildTree/finalExecutable
+```
+
+Typically, the project's code is added under a version control system (e.g. using Git), and therefore it is important to maintain the content of "sourceTree" clean and separate from the content of "buildTree". 
 
 
 
