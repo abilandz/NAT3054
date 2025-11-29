@@ -826,7 +826,7 @@ Configuration and generation stages are accomplished by executing:
 cmake -B buildTree -S sourceTree
 ```
 
-where "sourceTree" is the name of a directory in which the source code of the project is placed (the most frequent naming convention is simply "src"), and "buildTree" is a name (the most frequent naming convention is simply "build") of new directory created by **cmake** in which the output of configuration and generation stage is stored (e.g. the file "CMakeCache.txt" and _makefiles_ for **make**, etc.). 
+where "sourceTree" is the name or path of a directory in which the source code of the project is placed (the most frequent naming convention is simply "src"), and "buildTree" is a name (the most frequent naming convention is simply "build") of new directory created by **cmake** in which the output of configuration and generation stage is stored (e.g. the file "CMakeCache.txt" and _makefiles_ for **make**, etc.). 
 
 The final building stage commences by executing:
 
@@ -834,13 +834,31 @@ The final building stage commences by executing:
 cmake --build buildTree
 ```
 
-The name or path of "buildTree" must be the same as in the previous step. If the build succeeded, the final executable will be in the "buildTree", and can be immediately tested with:
+The name or path of "buildTree" must be the same as in the previous step. One can profile this step with additional flags, for instance:
+
+```bash
+# build the project using 10 cores and provide verbose output:
+cmake --build buildTree -j 10 -v
+```
+
+It is also possible via **cmake** to supply options for the native build tool which will be used (e.g. **make**) with the following syntax:
+
+```bash
+# build the project using non-default settings for 'make':
+cmake --build buildTree -- someFlagsForMake
+```
+
+If the build succeeded, the final executable will be in the "buildTree", and can be immediately tested with:
 
 ```bash
 ./buildTree/finalExecutable
 ```
 
 Typically, the project's code is added under a version control system (e.g. using Git), and therefore it is important to maintain the content of "sourceTree" clean and separate from the content of "buildTree". 
+
+
+
+TBI 20251130 add **cmake --install** from p25
 
 
 
@@ -956,6 +974,55 @@ $ ./build/hello
 
  Hello World! 
 
+```
+
+Before moving on, we remark that the content of "CMakeCache.txt" shall never be modified manually, instead, **cmake** provides special options for its modifications. Its content can be retrieved programmatically with:
+
+```bash
+$ cd someProject 
+$ cmake -LAH .
+... many more lines ...
+
+// CXX compiler
+CMAKE_CXX_COMPILER:FILEPATH=/usr/bin/c++
+
+... many more lines ...
+
+// C compiler
+CMAKE_C_COMPILER:FILEPATH=/usr/bin/cc
+
+... many more lines ...
+```
+
+Alternatively, we can retrieve all settings for the current environment and project with:
+
+```bash
+$ cmake --system-information
+Avoid ctest truncation of output: CTEST_FULL_OUTPUT
+========================================================
+=== MAIN VARIABLES
+========================================================
+CMAKE_STATIC_LIBRARY_PREFIX == "lib"
+CMAKE_STATIC_LIBRARY_SUFFIX == ".a"
+CMAKE_SHARED_LIBRARY_PREFIX == "lib"
+CMAKE_SHARED_LIBRARY_SUFFIX == ".so"
+CMAKE_SHARED_MODULE_PREFIX == "lib"
+CMAKE_SHARED_MODULE_SUFFIX == ".so"
+
+... many more lines ...
+```
+
+Finally, one call literally trace back all steps through which **cmake** went during build of the project:
+
+```bash
+$ cd someProject 
+$ cmake --trace .
+Running with trace output on.
+/home/abilandz/NAT3054/cmake/executable/someProject/CMakeLists.txt(2):  cmake_minimum_required(VERSION 3.22 )
+/home/abilandz/NAT3054/cmake/executable/someProject/CMakeLists.txt(5):  project(HelloWorld )
+/home/abilandz/NAT3054/cmake/executable/someProject/CMakeFiles/3.22.1/CMakeSystem.cmake(1):  set(CMAKE_HOST_SYSTEM Linux-6.6.87.2-microsoft-standard-WSL2 )
+
+... many more lines ...
 ```
 
 In the next section, we cover more elaborate examples of using **cmake**, which will demonstrate its full power.
