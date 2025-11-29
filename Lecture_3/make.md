@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20251127-1
+**Last update**: 20251129-1
 
 
 ### Table of Contents
@@ -1195,8 +1195,10 @@ $ cmake --build . -- -j 4
 
 ### 5. References <a name="references"></a>
 * _"UNIX A History and a Memoir"_, Brian Kernighan
-  * Section TBI 20250909:
+  * Section 5.2: "Yacc, Lex, Make"
 * "GNU make" Manual is available at this [link](https://www.gnu.org/software/make/)
+* "_Modern CMake for C++_", Rafal Swidzinski
+  * This book is the main reference used in preparing **cmake** part of this lecture
 * ["CMake Tutorial"](https://cmake.org/cmake/help/latest/guide/tutorial/index.html)
 * "Mastering CMake Textbook" &mdash; an open source version is available at this [link](https://cmake.org/cmake/help/book/mastering-cmake/)
 * Online resources on shared libraries can be found at this [link](https://www.cprogramming.com/tutorial/shared-libraries-linux-gcc.html )
