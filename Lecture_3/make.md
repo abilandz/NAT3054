@@ -782,44 +782,43 @@ Conceptually, when building a project, **cmake** goes through three different st
 2. _Generation_ &mdash; at this stage, **cmake** generates for the current environment automatically the suitable configuration files for native build tools (e.g. _makefiles_ for **make**). 
 3. _Building_ &mdash; build tools (e.g. **make**) are run to produce the final executables or libraries for this project. 
 
-Diagrammatically:
+Diagrammatically, the evolution of the project after all stages of **cmake** are executed can be described as follows:
 
 ```mermaid
-	flowchart LR
- 	subgraph Project 
-    wt4["sourceTree/
+
+flowchart TB
+    wt1["sourceTree/...
     CMakeLists.txt
-    buildTree/finalExecutable
-    buildTree/Makefile
-    buildTree/CMakeCache.txt
+    "] 
+	style wt1 text-align:left
+
+    wt2["sourceTree/...
+    CMakeLists.txt
     buildTree/...
+    buildTree/CMakeCache.txt
+    "] 
+	style wt2 text-align:left
+
+    wt3["sourceTree/...
+    CMakeLists.txt
+    buildTree/...
+    buildTree/CMakeCache.txt
+    buildTree/Makefile
     "]
-    end
+	style wt3 text-align:left
 
-	subgraph Project 
-    wt3["sourceTree/
+    wt4["sourceTree/...
     CMakeLists.txt
-    buildTree/Makefile
-    buildTree/CMakeCache.txt
-    buildTree/..."] -- "Building" --> wt4
-    end
-
-	subgraph Project 
-    wt2["sourceTree/
-    CMakeLists.txt
-    buildTree/CMakeCache.txt
     buildTree/...
-    "] -- "Generation" --> wt3
-    end
+    buildTree/CMakeCache.txt
+    buildTree/Makefile
+    buildTree/finalExecutable
+    "]
+	style wt4 text-align:left
 
-	subgraph Project 
-    wt1["sourceTree/
-    CMakeLists.txt"] -- "Configuration" --> wt2
-    
-    end
+    wt1 == "Configuration" ==> wt2 == "Generation" ==> wt3 == "Building" ==> wt4
+ 
 ```
-
-TBI 20251130 improve further the diagram above
 
 Configuration and generation stages are accomplished by executing:
 
