@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20251129-1
+**Last update**: 20251130-2
 
 
 ### Table of Contents
@@ -676,7 +676,7 @@ Vice versa, if there were changes only in the 'test.cxx', the executable **test*
 
 CMake ('cross-platform make') is an advanced software development tool used primarily to automate the creation of configuration files for standard native build tools, such as _makefiles_ for **make**. It was originally designed by Bill Hoffman and released in 2000 by Kitware, Inc., a technology company headquartered in Clifton Park, New York, with an initial focus on 3D biomedical imaging of the human body. 
 
-As its name suggests, CMake is cross-platform, meaning it can be used transparently to build projects in an automated manner on various underlying operating systems, including Linux, Windows, and macOS. By default, CMake assumes that the project is written in C or C++, but upon reconfiguration, it can build projects written in other languages as well, including TBI 20251130 
+As its name suggests, CMake is cross-platform, meaning it can be used transparently to build projects in an automated manner on various underlying operating systems, including Linux, Windows, and macOS. By default, CMake assumes that the project is written in C or C++, but upon reconfiguration, it can build projects written in other languages as well, including Fortran, Objective-C/C++, C#, Java, etc.
 
 CMake consists of five native executables: **cmake**, **ctest**, **cpack**, **cmake-gui**, and **ccmake**. In this lecture only **cmake** is covered in detail, and therefore CMake and **cmake** in what follows next will be used interchangeably.
 
@@ -780,7 +780,9 @@ Conceptually, when building a project, **cmake** goes through three different st
    * parses through the mandatory configuration file "CMakeLists.txt" (written in **cmake**'s native language!), and executes it line-by-line;
    * all gathered information is stored in a new output directory, the _build tree_, which is used in the generation stage (e.g. paths to found compilers are stored permanently within the _build tree_ in a file called "CMakeCache.txt"). 
 2. _Generation_ &mdash; at this stage, **cmake** generates for the current environment automatically the suitable configuration files for native build tools (e.g. _makefiles_ for **make**). 
-3. _Building_ &mdash; build tools (e.g. **make**) are run to produce the final executables or libraries for this project. 
+3. _Building_ &mdash; native build tools (e.g. **make**) are run to produce the final executables or libraries for this project. Everything that is created (e.g. object files, the final executable or library, build logs, etc.) during the build process by the native build tool is also stored within the _build tree_. 
+
+TBI 20251130 shall I also add _Installation_ as a specific stage here, in which the final executables and libraris are put in the correct place in the system, and all temporary files or leftovers from build are cleaned up?
 
 Diagrammatically, the evolution of the project after all stages of **cmake** are executed can be described as follows:
 
@@ -820,7 +822,9 @@ flowchart TB
  
 ```
 
-Configuration and generation stages are accomplished by executing:
+Before running **cmake**, one needs to prepare a mandatory configuration file "CMakeLists.txt". At least one such file needs to be prepared and placed in the root directory of the project, before **cmake** can be executed for that project. 
+
+After the configuration file "CMakeLists.txt" is written, the configuration and generation stages are accomplished by executing in the same directory where "CMakeLists.txt" is placed:
 
 ```bash
 cmake -B buildTree -S sourceTree
@@ -834,14 +838,14 @@ The final building stage commences by executing:
 cmake --build buildTree
 ```
 
-The name or path of "buildTree" must be the same as in the previous step. One can profile this step with additional flags, for instance:
+The name or path of "buildTree" must be the same as in the previous step. One can profile this step with additional flags, for instance: TBI 20251130 shall I move this later?
 
 ```bash
 # build the project using 10 cores and provide verbose output:
 cmake --build buildTree -j 10 -v
 ```
 
-It is also possible via **cmake** to supply options for the native build tool which will be used (e.g. **make**) with the following syntax:
+It is also possible via **cmake** to supply options for the native build tool which will be used (e.g. **make**) with the following syntax: TBI 20251130 shall I move this later?
 
 ```bash
 # build the project using non-default settings for 'make':
@@ -858,7 +862,116 @@ Typically, the project's code is added under a version control system (e.g. usin
 
 
 
-TBI 20251130 add **cmake --install** from p25
+TBI 20251130 add **cmake --install** from p25 + introduce "cmake_install.cmake" from build tree (see p35)
+
+TBI 20251130 mentioned somewhere that absolute paths should never be used within a source tree, as on a different computer or installed by somebody else that won't work
+
+
+
+
+
+
+
+#### Syntax of the native scripting language in cmake
+
+A "Hello World!" example in the native scripting language in **cmake** amounts to the following code saved in the script file named "hello.cmake":
+
+```cmake
+# An example of a 'cmake' script:
+cmake_minimum_required(VERSION 3.22)
+message("Hello World!")
+```
+
+This script has to be executed in the following way:
+
+```bash
+$ cmake -P hello.cmake
+Hello World!
+```
+
+The flag ```-P``` is important, and it instructs **cmake** that no configure or generate step is performed when the script is executed. Without using this flag, **cmake** expects the mandatory configuration file "CMakeLists.txt"  to be available, and in addition **cmake** will automatically perform a lot of additional actions. TBI 20251130 improve the wording here + check if this is correct, i.e. do I need ```-B``` flag, or what is a default flag, etc.
+
+1. _Command invocation_ &mdash; In general, in scripts or in configuration files, **cmake** commands use the following syntax:
+
+    ```cmake
+    command_name(command arguments)
+    ```
+
+    To name the commands, wide-spread convention is to follow _snake_case_ naming convention. Command arguments _can not_ be replaced with a call to another command, whose output will be in-lined as arguments to the current command, i.e. this syntax is not supported:
+
+    ```cmake
+    # this is NOT supported in 'cmake' scripting language:
+    command_name(some_other_command_name(command arguments))
+    ```
+
+    There can be only one command per line, therefore terminating semi-colon ```;``` is not needed.
+
+2. The command **cmake_minimum_required()** is not mandatory in the scripts, but it is mandatory in the configuration file "CMakeLists.txt". This command checks the version of the currently installed **cmake**, and to ensure consistent behaviour of all commands across different **cmake** versions, it is strongly recommended to be used in scripts as well. If the used version of **cmake** is older than the one specified via this command in the script or configuration file, the following error message will be printed:
+
+    ```cmake
+    CMake Error at CMakeLists.txt:3 (cmake_minimum_required):
+      CMake 3.23 or higher is required.  You are running version 3.22.1
+    ```
+    This can happen frequently, in fact, when running remotely on large-scale computing facilities, on which software is not updated too regularly. In that case, one needs to install the custom **cmake** version from source in the personal home directory, as explained in the previous section. To ensure consistent behaviour of all commands used in the scripts.
+
+3. _Comments_ &mdash; The **cmake** scripting language supports two types of comments: single-line and multi-line. Single-line comments start with the hash symbol ```#``` and behave similarly as in shell. Multi-line comments are started with the two opening brackets ```[``` with any number of ```=``` characters between them, and closed with the same compound delimiter, just each ```[``` is replaced with ```]```. For instance, multi-line comments can be embedded within
+
+    ```cmake	   
+    #[[
+    this line is commented out
+    this line is commented out as well
+    #]]
+    ```
+
+    or within:
+
+    ```cmake
+    #[==[
+    this line is commented out
+    this line is commented out as well
+    #]==]
+    ```
+
+4. _Line endings_ &mdash; Being a cross-platform tool, **cmake** will transparently read scripts and configuration files whether lines are terminated with ```\n``` (Linux style) or ```\r\n``` (Windows style).
+
+The main purpose of this section is to introduce the basic syntax and commands of **cmake** language by executing simple standalone scripts, as the one provided above, without building any project. All these commands can be used later in a more elaborate case as part of the configuration file "CMakeLists.txt" when the actual project is built.
+
+
+
+##### Writing to a file
+
+Naively, one would attempt to save the output of **cmake** script by using the redirection operator **>** or the **tee** command in Linux, by executing for instance:
+
+```bash
+$ cmake -P hello.cmake > hello.txt
+```
+
+While this would work on Linux, it will not work on any GUI-based project on Windows, and the main point of using **cmake**, namely to have platform-independent configuration files for the build, is lost.
+
+Instead, one can use the command **file** from the **cmake** scripting language as follows:
+
+```cmake
+# An example of a 'cmake' script:
+cmake_minimum_required(VERSION 3.22)
+file(WRITE hello.txt "\n I am writing to a file... \n\n")
+```
+
+If the above script is saved in the file "hello_2.cmake" and executed as:
+
+```bash
+$ cmake -P hello_2.cmake
+```
+
+the requested new file "hello.txt" is automatically created, with the following content:
+
+```bash
+$ cat hello.txt
+
+ I am writing to a file...
+
+```
+
+On whichever platform this script is executed, **cmake** will ensure transparently that the file "hello.txt" is created and the requested content is written into it with **cmake**'s command **file**. Otherwise, the above script would have to be written separately for each operating system, using directly native tools available on that operating system.
 
 
 
@@ -908,15 +1021,6 @@ target_sources(hello
     src/hello.cxx
 )
 ```
-
-The command **cmake_minimum_required()** is mandatory, and it will check the version of the currently installed **cmake**. If that version is older than the one specified in the configuration file as a bare minimum to build the project, the following error message will be printed:
-
-```cmake
-CMake Error at CMakeLists.txt:3 (cmake_minimum_required):
-  CMake 3.23 or higher is required.  You are running version 3.22.1
-```
-
-This can happen frequently, in fact, when running remotely on large-scale computing facilities, on which software is not updated too regularly. In that case, one needs to install the custom **cmake** version from source in the personal home directory, as explained in the previous section.
 
 The command **project()** is also mandatory, and it tells **cmake** that what follows is the definition of a software project. In addition, it will steer **cmake** to perform various checks on the settings in the current environment (most notably, whether the necessary compilers are available, etc.).
 
@@ -976,7 +1080,7 @@ $ ./build/hello
 
 ```
 
-Before moving on, we remark that the content of "CMakeCache.txt" shall never be modified manually, instead, **cmake** provides special options for its modifications. Its content can be retrieved programmatically with:
+Before moving on, we remark that the content of "CMakeCache.txt" shall never be modified manually, instead, **cmake** provides special options for its modifications. All settings in "CMakeCache.txt" are divided into two sections, namely "EXTERNAL cache entries" (maintained by the user), and "INTERNAL cache entries" (maintained by **cmake** itself). Its content can be retrieved programmatically with:
 
 ```bash
 $ cd someProject 
