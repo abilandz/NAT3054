@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20251130-2
+**Last update**: 20251201-1
 
 
 ### Table of Contents
@@ -972,6 +972,102 @@ $ cat hello.txt
 ```
 
 On whichever platform this script is executed, **cmake** will ensure transparently that the file "hello.txt" is created and the requested content is written into it with **cmake**'s command **file**. Otherwise, the above script would have to be written separately for each operating system, using directly native tools available on that operating system.
+
+
+
+##### Variables
+
+In **cmake** language, variables are set with the internal command **set()** using the following syntax:
+
+```cmaks
+set(varName "some content")
+```
+
+The content of variable is referenced later in a similar way as in a shell, using ```${varName}```. For instance, if the content of **cmake** script "var_1.cmake" is:
+
+```cmake
+cmake_minimum_required(VERSION 3.22)
+set(Var "hi there")
+message(${Var})
+```
+
+upon execution it follows:
+
+```bash
+$ cmake -P var_1.cmake
+hi there
+```
+
+Double quotes are important as they preserve the empty characters. Unlike in shell, single quotes have to special meaning in this context, i.e. the definition ```set(Var 'hi there')``` would reference the content of variable ```Var``` as ```'hithere'```. Also, when referencing the content of variables curly braces are mandatory, without them, the printout of ```message($Var)``` would be ```$Var```, even if ```Var``` was set to some value. All variables in **cmake** are stored internally as strings.
+
+On evaluation of variable content, **cmake** will recursively perform all variable references. To illustrate that, we store the following code in the script named "var_2.cmake":
+
+```cmake
+cmake_minimum_required(VERSION 3.22)
+set(Variable "hi there")
+set(tmp "iable")
+message(${Var${tmp}})
+```
+
+If we execute this script, it follows:
+
+```bash
+$ cmake -P var_2.cmake
+hi there
+```
+
+In the first recursive step, **cmake** referenced the content of variable ```tmp``` and replaced it with "iable". In the second recursive step, **cmake** referenced the content of variable ```Variable``` and replaced it with "hi there".
+
+In case variable needs to be removed, that can be achieved with the command **unset(someVar)**.
+
+There are three categories of variables in **cmake**:
+
+1. _normal_ &mdash; the standard default variables, their content is referenced with ```${VarName}```
+
+2. _environment_ &mdash; when **cmake** is started in a particular environment, it automatically extracts and stores internally variables defined in that environment. After that, in that running **cmake** instance, their content is referenced with the syntax ```$ENV{VarName}```. Their content can be changed using **set(ENV{someVar})** command or unset via **unset(ENV{someVar})**, but when that instance of **cmake** terminates, those changes won't be propagated globally into the environment in which **cmake** is running. By analogy with a shell, **cmake**'s' environment variables behave and shell's environment variables which were NOT exported. For instance, if we have the following script "var_3.cmake":
+
+   ```cmake
+   cmake_minimum_required(VERSION 3.22)
+   set(ENV{HOSTNAME} "nidoqueen")
+   message($ENV{HOSTNAME})
+   ```
+
+   we can test its behavior and scope definition as follows:
+
+   ```bash
+   # shell is printing the content of env. variable HOSTNAME:
+   $ echo $HOSTNAME
+   napalm
+   
+   # cmake is printing the content of env. variable HOSTNAME,
+   # valid only internally in this instance of cmake:
+   $ cmake -P var_3.cmake
+   nidoqueen
+   
+   # shell is printing the content of env. variable HOSTNAME:
+   $ echo $HOSTNAME
+   napalm
+   ```
+
+   Some environment variables have a special meaning to **cmake**, and changing their values will change **cmake**'s behavior during build. A list of all such environment variables can be found in the official **cmake** documentation under [cmake-env-variables(7)](https://cmake.org/cmake/help/latest/manual/cmake-env-variables.7.html). For instance, the content of environment variable ```CXX``` determines the executable which will be used to compile C++ source code. The ```CXX``` variable is used by **cmake** only in the first configuration to determine C++ compiler &mdash; after that, the value of `CXX` is stored in the cache as another variable ```CMAKE_CXX_COMPILER```.  Similar variables exist for other languages which **cmake** supports, e.g. ```FC``` is used for Fortran compiler found in configuration stage, whose value is stored in cache as ```CMAKE_Fortran_COMPILER```, etc.
+
+   Once **cmake**'s environment variables are stored in the configuration stage in the cache variables (like ```CMAKE_CXX_COMPILER``` or ```CMAKE_Fortran_COMPILER```), their content is persistent afterward during build (i.e. changing manually the content of ```CXX``` will have no effect during build, because the information about C++ compiler is retrieved later only from ```CMAKE_CXX_COMPILER```). 
+
+3. _cache_ &mdash;  their content is referenced either with the standard syntax ```${VarName}```, or equivalently with a more specific syntax ```$CACHE{VarName}```.
+
+
+
+TBC 20251201 p57
+
+
+
+##### Command arguments
+
+TBI 20251201 add boxed text from p55
+
+
+
+#### 
 
 
 
