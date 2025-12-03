@@ -1085,6 +1085,10 @@ There are three categories of variables in **cmake**:
 
 
 
+TBI 20251203 add some text here as a bridge towards next section
+
+
+
 ##### Command and script arguments
 
 Arguments are passed to **cmake** script in a similar fashion as to a shell script, using the following syntax:
