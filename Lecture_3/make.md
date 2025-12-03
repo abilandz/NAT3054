@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20251202-1
+**Last update**: 20251203-1
 
 
 ### Table of Contents
@@ -1085,13 +1085,87 @@ There are three categories of variables in **cmake**:
 
 
 
-##### Command arguments
+##### Command and script arguments
 
-TBC 20251202 add boxed text from p55
+Arguments are passed to **cmake** script in a similar fashion as to a shell script, using the following syntax:
+
+```bash
+cmake arg1 arg2 ... argN
+```
+
+All arguments are stored in **cmake**'s internal variables ```CMAKE_ARGV1```, ```CMAKE_ARGV2```, ... ```CMAKE_ARGVN```.  There is also a special variable ```CMAKE_ARGVC```, which counts total number of arguments. If the content of **cmake** script is:
+
+```cmake  
+cmake_minimum_required(VERSION 3.22)
+
+message(${CMAKE_ARGV0})
+message(${CMAKE_ARGV1})
+message(${CMAKE_ARGV2})
+message(${CMAKE_ARGV3})
+message(${CMAKE_ARGV4})
+message(${CMAKE_ARGV5})
+message("Total number of arguments: " ${CMAKE_ARGC})
+```
+
+Upon execution, it follows:
+
+```bash
+$ cmake -P arg_1.cmake -- "abc" "44"
+cmake
+-P
+arg_1.cmake
+--
+abc
+44
+Total number of arguments: 6
+```
+
+There are three conceptually different types of arguments in **cmake**:
+
+1. _bracket arguments_ &mdash; used to pass multi-line strings to commands preserving all empty characters, new lines, etc. For instance, if we save in the file "bracket.cmake" the following **cmake** script:
+
+   ```cmake	 
+   cmake_minimum_required(VERSION 3.22)
+   
+   message([[
+   some  text
+   
+     some    other text
+   ]])
+   ```
+
+   after execution it follows:
+
+   ```bash
+   $ cmake -P bracket.cmake 
+   some  text
+   
+     some    other text
+   ```
+
+   The delimiters ```[[ ... ]]``` can be replaced with any other combination ```[=[ ... ]=]```, ```[==[ ... ]==]```, etc. Within bracket arguments all symbols are interpreted literally, i.e. all symbols use their metacharacter meaning, which means that content within bracket arguments cannot be modified dynamically (i.e. it is interpreted as verbatim).
+
+2. _quoted arguments_ &mdash; delimiters are double quotes ```" ... "```, and within double quotes the standard escape sequences (e.g. ```\n``` for new line) and variable referencing (e.g. ```${CMAKE_VERSION}```) are evaluated. For instance, if we have in the script "quoted.cmake" the following content:
+
+   ```cmake
+   cmake_minimum_required(VERSION 3.22)
+   
+   message("Current cmake version is:\n${CMAKE_VERSION}")
+   ```
+
+   after execution it follows:
+
+   ```bash
+   $ cmake -P quoted.cmake 
+   Current cmake version is:
+   3.22.1
+   ```
+
+3. _unquoted arguments_ &mdash; TBC 20251203
 
 
 
-#### 
+
 
 
 
