@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20251203-1
+**Last update**: 20251204-1
 
 
 ### Table of Contents
@@ -1165,11 +1165,146 @@ There are three conceptually different types of arguments in **cmake**:
    3.22.1
    ```
 
-3. _unquoted arguments_ &mdash; TBC 20251203
+3. _unquoted arguments_ &mdash; when using unquoted arguments, one has to pay a special case to the metacharacter semicolon ```;```, which **cmake** uses to make lists. Each non-empty element withing semicolons is given to the command invocation as a separate argument. For more details how to define a list, see the **set()** command, and how to work with lists the **list()** command.
 
 
 
+In the next section, we introduce the basic control structures in the **cmake** scripting langues, like conditional blocks, loops, etc.
 
+
+
+##### Control structures
+
+The only available conditional block in **cmake** is given with the following schematic syntax:
+
+```cmake
+if(someCondition)
+  ... some commands ...
+elseif(someOherCondition) # can be repeated
+  ... some other commands ...
+else()
+  ... yet another commands ...
+endif()
+```
+
+The meaning of above conditional block is similar to other languages and it is self-explanatory.
+
+As a part of condition to be tested, the following standard _logical_ operators are supported: ```NOT```, ```AND```, ```OR```. The strings which act as standard booleans are ```TRUE``` and ```FALSE```. The conditions can be grouped with round braces ```( ... )```. If we have the following content in the script "if.cmake":
+
+```cmake
+cmake_minimum_required(VERSION 3.22)
+if( TRUE AND ( TRUE OR FALSE ) )
+  message("It's true.")
+endif()
+```
+
+we get after execution:
+
+```bash
+$ cmake -P if.cmake
+It's true.
+```
+
+The strings which **cmake** will evaluate as a Boolean true are ```ON```, ```YES```, ```Y```, ```TRUE``` (all of them are case insensitive), and any non-zero integer. This is illustrated with the following script named "bool.cmake":
+
+```cmake
+cmake_minimum_required(VERSION 3.22)
+if(ON)
+  message("It's ON")
+endif()
+
+if(oN)
+  message("It's oN")
+endif()
+
+if(YES)
+  message("YES")
+endif()
+
+if(YeS)
+  message("YeS")
+endif()
+
+if(Y)
+  message("Y")
+endif()
+
+if(YY)
+  message("YY")
+endif()
+
+if(0)
+  message("0")
+endif()
+
+if(1)
+  message("1")
+endif()
+
+if(-1)
+  message("-1")
+endif()
+
+if(0.1)
+  message("0.1")
+endif()
+```
+
+After execution, it follows:
+
+```bash
+$ cmake -P bool.cmake
+It's ON
+It's oN
+YES
+YeS
+Y
+1
+-1
+0.1
+```
+
+Analogously, the strings which **cmake** will evaluate as a Boolean false are ```OFF```, ```NO```, ```N```, ```FALSE```, ```IGNORE```, ```NOTFOUND```, ```NOTFOUND``` suffix (all of them are case insensitive), an empty string and a zero. 
+
+The **cmake** scripting language offers several operators for comparison, which can be grouped as follows:
+
+* _integer comparison_ &mdash; ```EQUAL```, ```LESS```, ```LESS_EQUAL```, ```GREATER```, and ```GREATER_EQUAL```
+
+* _version comparison_ &mdash; ```VERSION_EQUAL```, ```VERSION_LESS```, ```VERSION_LESS_EQUAL```, ```VERSION_GREATER```, and ```VERSION_GREATER_EQUAL```. The version identifier has to follow the standard syntax convention "major.minor.patch.tweak". If "tweak" number it missing, that is interpreted in comparison as "major.minor.patch.0", if "patch" and "tweak" numbers are missing, that is interpreted in comparison as "major.minor.0.0", etc. For instance, the code snippet:
+
+  ```cmake
+  if (2.3.4 VERSION_LESS_EQUAL 2.3)
+  ```
+
+  will evaluate to false, the code snippet:
+
+  ```cmake
+  if (2.2.4 VERSION_LESS_EQUAL 2.3)
+  ```
+
+  will evaluate to true, while the code snippet:
+
+  ```cmake
+  if (2.3.0 EQUAL 2.3)
+  ```
+
+  will evaluate to true.
+
+* _string comparison_ &mdash; ```STREQUAL``` . The operator is case sensitive. The code snippet
+
+  ```cmake  
+  if ("AA" STREQUAL "AA")
+  ```
+
+  will evaluate to true, while the code snippet
+
+  ```cmake
+  if ("AA" STREQUAL "Aa")
+  ```
+
+  will evaluate to false.
+
+* _regex comparison_ &mdash; TBC 20251204
 
 
 
