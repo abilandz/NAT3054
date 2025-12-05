@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20251204-1
+**Last update**: 20251205-1
 
 
 ### Table of Contents
@@ -1304,7 +1304,84 @@ The **cmake** scripting language offers several operators for comparison, which 
 
   will evaluate to false.
 
-* _regex comparison_ &mdash; TBC 20251204
+* _regex comparison_ &mdash; **cmake** supports set of regex metacharacters, but there are some differences with respect to the standard BRE ("Basic Regular Expression") and ERE ("Extended Regular Expression"), therefore regex has to be used in **cmake** with some care. The operator to perform regex match is ```MATCHES``` and all matched expressions and stored in **cmake**'s internal variables ```CMAKE_MATCH_0```, ```CMAKE_MATCH_1```, ```CMAKE_MATCH_2```, etc.  The variable ```CMAKE_MATCH_0``` stores the entire match, and another internal variable, the ```CMAKE_MATCH_COUNT```, holds the total number of matched expressions. The general syntax is:
+
+  ```cmake
+  someText MATCHES someRegex
+  ```
+
+  For instance, if we store the following **cmake** script in the file "regex.cmake":
+
+  ```cmake
+  cmake_minimum_required(VERSION 3.22)
+  if("abc" MATCHES ab*)
+   message("matches")
+   message(${CMAKE_MATCH_COUNT})
+   message(${CMAKE_MATCH_0})
+  endif()
+  
+  if("abc" MATCHES [abc])
+   message("matches")
+   message(${CMAKE_MATCH_COUNT})
+   message(${CMAKE_MATCH_0})
+  endif()
+  ```
+
+  upon execution it follows:
+
+  ```bash
+  $ cmake -P regex.cmake 
+  matches
+  0
+  ab
+  matches
+  0
+  a
+  ```
+
+  
+
+Finally, the **cmake** scripting language offers several operators to inspect directly status of files or directories. Their meaning and usage is the same as in a shell, only the syntax differ: 
+
+* ```EXISTS``` &mdash; checks if a file or directory exists:
+
+  ```cmake
+  set(File "/home/abilandz/git/lectures/NAT3054/Lecture_3/make.md")
+  if(EXISTS ${File})
+    message("File ${File} exists")
+  endif()
+  ```
+
+* ```IS_NEWER_THAN``` &mdash; checks which file is newer:
+
+  ```cmake
+  set(File_1 "/home/abilandz/git/lectures/NAT3054/Lecture_3/make.md")
+  set(File_2 "/home/abilandz/git/lectures/NAT3054/Lecture_2/git.md")
+  if(${File_1} IS_NEWER_THAN ${File_2})
+    message("${File_1} is newer than ${File_2}")
+  else()
+    message("${File_2} is newer than ${File_1}")
+  endif()
+  ```
+
+  Warning: the operator ```IS_NEWER_THAN``` evaluated to ```true``` even if one or both files in a comparison do not exist.
+
+* ```IS_DIRECTORY``` &mdash; checks if a specified path points to a directory:
+
+  ```cmake
+  set(Path "/home/abilandz/git/lectures/NAT3054/Lecture_3")
+  if(IS_DIRECTORY ${Path})
+    message("${Path} is a directory")
+  endif()
+  ```
+
+In a similar manner, one can use other operators in this category, e.g. ```IS_SYMLINK```, ```IS_ABSOLUTE```, etc.
+
+
+
+##### Loops
+
+TBC 20251205
 
 
 
