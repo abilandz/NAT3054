@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20251205-1
+**Last update**: 20251206-1
 
 
 ### Table of Contents
@@ -1091,13 +1091,13 @@ TBI 20251203 add some text here as a bridge towards next section
 
 ##### Command and script arguments
 
-Arguments are passed to **cmake** script in a similar fashion as to a shell script, using the following syntax:
+Arguments are passed to **cmake** script similarly as to a shell script, using the following syntax:
 
 ```bash
 cmake arg1 arg2 ... argN
 ```
 
-All arguments are stored in **cmake**'s internal variables ```CMAKE_ARGV1```, ```CMAKE_ARGV2```, ... ```CMAKE_ARGVN```.  There is also a special variable ```CMAKE_ARGVC```, which counts total number of arguments. If the content of **cmake** script is:
+All arguments are stored in **cmake**'s internal variables ```CMAKE_ARGV1```, ```CMAKE_ARGV2```, ... ```CMAKE_ARGVN```.  There is also a special variable ```CMAKE_ARGVC```, which counts the total number of arguments. If the content of **cmake** script is:
 
 ```cmake  
 cmake_minimum_required(VERSION 3.22)
@@ -1189,7 +1189,7 @@ endif()
 
 The meaning of above conditional block is similar to other languages and it is self-explanatory.
 
-As a part of condition to be tested, the following standard _logical_ operators are supported: ```NOT```, ```AND```, ```OR```. The strings which act as standard booleans are ```TRUE``` and ```FALSE```. The conditions can be grouped with round braces ```( ... )```. If we have the following content in the script "if.cmake":
+As a part of the condition to be tested, the following standard _logical_ operators are supported: ```NOT```, ```AND```, ```OR```. The strings that act as standard booleans are ```TRUE``` and ```FALSE```. The conditions can be grouped with round braces ```( ... )```. If we have the following content in the script "if.cmake":
 
 ```cmake
 cmake_minimum_required(VERSION 3.22)
@@ -1381,7 +1381,195 @@ In a similar manner, one can use other operators in this category, e.g. ```IS_SY
 
 ##### Loops
 
-TBC 20251205
+The **cmake** scripting language supports two types of loops: **while** and **foreach** loop. Their syntax and usage is illustrated with a few concrete examples. 
+
+In general, one uses **while** loop as follows:
+
+```cmake
+while(condition)
+  command-1
+  command-2
+    ...
+  command-N
+endwhile()  
+```
+
+Within the body of a **while()** loop, one can use the commands **break()** and **continue()** with their standard meanings. This loop is typically used when the _condition_ evaluates to a simple boolean expression directly.
+
+It is possible to use a **while()** loop to work with the explicit counters, but the syntax is somewhat cumbersome. If the following script is saved in the file "while.cmake":
+
+````cmake
+cmake_minimum_required(VERSION 3.22)
+
+set(Counter 0)
+set(Max 4)
+while(${Counter} LESS_EQUAL ${Max})
+
+ # some message:
+ message("Counter = ${Counter}")
+ 
+ # increment (yes, this is the simplest syntax!):
+ math(EXPR Counter ${Counter}+1)
+
+endwhile()
+````
+
+upon execution it follows:
+
+```bash
+$ cmake -P while.cmake
+Counter = 0
+Counter = 1
+Counter = 2
+Counter = 3
+Counter = 4
+```
+
+This syntax is cumbersome, because even to execute a simple increment, we had to execute the mathematical expressions in a special environment, with the following general syntax:
+
+```cmake
+math(EXPR outputVariable "mathExpression")
+```
+
+For instance:
+
+```cmake
+set(Var 4)
+set(Square 0)
+math(EXPR Square "${Var}*${Var}")
+message("Square of ${Var} is ${Square}") 
+# Square of 4 is 16
+```
+
+One should not take mathematical operations in **cmake** too seriously, as the above built-in **math()** command supports only basic and rudimentary mathematical operations. For instance, floating-point arithmetic is not supported. Similar to shell, whenever more involved mathematical operations need to be performed in a **cmake** script, one can call an external utility (more on this later!).
+
+Another loop supported by **cmake** is the **foreach()** loop, and this version is much more versatile than the **while()** loop. It comes in several variants, each of which is more suitable for a specific use case than the others. 
+
+The simplest version of the **foreach()** loop is a so-called _C-style for loop_, with the following general syntax:
+
+```cmake
+foreach(loopIndex RANGE maxValue)
+  command-1
+  command-2
+    ...
+  command-N
+endforeach()
+```
+
+Also within the body of a **foreach()** loop, one can use the commands **break()** and **continue()** with their standard meanings. 
+
+For instance, the following **cmake** script implemented in a file "for.cmake":
+
+```cmake
+cmake_minimum_required(VERSION 3.22)
+
+set(Max 4)
+foreach(Index RANGE ${Max})
+  message("Index: ${Index}")
+endforeach()
+```
+
+evaluates into:
+
+```bash
+$ cmake -P for.cmake
+Index: 0
+Index: 1
+Index: 2
+Index: 3
+Index: 4
+```
+
+The loop variable (e.g. named "Index" in the above example) has a local scope to **foreach()**, and it is automatically initialized to 0.  
+
+A slightly more general version of **foreach()** loop is given by the following general syntax:
+
+```cmake
+foreach(loopIndex RANGE minValue maxValue step)
+  command-1
+  command-2
+    ...
+  command-N
+endforeach()
+```
+
+In the above code, the last argument "step" is optional. For instance, the script:
+
+```cmake
+cmake_minimum_required(VERSION 3.22)
+
+set(Min 0)
+set(Max 10)
+set(Step 2)
+foreach(Index RANGE ${Min} ${Max} ${Step})
+  message("Index: ${Index}")
+endforeach()
+```
+
+will print
+
+```bash
+Index: 0
+Index: 2
+Index: 4
+Index: 6
+Index: 8
+Index: 10
+```
+
+Finally, one can use **foreach()** loop to parse directly to list elements. The general syntax for this variant of **foreach()** loop is:
+
+```cmake
+foreach(Var listElement-1 listElement-2 ... listElement-N)
+```
+
+The following script:
+
+```cmake
+cmake_minimum_required(VERSION 3.22)
+
+foreach(Var "a" "b" "ab" "a  b" 1 2)
+  message("Var: ${Var}")
+endforeach()
+```
+
+will print:
+
+```bash
+Var: a
+Var: b
+Var: ab
+Var: a  b
+Var: 1
+Var: 2
+```
+
+In each variant of the **foreach()** loop, the scope of the loop variable is local to the loop in which that variable is used:
+
+```cmake
+set(Var "44")
+message("Var before loop: ${Var}")
+foreach(Var "a" "b" "c")
+  message("Var in the loop: ${Var}")
+endforeach()
+message("Var after loop:  ${Var}")
+```
+
+will print:
+
+```bash
+Var before loop: 44
+Var in the loop: a
+Var in the loop: b
+Var in the loop: c
+Var after loop:  44
+```
+
+
+
+##### Commands and functions
+
+TBC 20251206
 
 
 
