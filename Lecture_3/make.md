@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20251206-1
+**Last update**: 20251207-1
 
 
 ### Table of Contents
@@ -1567,9 +1567,233 @@ Var after loop:  44
 
 
 
-##### Commands and functions
+##### Functions
 
-TBC 20251206
+The **cmake** scripting language supports functions. The general design and syntax is similar to shell:
+
+````cmake
+function(functionName)
+  ... function body ...
+endfunction()
+````
+
+A list of arguments _argument-1 argument-2 ... argument-N_ is optional. An executive summary of the main design decisions: 
+
+* _scope_ &mdash; all variables defined in the function body and local to that function. The following scripts
+
+  ```cmake
+  cmake_minimum_required(VERSION 3.22)
+  
+  function(fun)
+    set(Var "123")
+    message("in function: Var = ${Var}")
+  endfunction()
+  
+  fun()
+  message("outside of function: Var = ${Var}")
+  ```
+
+  after execution produces:
+
+  ```bash
+  in function: Var = 123
+  outside of function: Var =
+  ```
+
+* _environment_ &mdash; function inherits variables set already in the global environment, can change their content locally, but those changes are not propagated into the global environment. That is illustrated with the following script:
+
+  ```cmake 
+  cmake_minimum_required(VERSION 3.22)
+  
+  set(Var "123")
+  message("before function: Var = ${Var}")
+  
+  function(fun)
+    message("in function (before redefinition): Var = ${Var}")
+    set(Var "abc")
+    message("in function (after redefinition): Var = ${Var}")
+  endfunction()
+  
+  fun()
+  message("after function: Var = ${Var}")
+  ```
+
+  which executes as follows:
+
+  ```bash
+  before function: Var = 123
+  in function (before redefinition): Var = 123
+  in function (after redefinition): Var = abc
+  after function: Var = 123
+  ```
+
+  With respect to the environment, **function()** in **cmake** scripting language behaves similarly as a subshell ```( ... )``` in Bash. 
+
+  It is possible to change the global environment by executing a call to the function &mdash; for that sake one can use an alternative implementation in the **cmake** scripting language named **macro()**, but its usage is not recommended, because one can realize which variables in the global environment will be potentially changed, only by inspecting the source code of **macro()**.
+
+* _arguments_ &mdash; arguments _argument-1 argument-2 ... argument-N_ passed in a function call **fun(_argument-1 argument-2 ... argument-N_)** can be referenced programmatically in the function body with the following built-in variables, which resembles the classical C-style definition and usage:
+
+  * ```ARGC``` : the total number of arguments ("argument count");
+  * ```ARGV``` : list of all arguments;
+  * ```ARGV0```, ```ARGV1```, ...  : value of the 1st argument passed to the function, value of the 2nd argument passed to the function, etc;
+
+  Their usage is illustrated with the following function implementation:
+
+  ```cmake
+  cmake_minimum_required(VERSION 3.22)
+  
+  # function implementation:
+  function(fun)
+    message("number of arguments: ${ARGC}")
+    message("list of arguments:   ${ARGV}")
+  
+    message("argument 1: ${ARGV0}")
+    message("argument 2: ${ARGV1}")
+    message("argument 3: ${ARGV2}")
+  
+    # special treatment for the last argument:
+    set(LA -1)
+    math(EXPR LA "${ARGC}-1")
+    message("last argument: ${ARGV${LA}}")
+  
+  endfunction()
+  
+  # call the function:
+  fun("a" "b c" 44)
+  ```
+
+  The call to the function gives the following output:
+
+  ```cmake
+  number of arguments: 3
+  list of arguments:   a;b c;44
+  argument 1: a
+  argument 2: b c
+  argument 3: 44
+  last argument: 44
+  ```
+
+  There is no special built-in variable to retrieve directly the last argument, but as the above example illustrates, this can be achieved easily. 
+
+  Alternatively, one can define the formal arguments explicitly in the function definition and retrieve them in the function body by their name:
+
+  ```cmake
+  function(functionName someArg)
+    message("someArg: ${someArg}")
+  endfunction()
+  ```
+
+  but this is less flexible and powerful than working with the built-in variables for arguments.
+
+* _return_ &mdash; one can terminate function call with **return()**, for instance:
+
+  ```cmake
+  cmake_minimum_required(VERSION 3.22)
+  
+  function(fun)
+    if(NOT ${ARGC} EQUAL 2)
+      message("exactly two arguments expected")
+      return()
+    endif()
+    message("okay, let's do something...")
+  endfunction()
+  
+  fun("a" "b" "c") # prints: "exactly two arguments expected"
+  fun("a" "b") # prints: "okay, let's do something..."
+  ```
+
+* _debugging_ &mdash; mostly for debugging purposes, one case use a few more built-in variables functions, which are set each time a function is called, and can be used only in the function body:
+
+  * ```CMAKE_CURRENT_FUNCTION``` &mdash; the name of the function;
+  * ```CMAKE_CURRENT_FUNCTION_LIST_DIR``` &mdash; path to the directory holding the file in which the function is implemented;
+  * ```CMAKE_CURRENT_FUNCTION_LIST_FILE``` &mdash; path to the file in which the function is implemented;
+  * ```CMAKE_CURRENT_FUNCTION_LIST_LINE``` &mdash; in the file in which the function is implemented, this variable holds the line number at which the implementation of the function begins.
+
+  There usage is illustrated with the following example, which is saved in the file "/home/abilandz/NAT3054/cmake/functions/debugging.cmake":
+
+  ```cmake
+  cmake_minimum_required(VERSION 3.22)
+  
+  function(fun_1)
+    message("hello from function ${CMAKE_CURRENT_FUNCTION}")
+    message("hello from function ${CMAKE_CURRENT_FUNCTION_LIST_DIR}")
+    message("hello from function ${CMAKE_CURRENT_FUNCTION_LIST_FILE}")
+    message("hello from function ${CMAKE_CURRENT_FUNCTION_LIST_LINE}")
+  endfunction()
+  
+  function(fun_2)
+    message("hello from function ${CMAKE_CURRENT_FUNCTION}")
+    message("hello from function ${CMAKE_CURRENT_FUNCTION_LIST_DIR}")
+    message("hello from function ${CMAKE_CURRENT_FUNCTION_LIST_FILE}")
+    message("hello from function ${CMAKE_CURRENT_FUNCTION_LIST_LINE}")
+  endfunction()
+  
+  fun_1()
+  fun_2()
+  ```
+
+  After executing this script, we obtain:
+
+  ```bash
+  $ cmake -P debugging.cmake
+  hello from function fun_1
+  hello from function /home/abilandz/NAT3054/cmake/functions
+  hello from function /home/abilandz/NAT3054/cmake/functions/debugging.cmake
+  hello from function 3
+  hello from function fun_2
+  hello from function /home/abilandz/NAT3054/cmake/functions
+  hello from function /home/abilandz/NAT3054/cmake/functions/debugging.cmake
+  hello from function 10
+  ```
+
+* _cmake function libraries_ &mdash; it is possible to group **cmake** function implementations across different files and use only the ones that are needed. For instance, one defines the project with the following directory structure:
+
+  ```bash
+  ├── someProject
+  │   ├── cmakeFunctions
+  │       ├── io.cmake
+  │       ├── math.cmake
+  │       ├── ...
+  ```
+
+  The content of "io.cmake" could be:
+
+  ```cmake
+  function(Green)
+    string(ASCII 27 Esc)
+    message("${Esc}[32m${ARGV0}${Esc}[m")
+  endfunction()
+  
+  function(Red)
+    string(ASCII 27 Esc)
+    message("${Esc}[31m${ARGV0}${Esc}[m")
+  endfunction()
+  ```
+
+  In the main configuration file "CMakeLists.txt" or in some **cmake** script one first loads the function definitions with **include(...)**, and then simply use the functions, for instance:
+
+  ```cmake
+  cmake_minimum_required(VERSION 3.22)
+  
+  # Load personal cmake functions:
+  include(./cmakeFunctions/io.cmake)
+  
+  # Call some personal cmake functions:
+  Red("Error: some error message") 
+  Green("Everything is OK!")
+  ```
+
+  If the above script is executed, we obtain the coloured printout:
+
+  <img src="coloredPrintout.png" alt="drawing" width="250"/>
+
+   
+
+ 
+
+
+
+TBI 20251207 make a bridge towards next section
 
 
 
