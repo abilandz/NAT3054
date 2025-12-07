@@ -1785,15 +1785,19 @@ A list of arguments _argument-1 argument-2 ... argument-N_ is optional. An execu
 
   If the above script is executed, we obtain the coloured printout:
 
-  <img src="coloredPrintout.png" alt="drawing" width="250"/>
+  <img src="coloredPrintout.png" alt="drawing" width="250"/>  
 
-   
-
- 
+In the examples above, we have used some predefined **cmake** commands, without introducing them in detail. In the next section, the overview of the most frequently used commands in that category is provided. 
 
 
 
-TBI 20251207 make a bridge towards next section
+
+
+##### Predefined cmake commands
+
+TBC 20251207 message(), include(), string(), file(), etc.
+
+
 
 
 
