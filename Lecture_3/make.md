@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20251207-1
+**Last update**: 20251208-1
 
 
 ### Table of Contents
@@ -1793,9 +1793,98 @@ In the examples above, we have used some predefined **cmake** commands, without 
 
 
 
-##### Predefined cmake commands
+##### Predefined scripting commands in cmake
 
-TBC 20251207 message(), include(), string(), file(), etc.
+In this section the most frequently used predefined scripting commands **cmake** are covered in more detail. These commands are always available, and their full list can be found in the official documentation at the following [link](https://cmake.org/cmake/help/latest/manual/cmake-commands.7.html#id3).
+
+* **message()** &mdash; Besides default printout of the text message to the stdout stream, this command offers a lot of other functionalites, through the usage of one of supported keywords as its first argument. For instance:
+
+  ```cmake
+  message(FATAL_ERROR "terminating execution due to fatal error")
+  ```
+
+  If the keyword ```FATAL_ERROR``` is used, **cmake** will abort processing and skip generation stage, and it will return a non-zero exit code.
+
+  On the other hand:
+
+  ```cmake
+  message(SEND_ERROR "error encountered, generation stage will be skipped")
+  ```
+
+  If the keyword ```SEND_ERROR``` is used, **cmake** will continue processing but it will skip the generation stage.
+
+  If the keyword is not specified as a first argument, it defaults to ```NOTICE```:
+
+  ```cmake
+  message(NOTICE "some message written to stderr stream")
+  message("some message written to stderr stream") # same as above
+  ```
+
+  It is important to remember that **message()** writes by default to _stderr_ stream. For instance, if the script is saved in the file "message.cmake":
+
+  ```cmake
+  cmake_minimum_required(VERSION 3.22)
+  message("some message")
+  ```
+
+  it follows:
+
+  ```bash
+  $ cmake -P message.cmake 1>stdout.log 2>stderr.log
+  $ cat stdout.log
+  $ cat stderr.log
+  some message
+  ```
+
+  Other supported keywords by the **message()** command can be found in the official documentation at this [link](https://cmake.org/cmake/help/latest/command/message.html).
+
+* **include()** &mdash; This commands loads and in-lines the **cmake** code from a separate file.  The relative paths will be by default resolved from the current
+  working directory. It's usage is illustrated with a few code snippets:
+
+  ```cmake 
+  # Load personal cmake functions:
+  include(myCmakeFunctions.cmake) # error, it file doesn't exist
+  
+  # Load personal cmake functions, if the file with their implementation exist:
+  include(myCmakeFunctions.cmake OPTIONAL) # no error, it file doesn't exist
+  
+  # Load personal cmake functions. If the file with their implementation exist,
+  # store the file path in 'Var', otherwise store NOTFOUND in 'Var':
+  include(myCmakeFunctions.cmake OPTIONAL RESULT_VARIABLE Var)
+  
+  # Search for a file relative to the script, not to the current working directory:
+  include("${CMAKE_CURRENT_LIST_DIR}/myCmakeFunctions.cmake")
+  ```
+
+  TBI 20251208 test these examples + check **include_guard()** on p79
+
+* **file()** &mdash; This command enables working directly with the file content in filesystem, but also fetching the content from online resources. Few general examples of its usage, with self-explanatory syntax:
+
+  ```cmake
+  # read the content of "someFile", and store it in variable "Var":
+  file(READ someFile Var)
+  
+  # write "someContent" to an external file "someFile". If the file
+  # doesn't exist, it's automatically created. If the file exists,
+  # its content will be overwritten:
+  file(WRITE someFile "someContent")
+  
+  # same as WRITE, just the content is appended, not overwritten:
+  file(APPEND someFile "someContent")
+  
+  # download online file from "someUrl" locally to "localPath"
+  file(DOWNLOAD someUrl localPath)
+  ```
+
+  TBI 20251208 check still Appendix A for further details
+
+* **execute_process()** &mdash; TBC 20251208
+
+* **string()** &mdash; 
+
+* **math()** &mdash;
+
+  
 
 
 
