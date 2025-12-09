@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20251208-1
+**Last update**: 20251209-1
 
 
 ### Table of Contents
@@ -1878,9 +1878,78 @@ In this section the most frequently used predefined scripting commands **cmake**
 
   TBI 20251208 check still Appendix A for further details
 
-* **execute_process()** &mdash; TBC 20251208
+* **execute_process()** &mdash; By using this command, one can in **cmake** scripts or configuration files execute external commands available on the underlying system. Since not all commands are available on all systems, and even if they are, their implementation details can differ, the **cmake**'s ' command **execute_process()** has to be used with care, as it typically leads to the loss of portability. Its general syntax is:
 
-* **string()** &mdash; 
+  ```cmake 
+  execute_process(COMMAND someExternalCommand arg1 ... argN option1 ... optionN)
+  ```
+
+  Arguments "arg1", ..., "argN " are optional, and they are passed to an external command "someExternalCommand". On the other hand, options "option1", ..., "optionN" are interpreted directly by **cmake**'s command **execute_process()**.
+
+  For instance, to obtain a timestamp in seconds since Unix epoch (1970-01-01 00:00 UTC), the following command and options can be executed on Linux:
+
+  ```bash
+  $ date +%s
+  1765262578
+  ```
+
+  Within **cmake**, that command can be executed with:
+
+  ```cmake
+  execute_process(COMMAND date +%s)
+  ```
+
+  Below we provide some of the most frequently used options to modify or extend the default behavior of **execute_process()**:
+
+  * ```OUTPUT_VARIABLE``` &mdash; The output is not printed on the _stdout_ stream, but instead stored in a variable;
+  * ```ERROR_VARIABLE``` &mdash; The command error message is not printed on the _stderr_ stream, but instead stored in a variable;
+
+  * ```RESULT_VARIABLE``` &mdash; The exit status of last executed command is stored in a variable.
+
+    For instance:
+
+    ```cmake
+    cmake_minimum_required(VERSION 3.22)
+    
+    execute_process(COMMAND date +%s OUTPUT_VARIABLE output ERROR_VARIABLE error RESULT_VARIABLE exit_status)
+    
+    if(${exit_status} EQUAL 0)
+     message("The current timestamp: ${output}")
+    else()
+     message("Error message: ${error}")
+    endif()
+    ```
+
+    will execute as:
+
+    ```bash
+    The current timestamp: 1765263952
+    ```
+
+    On the other hand, if the command fails, like in the following slightly modified script in which an error was intentionally introduced by passing to the **date** command the flag ```-a``` which that command doesn't support:
+
+    ```cmake
+    make_minimum_required(VERSION 3.22)
+    
+    execute_process(COMMAND date -a OUTPUT_VARIABLE output ERROR_VARIABLE error RESULT_VARIABLE exit_status)
+    
+    if(${exit_status} EQUAL 0)
+     message("The current timestamp: ${output}")
+    else()
+     message("Error message: ${error}")
+    endif()
+    ```
+
+    The execution now gives:
+
+    ```bash
+    Error message: date: invalid option -- 'a'
+    Try 'date --help' for more information.
+    ```
+
+    Other supported options for the command **execute_process()** can be found at official documentation at the following [link](https://cmake.org/cmake/help/latest/command/execute_process.html).
+
+* **string()** &mdash; TBC 20251209
 
 * **math()** &mdash;
 
