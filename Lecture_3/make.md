@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20251209-1
+**Last update**: 20251210-1
 
 
 ### Table of Contents
@@ -674,11 +674,11 @@ Vice versa, if there were changes only in the 'test.cxx', the executable **test*
 
 ### 4. The final step: **cmake** <a name="the.final.step.cmake"></a>
 
-CMake ('cross-platform make') is an advanced software development tool used primarily to automate the creation of configuration files for standard native build tools, such as _makefiles_ for **make**. It was originally designed by Bill Hoffman and released in 2000 by Kitware, Inc., a technology company headquartered in Clifton Park, New York, with an initial focus on 3D biomedical imaging of the human body. 
+CMake ('cross-platform make') is an advanced software development tool used primarily to automate the creation of configuration files for standard native build tools, such as _makefiles_ for the **make** tool. It was originally designed by Bill Hoffman and released in 2000 by Kitware, Inc., a technology company headquartered in Clifton Park, New York, with an initial focus on 3D biomedical imaging of the human body. 
 
-As its name suggests, CMake is cross-platform, meaning it can be used transparently to build projects in an automated manner on various underlying operating systems, including Linux, Windows, and macOS. By default, CMake assumes that the project is written in C or C++, but upon reconfiguration, it can build projects written in other languages as well, including Fortran, Objective-C/C++, C#, Java, etc.
+As its name suggests, CMake is cross-platform, meaning it can be used transparently to build projects in an automated manner on various underlying operating systems, including Linux, Windows, and macOS. By default, CMake assumes that the project is written in C or C++, but upon reconfiguration, it can also build projects written in other languages, including Fortran, Objective-C/C++, C#, Java, and others.
 
-CMake consists of five native executables: **cmake**, **ctest**, **cpack**, **cmake-gui**, and **ccmake**. In this lecture only **cmake** is covered in detail, and therefore CMake and **cmake** in what follows next will be used interchangeably.
+CMake consists of five native executables: **cmake**, **ctest**, **cpack**, **cmake-gui**, and **ccmake**. In this lecture, only **cmake** is covered in detail, and therefore CMake and **cmake** in what follows next will be used interchangeably.
 
 #### Installing cmake
 
@@ -703,7 +703,7 @@ In a case when the custom **cmake** version needs to be compiled (e.g. when a ne
 # Othwerwise, skip this step:
 $ sudo apt remove --purge --auto-remove cmake
 
-# Download the custom version, e.g. 3.23.1 in some directory:
+# Download the custom version, e.g. 3.23.1, in some directory:
 $ mkdir $HOME/cmake && cd $HOME/cmake
 $ wget https://cmake.org/files/v3.23/cmake-3.23.1.tar.gz
 
@@ -749,7 +749,7 @@ CMake suite maintained and supported by Kitware (kitware.com/cmake).
 # othwerwise, skip this step:
 $ sudo make install
 
-# b) If you do not have admin privilages, simply add new 
+# b) If you do not have admin privilages, simply add a new 
 # install directory to PATH with higher precedence:
 $ export PATH=$HOME/cmake/cmake-3.23.1/bin:$PATH
 $ which cmake
@@ -777,12 +777,10 @@ Conceptually, when building a project, **cmake** goes through three different st
 1. _Configuration_:
    * collects all details about the underlying environment (e.g. which compilers are available for the languages **cmake** supports);
    * performs simple tests (e.g. whether a simple program can be compiled with found compilers);
-   * parses through the mandatory configuration file "CMakeLists.txt" (written in **cmake**'s native language!), and executes it line-by-line;
+   * parses through the mandatory configuration file "CMakeLists.txt" (written in **cmake**'s native scripting language!), and executes it line-by-line;
    * all gathered information is stored in a new output directory, the _build tree_, which is used in the generation stage (e.g. paths to found compilers are stored permanently within the _build tree_ in a file called "CMakeCache.txt"). 
 2. _Generation_ &mdash; at this stage, **cmake** generates for the current environment automatically the suitable configuration files for native build tools (e.g. _makefiles_ for **make**). 
 3. _Building_ &mdash; native build tools (e.g. **make**) are run to produce the final executables or libraries for this project. Everything that is created (e.g. object files, the final executable or library, build logs, etc.) during the build process by the native build tool is also stored within the _build tree_. 
-
-TBI 20251130 shall I also add _Installation_ as a specific stage here, in which the final executables and libraris are put in the correct place in the system, and all temporary files or leftovers from build are cleaned up?
 
 Diagrammatically, the evolution of the project after all stages of **cmake** are executed can be described as follows:
 
@@ -824,7 +822,7 @@ flowchart TB
 
 Before running **cmake**, one needs to prepare a mandatory configuration file "CMakeLists.txt". At least one such file needs to be prepared and placed in the root directory of the project, before **cmake** can be executed for that project. 
 
-After the configuration file "CMakeLists.txt" is written, the configuration and generation stages are accomplished by executing in the same directory where "CMakeLists.txt" is placed:
+After the configuration file "CMakeLists.txt" is written, the configuration and generation stages are accomplished by executing the following command in the same directory where "CMakeLists.txt" is placed:
 
 ```bash
 cmake -B buildTree -S sourceTree
@@ -832,27 +830,27 @@ cmake -B buildTree -S sourceTree
 
 where "sourceTree" is the name or path of a directory in which the source code of the project is placed (the most frequent naming convention is simply "src"), and "buildTree" is a name (the most frequent naming convention is simply "build") of new directory created by **cmake** in which the output of configuration and generation stage is stored (e.g. the file "CMakeCache.txt" and _makefiles_ for **make**, etc.). 
 
-The final building stage commences by executing:
+The final building stage commences after executing:
 
 ```bash
 cmake --build buildTree
 ```
 
-The name or path of "buildTree" must be the same as in the previous step. One can profile this step with additional flags, for instance: TBI 20251130 shall I move this later?
+The name or path of "buildTree" must be the same as in the previous step. One can profile and optimize this stage with additional flags, for instance:
 
 ```bash
 # build the project using 10 cores and provide verbose output:
 cmake --build buildTree -j 10 -v
 ```
 
-It is also possible via **cmake** to supply options for the native build tool which will be used (e.g. **make**) with the following syntax: TBI 20251130 shall I move this later?
+It is also possible via **cmake** to supply options for the native build tool which will be used (e.g. **make**) with the following syntax:
 
 ```bash
 # build the project using non-default settings for 'make':
 cmake --build buildTree -- someFlagsForMake
 ```
 
-If the build succeeded, the final executable will be in the "buildTree", and can be immediately tested with:
+If the build succeeded, the final executable will be in the "buildTree" directory, and can be immediately tested with:
 
 ```bash
 ./buildTree/finalExecutable
@@ -860,19 +858,11 @@ If the build succeeded, the final executable will be in the "buildTree", and can
 
 Typically, the project's code is added under a version control system (e.g. using Git), and therefore it is important to maintain the content of "sourceTree" clean and separate from the content of "buildTree". 
 
-
-
-TBI 20251130 add **cmake --install** from p25 + introduce "cmake_install.cmake" from build tree (see p35)
-
-TBI 20251130 mentioned somewhere that absolute paths should never be used within a source tree, as on a different computer or installed by somebody else that won't work
+Before we start discussing the **cmake** projects in detail, a quick passage through its native scripting language is provided in the next section.
 
 
 
-
-
-
-
-#### Syntax of the native scripting language in cmake
+#### The native scripting language in cmake
 
 A "Hello World!" example in the native scripting language in **cmake** amounts to the following code saved in the script file named "hello.cmake":
 
@@ -889,7 +879,7 @@ $ cmake -P hello.cmake
 Hello World!
 ```
 
-The flag ```-P``` is important, and it instructs **cmake** that no configure or generate step is performed when the script is executed. Without using this flag, **cmake** expects the mandatory configuration file "CMakeLists.txt"  to be available, and in addition **cmake** will automatically perform a lot of additional actions. TBI 20251130 improve the wording here + check if this is correct, i.e. do I need ```-B``` flag, or what is a default flag, etc.
+The flag ```-P``` is important, and it instructs **cmake** that no configuration or generation step needs to be performed when the script is executed. Without using this flag, **cmake** expects the mandatory configuration file "CMakeLists.txt"  to be available, and in addition **cmake** will automatically perform a lot of additional actions behind the scene. A few other general remarks:
 
 1. _Command invocation_ &mdash; In general, in scripts or in configuration files, **cmake** commands use the following syntax:
 
@@ -912,7 +902,7 @@ The flag ```-P``` is important, and it instructs **cmake** that no configure or 
     CMake Error at CMakeLists.txt:3 (cmake_minimum_required):
       CMake 3.23 or higher is required.  You are running version 3.22.1
     ```
-    This can happen frequently, in fact, when running remotely on large-scale computing facilities, on which software is not updated too regularly. In that case, one needs to install the custom **cmake** version from source in the personal home directory, as explained in the previous section. To ensure consistent behaviour of all commands used in the scripts.
+    This can happen frequently, in fact, when running remotely on large-scale computing facilities, on which software is not updated too regularly. In that case, one needs to install the custom **cmake** version from source in the personal home directory, as explained in the previous section, to ensure consistent behaviour of all commands used in the scripts.
 
 3. _Comments_ &mdash; The **cmake** scripting language supports two types of comments: single-line and multi-line. Single-line comments start with the hash symbol ```#``` and behave similarly as in shell. Multi-line comments are started with the two opening brackets ```[``` with any number of ```=``` characters between them, and closed with the same compound delimiter, just each ```[``` is replaced with ```]```. For instance, multi-line comments can be embedded within
 
@@ -971,13 +961,13 @@ $ cat hello.txt
 
 ```
 
-On whichever platform this script is executed, **cmake** will ensure transparently that the file "hello.txt" is created and the requested content is written into it with **cmake**'s command **file**. Otherwise, the above script would have to be written separately for each operating system, using directly native tools available on that operating system.
+On whichever platform this script is executed, **cmake** will ensure transparently that the file "hello.txt" is created and the requested content is written into it with the **cmake**'s command **file**. Otherwise, the above script would have to be written separately for each operating system, using directly native tools available on that operating system.
 
 
 
 ##### Variables
 
-In **cmake** language, variables are set with the internal command **set()** using the following syntax:
+In the **cmake**'s scripting language, variables are set with the internal command **set()** using the following syntax:
 
 ```cmaks
 set(varName "some content")
@@ -1024,7 +1014,7 @@ There are three categories of variables in **cmake**:
 
 1. _normal_ &mdash; the standard default variables, their content is referenced with ```${VarName}```
 
-2. _environment_ &mdash; when **cmake** is started in a particular environment, it automatically extracts and stores internally variables defined in that environment. After that, in that running **cmake** instance, their content is referenced with the syntax ```$ENV{VarName}```. Their content can be changed using **set(ENV{someVar})** command or unset via **unset(ENV{someVar})**, but when that instance of **cmake** terminates, those changes won't be propagated globally into the environment in which **cmake** is running. By analogy with a shell, **cmake**'s' environment variables behave and shell's environment variables which were NOT exported. For instance, if we have the following script "var_3.cmake":
+2. _environment_ &mdash; when **cmake** is started in a particular environment, it automatically extracts and stores internally variables defined in that environment. After that, in that running **cmake** instance, their content is referenced with the syntax ```$ENV{VarName}```. Their content can be changed using **set(ENV{someVar})** command or unset via **unset(ENV{someVar})**, but when that instance of **cmake** terminates, those changes won't be propagated globally into the environment in which **cmake** is running. By analogy with a shell, **cmake**'s environment variables behave like shell environment variables which were not exported. For instance, if we have the following script "var_3.cmake":
 
    ```cmake
    cmake_minimum_required(VERSION 3.22)
@@ -1051,7 +1041,7 @@ There are three categories of variables in **cmake**:
 
    Some environment variables have a special meaning to **cmake**, and changing their values will change **cmake**'s behavior during build. A list of all such environment variables can be found in the official **cmake** documentation under [cmake-env-variables(7)](https://cmake.org/cmake/help/latest/manual/cmake-env-variables.7.html). For instance, the content of environment variable ```CXX``` determines the executable which will be used to compile C++ source code. The ```CXX``` variable is used by **cmake** only in the first configuration to determine C++ compiler &mdash; after that, the value of `CXX` is stored in the cache as another variable ```CMAKE_CXX_COMPILER```.  Similar variables exist for other languages which **cmake** supports, e.g. ```FC``` is used for Fortran compiler found in configuration stage, whose value is stored in cache as ```CMAKE_Fortran_COMPILER```, etc.
 
-   Once **cmake**'s environment variables are stored in the configuration stage in the cache variables (like ```CMAKE_CXX_COMPILER``` or ```CMAKE_Fortran_COMPILER```), their content is persistent afterward during build (i.e. changing manually the content of ```CXX``` will have no effect during build, because the information about C++ compiler is retrieved later only from ```CMAKE_CXX_COMPILER```). 
+   Once **cmake**'s environment variables are stored during the configuration stage in the cache variables (like ```CMAKE_CXX_COMPILER``` or ```CMAKE_Fortran_COMPILER```), their content is persistent afterward during build (i.e. changing manually the content of ```CXX``` will have no effect during build, because the information about C++ compiler is retrieved later only from ```CMAKE_CXX_COMPILER```). 
 
 3. _cache_ &mdash; these variables are permanently stored within a build tree of particular project, in a file named "CMakeCache.txt". Therefore, they have relevance only during the build of the project, when the build tree is automatically generated by **cmake**. In particular, cache variables cannot be used in standalone **cmake** scripts, like normal and environment variables. In essence, cache variables hold permanently information gathered during the project configuration stage (e.g. path to compilers, linkers, etc.), which is referenced from them in the subsequent stages in the build of the project. Their content is referenced either with the standard syntax ```${variableName}```, or equivalently with a more specific syntax ```$CACHE{variableName}```. However, to set them, a special syntax has to be used:
 
@@ -1061,7 +1051,7 @@ There are three categories of variables in **cmake**:
 
    Typically, after the configuration stage is done, one can use the above command to overwrite manually content of some cache variables before the project build starts. For instance, if after configuration stage the outdated **gcc** compiler was found by **cmake** and stored in the cache variable ```CMAKE_CXX_COMPILER```, one can manually this way set the content of that variable to the newer **gcc** version available. 
 
-   In the above general syntax, "CACHE" is a keyword and it has to be always there. The supported "variableType" includes most importantly "BOOL", "FILEPATH", "PATH" (the directory path), "STRING", etc. The final mandatory entry, "variableComment", sets the comment next to definition of this variable on the file "CMakeCache.txt", and it serves as tool-tip message when **cmake** is used with GUIs in Windows. Finally, the last argument "FORCE" is an optional keyword, and if used it will force overwriting permanently the already existing cache variable with the same name in the file "CMakeCache.txt".
+   In the above general syntax, "CACHE" is a keyword and it has to be always there. The supported "variableType" includes most importantly "BOOL", "FILEPATH", "PATH" (the directory path), "STRING", etc. The final mandatory entry, "variableComment", sets the comment next to definition of this variable in the file "CMakeCache.txt", and it serves as tool-tip message when **cmake** is used with GUIs in Windows. Finally, the last argument "FORCE" is an optional keyword, and if used it will force overwriting permanently the already existing cache variable with the same name in the file "CMakeCache.txt".
 
    For instance, if after the configuration stage, the cache variable ```CMAKE_CXX_COMPILER``` is set in the file "CMakeCache.txt" to the outdated C++ compiler:
 
@@ -1085,8 +1075,6 @@ There are three categories of variables in **cmake**:
 
 
 
-TBI 20251203 add some text here as a bridge towards next section
-
 
 
 ##### Command and script arguments
@@ -1097,7 +1085,7 @@ Arguments are passed to **cmake** script similarly as to a shell script, using t
 cmake arg1 arg2 ... argN
 ```
 
-All arguments are stored in **cmake**'s internal variables ```CMAKE_ARGV1```, ```CMAKE_ARGV2```, ... ```CMAKE_ARGVN```.  There is also a special variable ```CMAKE_ARGVC```, which counts the total number of arguments. If the content of **cmake** script is:
+All arguments are stored in **cmake**'s internal variables ```CMAKE_ARGV1```, ```CMAKE_ARGV2```, ..., ```CMAKE_ARGVN```.  There is also a special variable ```CMAKE_ARGVC```, which counts the total number of arguments. If the content of **cmake** script "arg_1.cmake" is:
 
 ```cmake  
 cmake_minimum_required(VERSION 3.22)
@@ -1165,11 +1153,11 @@ There are three conceptually different types of arguments in **cmake**:
    3.22.1
    ```
 
-3. _unquoted arguments_ &mdash; when using unquoted arguments, one has to pay a special case to the metacharacter semicolon ```;```, which **cmake** uses to make lists. Each non-empty element withing semicolons is given to the command invocation as a separate argument. For more details how to define a list, see the **set()** command, and how to work with lists the **list()** command.
+3. _unquoted arguments_ &mdash; when using unquoted arguments, one has to pay a special case to the metacharacter semicolon ```;``` which **cmake** uses to make lists. Each non-empty element within semicolons is given to the command invocation as a separate argument. For more details how to define a list, see the **set()** command, and how to work with lists the **list()** command.
 
 
 
-In the next section, we introduce the basic control structures in the **cmake** scripting langues, like conditional blocks, loops, etc.
+In the next section, we introduce the basic control structures in the **cmake** scripting language, like conditional blocks, loops, etc.
 
 
 
@@ -1364,7 +1352,7 @@ Finally, the **cmake** scripting language offers several operators to inspect di
   endif()
   ```
 
-  Warning: the operator ```IS_NEWER_THAN``` evaluated to ```true``` even if one or both files in a comparison do not exist.
+  Warning: the operator ```IS_NEWER_THAN``` evaluates to ```true``` even if one or both files in a comparison do not exist.
 
 * ```IS_DIRECTORY``` &mdash; checks if a specified path points to a directory:
 
@@ -1441,7 +1429,7 @@ message("Square of ${Var} is ${Square}")
 # Square of 4 is 16
 ```
 
-One should not take mathematical operations in **cmake** too seriously, as the above built-in **math()** command supports only basic and rudimentary mathematical operations. For instance, floating-point arithmetic is not supported. Similar to shell, whenever more involved mathematical operations need to be performed in a **cmake** script, one can call an external utility (more on this later!).
+One should not take mathematical operations in **cmake** too far, as the above built-in **math()** command supports only basic and rudimentary mathematical operations. For instance, floating-point arithmetic is not supported. Similar to shell, whenever more involved mathematical operations need to be performed in a **cmake** script, one can call an external utility (more on this later!).
 
 Another loop supported by **cmake** is the **foreach()** loop, and this version is much more versatile than the **while()** loop. It comes in several variants, each of which is more suitable for a specific use case than the others. 
 
@@ -1517,7 +1505,7 @@ Index: 8
 Index: 10
 ```
 
-Finally, one can use **foreach()** loop to parse directly to list elements. The general syntax for this variant of **foreach()** loop is:
+Finally, one can use **foreach()** loop to parse directly list elements. The general syntax for this variant of **foreach()** loop is:
 
 ```cmake
 foreach(Var listElement-1 listElement-2 ... listElement-N)
@@ -1569,7 +1557,7 @@ Var after loop:  44
 
 ##### Functions
 
-The **cmake** scripting language supports functions. The general design and syntax is similar to shell:
+The **cmake** scripting language supports functions. The general design and syntax is:
 
 ````cmake
 function(functionName)
@@ -1577,9 +1565,9 @@ function(functionName)
 endfunction()
 ````
 
-A list of arguments _argument-1 argument-2 ... argument-N_ is optional. An executive summary of the main design decisions: 
+An executive summary of the main design decisions: 
 
-* _scope_ &mdash; all variables defined in the function body and local to that function. The following scripts
+* _scope_ &mdash; all variables defined in the function body are local to that function. The following scripts
 
   ```cmake
   cmake_minimum_required(VERSION 3.22)
@@ -1685,7 +1673,7 @@ A list of arguments _argument-1 argument-2 ... argument-N_ is optional. An execu
 
   but this is less flexible and powerful than working with the built-in variables for arguments.
 
-* _return_ &mdash; one can terminate function call with **return()**, for instance:
+* _return_ &mdash; one can terminate a function call with **return()**, for instance:
 
   ```cmake
   cmake_minimum_required(VERSION 3.22)
@@ -1702,7 +1690,7 @@ A list of arguments _argument-1 argument-2 ... argument-N_ is optional. An execu
   fun("a" "b") # prints: "okay, let's do something..."
   ```
 
-* _debugging_ &mdash; mostly for debugging purposes, one case use a few more built-in variables functions, which are set each time a function is called, and can be used only in the function body:
+* _debugging_ &mdash; mostly for debugging purposes, one case use a few more built-in variables within functions, which are set each time a function is called, and can be used only in the function body:
 
   * ```CMAKE_CURRENT_FUNCTION``` &mdash; the name of the function;
   * ```CMAKE_CURRENT_FUNCTION_LIST_DIR``` &mdash; path to the directory holding the file in which the function is implemented;
@@ -1795,9 +1783,9 @@ In the examples above, we have used some predefined **cmake** commands, without 
 
 ##### Predefined scripting commands in cmake
 
-In this section the most frequently used predefined scripting commands **cmake** are covered in more detail. These commands are always available, and their full list can be found in the official documentation at the following [link](https://cmake.org/cmake/help/latest/manual/cmake-commands.7.html#id3).
+In this section the most frequently used predefined scripting commands in **cmake** are covered in more detail. These commands are always available, and their full list can be found in the official documentation at the following [link](https://cmake.org/cmake/help/latest/manual/cmake-commands.7.html#id3).
 
-* **message()** &mdash; Besides default printout of the text message to the stdout stream, this command offers a lot of other functionalites, through the usage of one of supported keywords as its first argument. For instance:
+* **message()** &mdash; Besides default printout of the text message to the _stdout_ stream, this command offers a lot of other functionalities, through the usage of one of supported keywords as its first argument. For instance:
 
   ```cmake
   message(FATAL_ERROR "terminating execution due to fatal error")
@@ -1838,15 +1826,14 @@ In this section the most frequently used predefined scripting commands **cmake**
 
   Other supported keywords by the **message()** command can be found in the official documentation at this [link](https://cmake.org/cmake/help/latest/command/message.html).
 
-* **include()** &mdash; This commands loads and in-lines the **cmake** code from a separate file.  The relative paths will be by default resolved from the current
-  working directory. It's usage is illustrated with a few code snippets:
-
+* **include()** &mdash; This commands loads and in-lines the **cmake** code from a separate file. The relative paths will be by default resolved from the current working directory. It's usage is illustrated with a few code snippets:
+  
   ```cmake 
   # Load personal cmake functions:
-  include(myCmakeFunctions.cmake) # error, it file doesn't exist
+  include(myCmakeFunctions.cmake) # error, if file doesn't exist
   
   # Load personal cmake functions, if the file with their implementation exist:
-  include(myCmakeFunctions.cmake OPTIONAL) # no error, it file doesn't exist
+  include(myCmakeFunctions.cmake OPTIONAL) # no error if file doesn't exist
   
   # Load personal cmake functions. If the file with their implementation exist,
   # store the file path in 'Var', otherwise store NOTFOUND in 'Var':
@@ -1855,10 +1842,8 @@ In this section the most frequently used predefined scripting commands **cmake**
   # Search for a file relative to the script, not to the current working directory:
   include("${CMAKE_CURRENT_LIST_DIR}/myCmakeFunctions.cmake")
   ```
-
-  TBI 20251208 test these examples + check **include_guard()** on p79
-
-* **file()** &mdash; This command enables working directly with the file content in filesystem, but also fetching the content from online resources. Few general examples of its usage, with self-explanatory syntax:
+  
+* **file()** &mdash; This command enables working directly with the file content in the underlying filesystem, but also fetching the content from online resources. Few general examples of its usage, with self-explanatory syntax:
 
   ```cmake
   # read the content of "someFile", and store it in variable "Var":
@@ -1876,15 +1861,13 @@ In this section the most frequently used predefined scripting commands **cmake**
   file(DOWNLOAD someUrl localPath)
   ```
 
-  TBI 20251208 check still Appendix A for further details
-
-* **execute_process()** &mdash; By using this command, one can in **cmake** scripts or configuration files execute external commands available on the underlying system. Since not all commands are available on all systems, and even if they are, their implementation details can differ, the **cmake**'s ' command **execute_process()** has to be used with care, as it typically leads to the loss of portability. Its general syntax is:
+* **execute_process()** &mdash; By using this command, one can in **cmake** scripts or configuration files execute external commands available on the underlying system. Since not all commands are available on all systems, and even if they are, their implementation details can differ, the **cmake**'s command **execute_process()** has to be used with care, as it typically leads to the loss of portability. Its general syntax is:
 
   ```cmake 
   execute_process(COMMAND someExternalCommand arg1 ... argN option1 ... optionN)
   ```
 
-  Arguments "arg1", ..., "argN " are optional, and they are passed to an external command "someExternalCommand". On the other hand, options "option1", ..., "optionN" are interpreted directly by **cmake**'s command **execute_process()**.
+  Arguments "arg1", ..., "argN " are optional, and they are passed to an external command "someExternalCommand". On the other hand, options "option1", ..., "optionN" are interpreted directly by the **cmake**'s command **execute_process()**.
 
   For instance, to obtain a timestamp in seconds since Unix epoch (1970-01-01 00:00 UTC), the following command and options can be executed on Linux:
 
@@ -1949,7 +1932,7 @@ In this section the most frequently used predefined scripting commands **cmake**
 
     Other supported options for the command **execute_process()** can be found at official documentation at the following [link](https://cmake.org/cmake/help/latest/command/execute_process.html).
 
-* **string()** &mdash; TBC 20251209
+* **string()** &mdash; TBC 20251210
 
 * **math()** &mdash;
 
