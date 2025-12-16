@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20251210-2
+**Last update**: 20251216-1
 
 
 ### Table of Contents
@@ -1079,7 +1079,7 @@ There are three categories of variables in **cmake**:
 
 ##### Command and script arguments
 
-Arguments are passed to **cmake** script similarly as to a shell script, using the following syntax:
+Arguments are passed to the **cmake** script similarly to a shell script, using the following syntax:
 
 ```bash
 cmake arg1 arg2 ... argN
@@ -1114,7 +1114,7 @@ Total number of arguments: 6
 
 There are three conceptually different types of arguments in **cmake**:
 
-1. _bracket arguments_ &mdash; used to pass multi-line strings to commands preserving all empty characters, new lines, etc. For instance, if we save in the file "bracket.cmake" the following **cmake** script:
+1. _bracket arguments_ &mdash; used to pass multi-line strings to commands, preserving all empty characters, new lines, etc. For instance, if we save in the file "bracket.cmake" the following **cmake** script:
 
    ```cmake	 
    cmake_minimum_required(VERSION 3.22)
@@ -1135,25 +1135,24 @@ There are three conceptually different types of arguments in **cmake**:
      some    other text
    ```
 
-   The delimiters ```[[ ... ]]``` can be replaced with any other combination ```[=[ ... ]=]```, ```[==[ ... ]==]```, etc. Within bracket arguments all symbols are interpreted literally, i.e. all symbols use their metacharacter meaning, which means that content within bracket arguments cannot be modified dynamically (i.e. it is interpreted as verbatim).
+   The delimiters ```[[ ... ]]``` can be replaced with any other combination ```[=[ ... ]=]```, ```[==[ ... ]==]```, etc. Within bracket arguments, all symbols are interpreted literally, i.e. all symbols lose their metacharacter meaning. This means that content within bracket arguments cannot be modified dynamically (i.e. it is interpreted as verbatim).
 
 2. _quoted arguments_ &mdash; delimiters are double quotes ```" ... "```, and within double quotes the standard escape sequences (e.g. ```\n``` for new line) and variable referencing (e.g. ```${CMAKE_VERSION}```) are evaluated. For instance, if we have in the script "quoted.cmake" the following content:
 
    ```cmake
    cmake_minimum_required(VERSION 3.22)
-   
    message("Current cmake version is:\n${CMAKE_VERSION}")
    ```
-
+   
    after execution it follows:
-
+   
    ```bash
    $ cmake -P quoted.cmake 
    Current cmake version is:
    3.22.1
    ```
-
-3. _unquoted arguments_ &mdash; when using unquoted arguments, one has to pay a special case to the metacharacter semicolon ```;``` which **cmake** uses to make lists. Each non-empty element within semicolons is given to the command invocation as a separate argument. For more details how to define a list, see the **set()** command, and how to work with lists the **list()** command.
+   
+3. _unquoted arguments_ &mdash; when using unquoted arguments, one has to pay special attention to the metacharacter semicolon ```;``` which **cmake** uses to make lists. Each non-empty element within semicolons is given to the command invocation as a separate argument. For more details on how to define a list, see the **set()** command, and for information on working with lists, refer to the **list()** command.
 
 
 
@@ -1193,7 +1192,7 @@ $ cmake -P if.cmake
 It's true.
 ```
 
-The strings which **cmake** will evaluate as a Boolean true are ```ON```, ```YES```, ```Y```, ```TRUE``` (all of them are case insensitive), and any non-zero integer. This is illustrated with the following script named "bool.cmake":
+The strings which **cmake** will evaluate as a Boolean true are ```ON```, ```YES```, ```Y```, ```TRUE``` (all of them are case insensitive), and any non-zero integer. This is illustrated by the following script named "bool.cmake":
 
 ```cmake
 cmake_minimum_required(VERSION 3.22)
@@ -1252,13 +1251,13 @@ Y
 0.1
 ```
 
-Analogously, the strings which **cmake** will evaluate as a Boolean false are ```OFF```, ```NO```, ```N```, ```FALSE```, ```IGNORE```, ```NOTFOUND```, ```NOTFOUND``` suffix (all of them are case insensitive), an empty string and a zero. 
+Analogously, the strings which **cmake** will evaluate as a Boolean false are ```OFF```, ```NO```, ```N```, ```FALSE```, ```IGNORE```, ```NOTFOUND```, suffix ```NOTFOUND``` (all of them are case insensitive), an empty string, and a zero. 
 
 The **cmake** scripting language offers several operators for comparison, which can be grouped as follows:
 
 * _integer comparison_ &mdash; ```EQUAL```, ```LESS```, ```LESS_EQUAL```, ```GREATER```, and ```GREATER_EQUAL```
 
-* _version comparison_ &mdash; ```VERSION_EQUAL```, ```VERSION_LESS```, ```VERSION_LESS_EQUAL```, ```VERSION_GREATER```, and ```VERSION_GREATER_EQUAL```. The version identifier has to follow the standard syntax convention "major.minor.patch.tweak". If "tweak" number it missing, that is interpreted in comparison as "major.minor.patch.0", if "patch" and "tweak" numbers are missing, that is interpreted in comparison as "major.minor.0.0", etc. For instance, the code snippet:
+* _version comparison_ &mdash; ```VERSION_EQUAL```, ```VERSION_LESS```, ```VERSION_LESS_EQUAL```, ```VERSION_GREATER```, and ```VERSION_GREATER_EQUAL```. The version identifier has to follow the standard syntax convention "major.minor.patch.tweak". If the "tweak" number is missing, that is interpreted in comparison as "major.minor.patch.0", if "patch" and "tweak" numbers are missing, that is interpreted in comparison as "major.minor.0.0", etc. For instance, the code snippet:
 
   ```cmake
   if (2.3.4 VERSION_LESS_EQUAL 2.3)
@@ -1278,7 +1277,7 @@ The **cmake** scripting language offers several operators for comparison, which 
 
   will evaluate to true.
 
-* _string comparison_ &mdash; ```STREQUAL``` . The operator is case sensitive. The code snippet
+* _string comparison_ &mdash; ```STREQUAL```. The operator is case sensitive. The code snippet
 
   ```cmake  
   if ("AA" STREQUAL "AA")
@@ -1329,7 +1328,7 @@ The **cmake** scripting language offers several operators for comparison, which 
 
   
 
-Finally, the **cmake** scripting language offers several operators to inspect directly status of files or directories. Their meaning and usage is the same as in a shell, only the syntax differ: 
+Finally, the **cmake** scripting language offers several operators to inspect the status of files or directories directly. Their meaning and usage are the same as in a shell, only the syntax differs: 
 
 * ```EXISTS``` &mdash; checks if a file or directory exists:
 
@@ -1352,9 +1351,9 @@ Finally, the **cmake** scripting language offers several operators to inspect di
   endif()
   ```
 
-  Warning: the operator ```IS_NEWER_THAN``` evaluates to ```true``` even if one or both files in a comparison do not exist.
+  Warning: the operator ```IS_NEWER_THAN``` evaluates to ```TRUE``` even if one or both files in a comparison do not exist.
 
-* ```IS_DIRECTORY``` &mdash; checks if a specified path points to a directory:
+* ```IS_DIRECTORY``` &mdash; checks if a specified path points to an existing directory:
 
   ```cmake
   set(Path "/home/abilandz/git/lectures/NAT3054/Lecture_3")
@@ -1369,7 +1368,7 @@ In a similar manner, one can use other operators in this category, e.g. ```IS_SY
 
 ##### Loops
 
-The **cmake** scripting language supports two types of loops: **while** and **foreach** loop. Their syntax and usage is illustrated with a few concrete examples. 
+The **cmake** scripting language supports two types of loops: **while** and **foreach** loops. Their syntax and usage are illustrated with a few concrete examples. 
 
 In general, one uses **while** loop as follows:
 
@@ -1413,7 +1412,7 @@ Counter = 3
 Counter = 4
 ```
 
-This syntax is cumbersome, because even to execute a simple increment, we had to execute the mathematical expressions in a special environment, with the following general syntax:
+This syntax is cumbersome because even to execute a simple increment, we had to execute the mathematical expressions in a special environment, with the following general syntax:
 
 ```cmake
 math(EXPR outputVariable "mathExpression")
@@ -1444,7 +1443,7 @@ foreach(loopIndex RANGE maxValue)
 endforeach()
 ```
 
-Also within the body of a **foreach()** loop, one can use the commands **break()** and **continue()** with their standard meanings. 
+Within the body of a **foreach()** loop, one can use the commands **break()** and **continue()** with their standard meanings. 
 
 For instance, the following **cmake** script implemented in a file "for.cmake":
 
@@ -1505,7 +1504,7 @@ Index: 8
 Index: 10
 ```
 
-Finally, one can use **foreach()** loop to parse directly list elements. The general syntax for this variant of **foreach()** loop is:
+Finally, one can use **foreach()** loop to parse the list of elements directly. The general syntax for this variant of **foreach()** loop is:
 
 ```cmake
 foreach(Var listElement-1 listElement-2 ... listElement-N)
@@ -1557,7 +1556,7 @@ Var after loop:  44
 
 ##### Functions
 
-The **cmake** scripting language supports functions. The general design and syntax is:
+The **cmake** scripting language supports functions. The commonly used design and syntax are:
 
 ````cmake
 function(functionName)
@@ -1617,7 +1616,7 @@ An executive summary of the main design decisions:
 
   With respect to the environment, **function()** in **cmake** scripting language behaves similarly as a subshell ```( ... )``` in Bash. 
 
-  It is possible to change the global environment by executing a call to the function &mdash; for that sake one can use an alternative implementation in the **cmake** scripting language named **macro()**, but its usage is not recommended, because one can realize which variables in the global environment will be potentially changed, only by inspecting the source code of **macro()**.
+  It is possible to change the global environment by executing a call to the function &mdash; for that sake, one can use an alternative implementation in the **cmake** scripting language named **macro()**, but its usage is not recommended, because one can realize which variables in the global environment will be potentially changed, only by inspecting the source code of **macro()**.
 
 * _arguments_ &mdash; arguments _argument-1 argument-2 ... argument-N_ passed in a function call **fun(_argument-1 argument-2 ... argument-N_)** can be referenced programmatically in the function body with the following built-in variables, which resembles the classical C-style definition and usage:
 
@@ -1661,7 +1660,7 @@ An executive summary of the main design decisions:
   last argument: 44
   ```
 
-  There is no special built-in variable to retrieve directly the last argument, but as the above example illustrates, this can be achieved easily. 
+  There is no special built-in variable to retrieve the last argument directly, but as the above example illustrates, this can be achieved easily. 
 
   Alternatively, one can define the formal arguments explicitly in the function definition and retrieve them in the function body by their name:
 
@@ -1783,7 +1782,7 @@ In the examples above, we have used some predefined **cmake** commands, without 
 
 ##### Predefined scripting commands in cmake
 
-In this section the most frequently used predefined scripting commands in **cmake** are covered in more detail. These commands are always available, and their full list can be found in the official documentation at the following [link](https://cmake.org/cmake/help/latest/manual/cmake-commands.7.html#id3).
+In this section, the most frequently used predefined scripting commands in **cmake** are covered in more detail. These commands are always available, and their full list can be found in the official documentation at the following [link](https://cmake.org/cmake/help/latest/manual/cmake-commands.7.html#id3).
 
 * **message()** &mdash; Besides default printout of the text message to the _stdout_ stream, this command offers a lot of other functionalities, through the usage of one of supported keywords as its first argument. For instance:
 
@@ -1799,7 +1798,7 @@ In this section the most frequently used predefined scripting commands in **cmak
   message(SEND_ERROR "error encountered, generation stage will be skipped")
   ```
 
-  If the keyword ```SEND_ERROR``` is used, **cmake** will continue processing but it will skip the generation stage.
+  If the keyword ```SEND_ERROR``` is used, **cmake** will continue processing, but it will skip the generation stage.
 
   If the keyword is not specified as a first argument, it defaults to ```NOTICE```:
 
@@ -1826,8 +1825,8 @@ In this section the most frequently used predefined scripting commands in **cmak
 
   Other supported keywords by the **message()** command can be found in the official documentation at this [link](https://cmake.org/cmake/help/latest/command/message.html).
 
-* **include()** &mdash; This commands loads and in-lines the **cmake** code from a separate file. The relative paths will be by default resolved from the current working directory. It's usage is illustrated with a few code snippets:
-  
+* **include()** &mdash; This command loads and in-lines the **cmake** code from a separate file. The relative paths will be resolved by default from the current working directory. Its usage is illustrated with a few code snippets:
+
   ```cmake 
   # Load personal cmake functions:
   include(myCmakeFunctions.cmake) # error, if file doesn't exist
@@ -1842,7 +1841,7 @@ In this section the most frequently used predefined scripting commands in **cmak
   # Search for a file relative to the script, not to the current working directory:
   include("${CMAKE_CURRENT_LIST_DIR}/myCmakeFunctions.cmake")
   ```
-  
+
 * **file()** &mdash; This command enables working directly with the file content in the underlying filesystem, but also fetching the content from online resources. Few general examples of its usage, with self-explanatory syntax:
 
   ```cmake
@@ -1861,7 +1860,7 @@ In this section the most frequently used predefined scripting commands in **cmak
   file(DOWNLOAD someUrl localPath)
   ```
 
-* **execute_process()** &mdash; By using this command, one can in **cmake** scripts or configuration files execute external commands available on the underlying system. Since not all commands are available on all systems, and even if they are, their implementation details can differ, the **cmake**'s command **execute_process()** has to be used with care, as it typically leads to the loss of portability. Its general syntax is:
+* **execute_process()** &mdash; By using this command, one can, in **cmake** scripts or configuration files, execute external commands available on the underlying system. Since not all commands are available on all systems, and even if they are, their implementation details can differ, the **cmake**'s command **execute_process()** has to be used with care, as it typically leads to the loss of portability. Its general syntax is:
 
   ```cmake 
   execute_process(COMMAND someExternalCommand arg1 ... argN option1 ... optionN)
@@ -1930,11 +1929,125 @@ In this section the most frequently used predefined scripting commands in **cmak
     Try 'date --help' for more information.
     ```
 
-    Other supported options for the command **execute_process()** can be found at official documentation at the following [link](https://cmake.org/cmake/help/latest/command/execute_process.html).
+    Other supported options for the command **execute_process()** can be found in the official documentation at the following [link](https://cmake.org/cmake/help/latest/command/execute_process.html).
 
-* **string()** &mdash; TBC 20251210
+* **string()** &mdash; This command is used for programmatic string manipulations. Here only basic examples are illustrated, while the full documentation of this powerful command can be found at the following [link](https://cmake.org/cmake/help/latest/command/string.html). 
 
-* **math()** &mdash;
+  * ```REPLACE``` &mdash; To replace all occurrences of one pattern with another, the following syntax can be used:
+
+    ```cmak
+    string(REPLACE OldPattern NewPattern OutputVariable SomeInputContent)
+    ```
+
+    For instance, the following code snippet:
+
+    ```cmake
+    set(InputVar "a bb c bb")
+    set(OutputVar "")
+    set(OldPattern "bb")
+    set(NewPattern "123")
+    
+    string(REPLACE ${OldPattern} ${NewPattern} OutputVar ${InputVar})
+    
+    message("${OutputVar}")
+    ```
+
+    will produce:
+
+    ```bash
+    a 123 c 123
+    ```
+
+  * ```LENGTH``` &mdash; To get the length of the string, the following syntax can be used:
+
+    ```cmake
+    string(LENGTH someString OutputVariable)
+    ```
+
+    For instance:
+
+    ```cmake
+    set(Var "abcd")
+    set(Length "")
+    string(LENGTH ${Var} Length)
+    message("${Length}") # prints 4
+    ```
+
+  * ```COMPARE``` &mdash; Two compare two strings, the following general syntax is used:
+
+    ```cmake
+    string(COMPARE WhichComparison FirstString SecondString OutputVariable)
+    ```
+
+    The supported comparisons "WhichComparison" are ```LESS```, ```GREATER```, ```EQUAL```,
+    ```NOTEQUAL```, ```LESS_EQUAL```, or ```GREATER_EQUAL```. The outcome of the comparison is either ```TRUE``` or ```FALSE```, and it is stored in "OutputVariable". 
+
+    For instance:
+
+    ```cmake
+    set(Str_1 "abcd")
+    set(Str_2 "abcd")
+    set(OutputVar "")
+    string(COMPARE EQUAL ${Str_1} ${Str_2} OutputVar)
+    if(${OutputVar})
+      message("two strings are equal")
+    endif()
+    ```
+
+    will print:
+
+    ```bash
+    two strings are equal
+    ```
+
+  * ```TIMESTAMP``` &mdash; the current date and time, by default local time is used:
+
+    ```cmake
+    string(TIMESTAMP OutputVariable SomeOptionalFormat)
+    ```
+
+    For instance, this code snippet:
+
+    ```cmake
+    set(OutputVar "")
+    string(TIMESTAMP OutputVar)
+    message(${OutputVar})
+    string(TIMESTAMP OutputVar %s)
+    message(${OutputVar})
+    ```
+
+    will produce:
+
+    ```bash
+    2025-12-16T09:26:05
+    1765873565
+    ```
+
+    The first line displays the default formatting of a timestamp, in the format ```YYYY-MM-DDTHH:MM:SS```. In the second line, with the non-default format option %s, the timestamp is printed in seconds since midnight (UTC) 1-Jan-1970 (UNIX epoch).
+
+  * _hashing_ &mdash; It is possible in the **cmake** scripting language to hash a string directly with several supported hashing algorithms (e.g. "MD5", "SHA1", etc.), by using the following general syntax:
+
+    ```cmake
+    string(WhichAlgorithm OutputVariable SomeString)
+    ```
+
+    For instance,
+
+    ```cmake
+    set(OutputVar "")
+    string(SHA1 OutputVar "abcdef")
+    message(${OutputVar})
+    ```
+
+    will print:
+
+    ```bash
+    1f8ac10f23c5b5bc1167bda84b833e5c057a77d2
+    ```
+
+  There are many more non-trivial operations one can perform with the command **string()** (e.g. querying the JSON format directly) &mdash; we refer to the full documentation at the following [link](https://cmake.org/cmake/help/latest/command/string.html). 
+
+* **math()** &mdash; TBC 20251216
 
   
 
