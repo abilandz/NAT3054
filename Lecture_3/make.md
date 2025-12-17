@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20251216-1
+**Last update**: 20251217-1
 
 
 ### Table of Contents
@@ -2047,11 +2047,44 @@ In this section, the most frequently used predefined scripting commands in **cma
 
   There are many more non-trivial operations one can perform with the command **string()** (e.g. querying the JSON format directly) &mdash; we refer to the full documentation at the following [link](https://cmake.org/cmake/help/latest/command/string.html). 
 
-* **math()** &mdash; TBC 20251216
+* **math()** &mdash; The **cmake** scripting language provides support only for elementary mathematical operations. They can be performed with the following general syntax:
 
+  ```cmake	
+  math(EXPR OutputVariable "some math. expression")
+  ```
+
+  The string "some math. expression" contains the expression that **cmake** will evaluate and store the final result in the variable "OutputVariable". Only elementary operators are supported, with their standard meaning as in other languages (for instance ```+```, ``` -```, ```*```, ```/```, ```%``` (modulo division), etc.). The following code snippet:
+
+  ```cmake
+  cmake_minimum_required(VERSION 3.22)
   
+  math(EXPR Result "6/2")
+  message("Result = ${Result}")
+  
+  math(EXPR Result "6%4")
+  message("Result = ${Result}")
+  
+  math(EXPR Result "6*(2+3)")
+  message("Result = ${Result}")
+  ```
 
+  will produce the following output:
 
+  ```bash
+  Result = 3
+  Result = 2
+  Result = 30
+  ```
+
+  The floating-point arithmetic is not supported directly within the **cmake** scripting language, but can be performed by calling external core utilities, like **awk** on Linux:
+
+  ```cmake
+  execute_process(COMMAND awk "BEGIN {print 4./7.}" OUTPUT_VARIABLE Result)
+  message("Result = ${Result}")
+  # Result = 0.571429
+  ```
+
+  The full documentation of the **math()** command can be found at the following [link](https://cmake.org/cmake/help/latest/command/math.html).
 
 
 
