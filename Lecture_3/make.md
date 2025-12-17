@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20251217-1
+**Last update**: 20251217-2
 
 
 ### Table of Contents
@@ -1192,7 +1192,7 @@ $ cmake -P if.cmake
 It's true.
 ```
 
-The strings which **cmake** will evaluate as a Boolean true are ```ON```, ```YES```, ```Y```, ```TRUE``` (all of them are case insensitive), and any non-zero integer. This is illustrated by the following script named "bool.cmake":
+The strings which **cmake** will evaluate as a Boolean true are ```ON```, ```YES```, ```Y```, ```TRUE``` (all of them are case insensitive), and any non-zero number (including floating point numbers). This is illustrated by the following script named "bool.cmake":
 
 ```cmake
 cmake_minimum_required(VERSION 3.22)
