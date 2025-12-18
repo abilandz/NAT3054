@@ -1298,42 +1298,8 @@ The **cmake** scripting language offers several operators for comparison, which 
 
   will evaluate to false.
 
-* _regex comparison_ &mdash; **cmake** supports set of regex metacharacters, but there are some differences with respect to the standard BRE ("Basic Regular Expression") and ERE ("Extended Regular Expression"), therefore regex has to be used in **cmake** with some care. The operator to perform regex match is ```MATCHES``` and all matched expressions and stored in **cmake**'s internal variables ```CMAKE_MATCH_0```, ```CMAKE_MATCH_1```, ```CMAKE_MATCH_2```, etc.  The variable ```CMAKE_MATCH_0``` stores the entire match, and another internal variable, the ```CMAKE_MATCH_COUNT```, holds the total number of matched expressions. The general syntax is:
+* _regex comparison_ &mdash; **cmake** supports a set of regex metacharacters, but there are some differences with respect to the standard BRE ("Basic Regular Expression") and ERE ("Extended Regular Expression"), therefore regex has to be used in **cmake** with some care. More details can be found in the official documentation under the section "Regex specification", available at this [link](https://cmake.org/cmake/help/latest/command/string.html#regex-matchall).
 
-  ```cmake
-  someText MATCHES someRegex
-  ```
-
-  For instance, if we store the following **cmake** script in the file "regex.cmake":
-
-  ```cmake
-  cmake_minimum_required(VERSION 3.22)
-  if("abc" MATCHES ab*)
-   message("matches")
-   message(${CMAKE_MATCH_COUNT})
-   message(${CMAKE_MATCH_0})
-  endif()
-  
-  if("abc" MATCHES [abc])
-   message("matches")
-   message(${CMAKE_MATCH_COUNT})
-   message(${CMAKE_MATCH_0})
-  endif()
-  ```
-
-  upon execution it follows:
-
-  ```bash
-  $ cmake -P regex.cmake 
-  matches
-  0
-  ab
-  matches
-  0
-  a
-  ```
-
-  
 
 Finally, the **cmake** scripting language offers several operators to inspect the status of files or directories directly. Their meaning and usage are the same as in a shell, only the syntax differs: 
 
