@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20251217-2
+**Last update**: 20251218-1
 
 
 ### Table of Contents
@@ -1255,7 +1255,14 @@ Analogously, the strings which **cmake** will evaluate as a Boolean false are ``
 
 The **cmake** scripting language offers several operators for comparison, which can be grouped as follows:
 
-* _integer comparison_ &mdash; ```EQUAL```, ```LESS```, ```LESS_EQUAL```, ```GREATER```, and ```GREATER_EQUAL```
+* _number comparison_ &mdash; ```EQUAL```, ```LESS```, ```LESS_EQUAL```, ```GREATER```, and ```GREATER_EQUAL```. These operators can be used to compare integers and real numbers. The two operands are parsed and interpreted as a type _double_ in the C programming language, which means that also the scientific notation can be used:
+
+  ```cmake
+  if(0.01 EQUAL 1.e-2)
+    message("yes")
+  endif()
+  # prints "yes"
+  ```
 
 * _version comparison_ &mdash; ```VERSION_EQUAL```, ```VERSION_LESS```, ```VERSION_LESS_EQUAL```, ```VERSION_GREATER```, and ```VERSION_GREATER_EQUAL```. The version identifier has to follow the standard syntax convention "major.minor.patch.tweak". If the "tweak" number is missing, that is interpreted in comparison as "major.minor.patch.0", if "patch" and "tweak" numbers are missing, that is interpreted in comparison as "major.minor.0.0", etc. For instance, the code snippet:
 
