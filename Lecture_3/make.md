@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 202512130-1
+**Last update**: 20251230-2
 
 
 ### Table of Contents
@@ -2144,6 +2144,8 @@ The directory structure of the project named "someProject" is organized as follo
 │       ├── hello.cxx
 ```
 
+From the very beginning, even in elementary examples, we advocate placing the source code to be compiled in its own separate directory, like "src" in the above example, and performing a project build and compilation in a separate directory.
+
 Therefore, we proceed as follows:
 
 ```bash
@@ -2161,20 +2163,20 @@ cmake_minimum_required(VERSION 3.22)
 project(HelloWorld)
 
 # Define a target:
-add_executable(hello)
-
-# Specify all source files needed to build the target:
-target_sources(hello
-  PRIVATE
-    src/hello.cxx
-)
+add_executable(hello src/hello.cxx)
 ```
 
-The command **project()** is also mandatory, and it tells **cmake** that what follows is the definition of a software project. In addition, it will steer **cmake** to perform various checks on the settings in the current environment (most notably, whether the necessary compilers are available, etc.).
+There are two new project-specific commands, namely **project()** and **add_executable()**, which we now introduce briefly.
 
-The command **add_executable()** defines the _target_ to be built, for instance, the final executable of the project, which is obtained by compiling the specified source files.
+* **project()** &mdash; This command is mandatory, and it tells **cmake** that what follows is the definition of a software project. In addition, it will steer **cmake** to perform various checks on the settings in the current environment (most notably, whether the necessary compilers are available, etc.). If that command is not present in the _CMakeLists.txt_, **cmake** will literally pretend there is a command **project(Project)** in the configuration file, and it will proceed nevertheless with the warning. As a direct consequence, the dummy name "Project" will be used by default in many environment variables pertaining to this project build (for instance, the content of the variable _PROJECT_NAME_ is set to "Project", then there will be a variable named _Project_SOURCE_DIR_, etc.). If the project is written in any other language besides C or C++, one has to indicate that explicitly, for instance, with the following syntax for Fortran:
 
-Finally, the command **target_sources()** specifies all source files to be used when building an executable, which was already defined in the configuration file with the **add_executable()** command. The _scope keyword_ **PRIVATE** in the body of the command **target_sources()** indicates that the specified source files belong only to the executable "hello" in this example (i.e. they are not shared or inherited).
+  ```cmake
+  project(HelloWorld Fortran)
+  ```
+
+  The keywords for all supported languages are: ```C```, ```CXX```, ```CUDA```, ```Fortran```, ```OBJC``` (Objective-C), ```OBJCXX``` (Objective C++), ```ISPC```, ```ASM```, ```CSharp``` (C#) and ```Java```. If the project is written in C++, it is advisable nevertheless to specify ```CXX``` as an argument to **project()**, to avoid all unnecessary checks in the configuration which are relevant only for the C programming language, and vice versa.
+
+* **add_executable()** &mdash; This command defines via its first argument the _target_ to be built, for instance, the final executable of the project, which is obtained by compiling the specified source files via its subsequent arguments. In the above example, the final executable is named "hello", and there is only one source file to be compiled, namely "src/hello.cxx".
 
 Given the above content of the configuration file _CMakeLists.txt_, we can proceed with configuring **cmake** by executing:
 
@@ -2198,7 +2200,7 @@ $ cmake -B build
 -- Build files have been written to: /home/abilandz/someProject/build
 ```
 
-The flag ```-B``` instructs **cmake** to make a new subdirectory named "build" in the current project as the directory to generate and store files during the build process. In general, this is an important step to keep the source tree in the subdirectory "src" clean.
+The flag ```-B``` instructs **cmake** to make a new subdirectory named "build" in the current project as the directory to generate and store files during the build process. In general, it is an important step to keep the source tree in the subdirectory "src" clean.
 
 If we now inspect the content of "build" directory, we find the following:
 
@@ -2207,7 +2209,7 @@ $ ls build
 CMakeCache.txt  CMakeFiles  cmake_install.cmake  Makefile
 ```
 
-As we can see, **cmake** generates automatically a lot of files related to the build process &mdash; most importantly, the _Makefile_ is generated automatically.
+As we can see, **cmake** generates automatically a lot of files related to the build process &mdash; most importantly, the _Makefile_ is generated automatically for the native build tool **make**.
 
 Finally, we can build the project, and we have to use the same "build" directory as the command argument, as in the previous configuration step:
 
@@ -2228,7 +2230,7 @@ $ ./build/hello
 
 ```
 
-Before moving on, we remark that the content of "CMakeCache.txt" shall never be modified manually, instead, **cmake** provides special options for its modifications. All settings in "CMakeCache.txt" are divided into two sections, namely "EXTERNAL cache entries" (maintained by the user), and "INTERNAL cache entries" (maintained by **cmake** itself). Its content can be retrieved programmatically with:
+Before moving on, we remark that the content of "CMakeCache.txt" shall never be modified manually, instead, **cmake** provides special options for its modifications (e.g. using the **set()** command with option "CACHE" as discussed in the previous sections). All settings in "CMakeCache.txt" are divided into two sections, namely "EXTERNAL cache entries" (maintained by the user), and "INTERNAL cache entries" (maintained by **cmake** itself). Its content can be retrieved programmatically with:
 
 ```bash
 $ cd someProject 
@@ -2319,6 +2321,10 @@ target_sources(MyFunctions
     src/bye.h
 )
 ```
+
+TBI 20251230 check and refurbish the paragraph, I just copied it here from previous section. Most notably, add explanation for **PUBLIC** + blend with the next paragraph. 
+
+Finally, the command **target_sources()** specifies all source files to be used when building an executable, which was already defined in the configuration file with the **add_executable()** command. The _scope keyword_ **PRIVATE** in the body of the command **target_sources()** indicates that the specified source files belong only to the executable "hello" in this example (i.e. they are not shared or inherited).
 
 We have to introduce one new command, namely **add_library()**, instead of **add_executable()**. The content of all source files is:
 
