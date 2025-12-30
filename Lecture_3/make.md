@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20251218-1
+**Last update**: 202512130-1
 
 
 ### Table of Contents
@@ -2058,6 +2058,68 @@ In this section, the most frequently used predefined scripting commands in **cma
   ```
 
   The full documentation of the **math()** command can be found at the following [link](https://cmake.org/cmake/help/latest/command/math.html).
+
+
+
+
+
+##### Command-line tools in cmake
+Similar to **git**, **cmake** also offers several command-line tools, which can be executed using the flag ```-E``` and the following general syntax:
+
+```bash
+cmake -E someCommand someOptions
+```
+
+To get the full list and brief documentation of available command-line tools, one can execute:
+
+```bash
+$ cmake -E
+CMake Error: cmake version 3.22.1
+Usage: cmake -E <command> [arguments...]
+Available commands:
+  capabilities              - Report capabilities built into cmake in JSON format
+  cat <files>...            - concat the files and print them to the standard output
+  chdir dir cmd [args...]   - run command in a given directory
+  compare_files [--ignore-eol] file1 file2
+                              - check if file1 is same as file2
+  copy <file>... destination  - copy files to destination (either file or directory)#
+  
+... many more lines ...
+
+  sleep <number>...         - sleep for given number of seconds
+  tar [cxt][vf][zjJ] file.tar [file/dir1 file/dir2 ...]
+                            - create or extract a tar or zip archive
+  time command [args...]    - run command and display elapsed time
+  touch <file>...           - touch a <file>.
+  touch_nocreate <file>...  - touch a <file> but do not create it.
+  create_symlink old new    - create a symbolic link new -> old
+  create_hardlink old new   - create a hard link new -> old
+  true                      - do nothing with an exit code of 0
+  false                     - do nothing with an exit code of 1
+```
+
+The **cmake** command-line tools ensure platform-independent behavior of the most important standard utilities when they are used in **cmake** scripts or configuration files. 
+
+For instance, if one wants to execute an infinite **while** loop with periodicity 1 hour, on Linux one can use the core utility **sleep**, and write that code snippet as follows:
+
+```cmake
+while(TRUE)
+ ... some commands ... 
+ execute_process(COMMAND sleep 3600)
+endwhile()
+```
+
+However, this code snippet may not work on other platforms, as it relies on the fact that the command **sleep** is available in the current environment outside of **cmake** installation. To circumvent that, we can use **cmake**'s command-line tool **sleep** in the following way:
+
+```cmake
+while(TRUE)
+ ... some commands ... 
+ execute_process(COMMAND cmake -E sleep 3600)
+endwhile()
+```
+
+The above code snippet is fully portable because **cmake** ensures that its internal implementation of the command-line tool **sleep** behaves in the same way across different platforms.
+
 
 
 
