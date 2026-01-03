@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20251230-2
+**Last update**: 20260103-1
 
 
 ### Table of Contents
@@ -2144,7 +2144,7 @@ The directory structure of the project named "someProject" is organized as follo
 │       ├── hello.cxx
 ```
 
-From the very beginning, even in elementary examples, we advocate placing the source code to be compiled in its own separate directory, like "src" in the above example, and performing a project build and compilation in a separate directory.
+From the very beginning, even in elementary examples, we advocate placing the source code that needs to be compiled in its own separate directory, such as the "src" directory in the above example, and performing a project build and compilation in a separate directory.
 
 Therefore, we proceed as follows:
 
@@ -2166,15 +2166,15 @@ project(HelloWorld)
 add_executable(hello src/hello.cxx)
 ```
 
-There are two new project-specific commands, namely **project()** and **add_executable()**, which we now introduce briefly.
+There are two new project-specific commands, namely **project()** and **add_executable()**, which we now introduce briefly:
 
-* **project()** &mdash; This command is mandatory, and it tells **cmake** that what follows is the definition of a software project. In addition, it will steer **cmake** to perform various checks on the settings in the current environment (most notably, whether the necessary compilers are available, etc.). If that command is not present in the _CMakeLists.txt_, **cmake** will literally pretend there is a command **project(Project)** in the configuration file, and it will proceed nevertheless with the warning. As a direct consequence, the dummy name "Project" will be used by default in many environment variables pertaining to this project build (for instance, the content of the variable _PROJECT_NAME_ is set to "Project", then there will be a variable named _Project_SOURCE_DIR_, etc.). If the project is written in any other language besides C or C++, one has to indicate that explicitly, for instance, with the following syntax for Fortran:
+* **project()** &mdash; This command is mandatory, and it tells **cmake** that what follows is the definition of a software project. In addition, it will steer **cmake** to perform various checks on the settings in the current environment (most notably, whether the necessary compilers are available, etc.). If that command is not present in the _CMakeLists.txt_, **cmake** will literally pretend there is a command **project(Project)** in the configuration file, and it will proceed nevertheless with the warning. As a direct consequence, the dummy name "Project" will be used by default in many environment variables pertaining to this project build (for instance, the content of the variable _PROJECT_NAME_ is set to "Project", then there will be a variable named _Project_SOURCE_DIR_, etc.). If the project is written in any other language besides C or C++, one has to indicate that explicitly with the 2nd argument, for instance, with the following syntax for Fortran:
 
   ```cmake
   project(HelloWorld Fortran)
   ```
 
-  The keywords for all supported languages are: ```C```, ```CXX```, ```CUDA```, ```Fortran```, ```OBJC``` (Objective-C), ```OBJCXX``` (Objective C++), ```ISPC```, ```ASM```, ```CSharp``` (C#) and ```Java```. If the project is written in C++, it is advisable nevertheless to specify ```CXX``` as an argument to **project()**, to avoid all unnecessary checks in the configuration which are relevant only for the C programming language, and vice versa.
+  The keywords for all supported languages are: ```C```, ```CXX```, ```CUDA```, ```Fortran```, ```OBJC``` (Objective-C), ```OBJCXX``` (Objective C++), ```ISPC```, ```ASM```, ```CSharp``` (C#) and ```Java```. If the project is written in C++, it is advisable nevertheless to specify ```CXX``` as an argument to **project()**, to avoid all unnecessary checks in the configuration stage which are relevant only for the C programming language, and vice versa.
 
 * **add_executable()** &mdash; This command defines via its first argument the _target_ to be built, for instance, the final executable of the project, which is obtained by compiling the specified source files via its subsequent arguments. In the above example, the final executable is named "hello", and there is only one source file to be compiled, namely "src/hello.cxx".
 
@@ -2306,7 +2306,7 @@ The content of configuration file "CMakeLists.txt" is now as follows:
 cmake_minimum_required(VERSION 3.22)
 
 # Project name:
-project(ExampleSharedLibrary)
+project(ExampleSharedLibrary CXX)
 
 # Define a target:
 add_library(MyFunctions SHARED)
@@ -2322,11 +2322,9 @@ target_sources(MyFunctions
 )
 ```
 
-TBI 20251230 check and refurbish the paragraph, I just copied it here from previous section. Most notably, add explanation for **PUBLIC** + blend with the next paragraph. 
+We introduced two new commands, namely **add_library()** and **target_sources()**. The command **target_sources()** specifies all source files for an already defined target (e.g. executable defined via **add_executable()** or library via **add_library()**), which will be used when building that target. The _scope keyword_ **PRIVATE** in the body of the command **target_sources()** indicates that the specified source files belong only to the executable "hello" in this example, and they will be compiled only during the build of the target "MyFunctions". On the other hand, the _scope keyword_ **PUBLIC** indicates that the code will be compiled into the current target "MyFunctions", and into any code that links to it afterward. 
 
-Finally, the command **target_sources()** specifies all source files to be used when building an executable, which was already defined in the configuration file with the **add_executable()** command. The _scope keyword_ **PRIVATE** in the body of the command **target_sources()** indicates that the specified source files belong only to the executable "hello" in this example (i.e. they are not shared or inherited).
-
-We have to introduce one new command, namely **add_library()**, instead of **add_executable()**. The content of all source files is:
+The content of all source files is:
 
 ```bash
 $ cat hello.h
@@ -2357,13 +2355,7 @@ Building of shared library is straightforward:
 ```bash
 $ cd library
 $ cmake -B build
--- The C compiler identification is GNU 11.4.0
 -- The CXX compiler identification is GNU 11.4.0
--- Detecting C compiler ABI info
--- Detecting C compiler ABI info - done
--- Check for working C compiler: /usr/bin/cc - skipped
--- Detecting C compile features
--- Detecting C compile features - done
 -- Detecting CXX compiler ABI info
 -- Detecting CXX compiler ABI info - done
 -- Check for working CXX compiler: /usr/bin/c++ - skipped
@@ -2371,7 +2363,7 @@ $ cmake -B build
 -- Detecting CXX compile features - done
 -- Configuring done
 -- Generating done
--- Build files have been written to: /home/abilandz/CMAKE/library/build
+-- Build files have been written to: /home/abilandz/NAT3054/cmake/library/build
 
 $ cmake --build build
 [ 33%] Building CXX object CMakeFiles/MyFunctions.dir/src/hello.cxx.o
@@ -2379,6 +2371,19 @@ $ cmake --build build
 [100%] Linking CXX shared library libMyFunctions.so
 [100%] Built target MyFunctions
 ```
+
+Note that now checks for the C programming language were not performed, i.e. the standard lines
+
+```cmake
+-- The C compiler identification is GNU 11.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+```
+
+are absent, because we have indicated explicitly that the project is written in C++ with the command **project(ExampleSharedLibrary CXX)** in the configuration file "CMakeLists.txt". 
 
 We can find the shared library "libMyFunctions.so" within the "build" directory:
 
