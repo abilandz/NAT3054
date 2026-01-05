@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20260103-1
+**Last update**: 20260105-1
 
 
 ### Table of Contents
@@ -2433,7 +2433,7 @@ The content of "test.cxx" looks now as follows:
 
 ```C++
 #include <stdio.h>
-#include "mySharedLibrary/functions.h"
+#include "functions.h"
 
 int main() {
   puts("This is a shared library test...");
@@ -2471,13 +2471,13 @@ In this project, we have 3 configuration files "CMakeLists.txt". The content of 
 cmake_minimum_required(VERSION 3.22)
 
 # Project name:
-project(someProjectName)
+project(someProjectName CXX)
 
 add_subdirectory(test)
 add_subdirectory(mySharedLibrary)
 ```
 
-If some "CMakeLists.txt" files are located in subdirectories of the project, the **add_subdirectory()** command will incorporate them when **cmake** is executed for the main "CMakeLists.txt" file. The relative paths used in "CMakeLists.txt" file in a subdirectory are relative to that subdirectory.
+If some "CMakeLists.txt" files are located in subdirectories of the project, the **add_subdirectory()** command will incorporate them when **cmake** is executed for the main "CMakeLists.txt" file. The relative paths used in the "CMakeLists.txt" file in a subdirectory are relative to that subdirectory.
 
 The content of "test/CMakeLists.txt" is:
 
@@ -2496,10 +2496,16 @@ add_library(
     functions.h
     functions.cxx
 )
-target_include_directories(mySharedLibrary PUBLIC "${PROJECT_SOURCE_DIR}")
+target_include_directories(mySharedLibrary PUBLIC .)
 ```
 
-The command **target_include_directories()** specifies include directories to use when compiling a given target. The internal variable ```PROJECT_SOURCE_DIR``` is set when the command **project()** is called in the main "CMakeLists.txt" file, and in this example it will be set to the path of "someProject" directory.
+The command **target_include_directories()** specifies include directories to use when compiling a given target. This allows using directly in the source code of the main executable the line
+
+```c++
+#include "functions.h"
+```
+
+without providing a relative path to the directory in which a header file "functions.h" is placed.
 
 Given the above structure and content of all files, the project can be readily built with:
 
@@ -2541,7 +2547,28 @@ This is a shared library test...
  See you later!
 ```
 
-Changing the source code either of executable or libraries will only recompile them differentially.
+Changing the source code of either the executable or the libraries will only recompile the one that was modified. For instance, if we change the source code of the shared library in the files "functions.h" and "functions.cxx", we can rebuild the executable by recompiling only shared libraries:
+
+```bash
+$ cmake --build build
+Consolidate compiler generated dependencies of target mySharedLibrary
+[ 25%] Building CXX object mySharedLibrary/CMakeFiles/mySharedLibrary.dir/functions.cxx.o
+[ 50%] Linking CXX shared library libmySharedLibrary.so
+[ 50%] Built target mySharedLibrary
+Consolidate compiler generated dependencies of target test
+[ 75%] Linking CXX executable test
+[100%] Built target test
+```
+
+As we can see from the above, the line
+
+```bash
+[ 75%] Building CXX object test/CMakeFiles/test.dir/test.cxx.o
+```
+
+is not present in the log, because the source code of the executable was not modified and therefore it was not recompiled, only it was linked against a newly recompiled shared library.
+
+
 
 
 
