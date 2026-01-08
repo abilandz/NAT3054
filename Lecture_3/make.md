@@ -2,7 +2,7 @@
 
 # make & cmake
 
-**Last update**: 20260105-1
+**Last update**: 20260108-1
 
 
 ### Table of Contents
@@ -2119,6 +2119,38 @@ endwhile()
 ```
 
 The above code snippet is fully portable because **cmake** ensures that its internal implementation of the command-line tool **sleep** behaves in the same way across different platforms.
+
+
+
+##### Creating or updating a cmake cache entry directly
+
+By using a flag ```-D```, one can create a new cache variable or update an already existing one in the file "CMakeCache.txt". The general syntax is:
+
+```bash
+cmake -D someCacheVariable=someValue
+```
+
+or even the condensed version:
+
+```bash
+cmake -DsomeCacheVariable=someValue
+```
+
+For instance, one can set the C++ standard which will be used in compiling the project through the variable ```CMAKE_CXX_STANDARD```. The currently supported values for the C++ standard are 98, 11, 14, 17, 20 and 23. One way to set the content of that variable is by inserting in the main configuration file "CMakeLists.txt" the following two lines:
+
+```cmake
+# Define a C++ standard:
+set(CMAKE_CXX_STANDARD 17 CACHE STRING "set the C++ standard" FORCE)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+```
+
+Another way is to set these variables at command line by using an option ```-D```:
+
+```bash
+$ cmake -D CMAKE_CXX_STANDARD=17 -D CMAKE_CXX_STANDARD_REQUIRED=ON
+```
+
+If these variables are set both in the main configuration file "CMakeLists.txt" and at command line by using an option ```-D```, the former will take precedence and its settings will be saved permanently in "CMakeCache.txt", and used in subsequent build and compilation.
 
 
 
