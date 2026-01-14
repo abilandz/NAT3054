@@ -1,6 +1,6 @@
 # Working remotely
 
-**Last update**: 20251009-7
+**Last update**: 20260114-1
 
 
 ### Table of Contents
@@ -17,17 +17,17 @@
 
 ### 1. Terminal multiplexers (screen, tmux) <a name="screen"></a>
 
-In high-energy physics, one frequently encounters a situation where the processing of a dataset is feasible only by using large computing facilities. In that case, one needs to connect and organize the work on a remote computer (typically, this amounts to running shell scripts for the automated job submission, merging output files, copying, etc.). It would be very inconvenient if, after each remote login, one would need to set up the working environment from scratch, start all the scripts, etc. In addition, if on a remote computer there is a running process that will not terminate before a user wants to disconnect, it is essential to be able to keep that process running, and reattach to it with a new login later, without affecting the status of that running process.
+In high-energy physics, one often encounters situations where processing a dataset is feasible only by using large computing facilities. In that case, one needs to connect and organize the work on a remote computer (typically, this involves running shell scripts for automated job submission, merging output files, copying, etc.). It would be very inconvenient if, after each remote login, one would need to set up the working environment from scratch, start all the scripts, etc. In addition, if on a remote computer there is a running process that will not terminate before a user wants to disconnect, it is essential to be able to keep that process running, and reattach to it with a new login later, without affecting the status of that running process.
 
-All these functionalities can be achieved by _terminal multiplexers_. These software tools make it possible to detach and reattach sessions from a terminal running on any computer, including the computers on which only remote access is possible. They also enable the separation of running processes from the shell that started that process (by design, one shell cannot take control of a process started by another shell). In turn, this keeps the remote process running even when the user is disconnected from remote computer (i.e. after its login shell has terminated). Several open-source terminal multiplexers are available, with **screen** and **tmux** being the most popular ones. In this lecture, the primary focus and all examples are provided for **screen**. 
+All these functionalities can be achieved by _terminal multiplexers_. These software tools make it possible to detach and reattach sessions from a terminal running on any computer, including those where remote access is the only option. They also enable the separation of running processes from the shell that started that process (by design, one shell cannot take control of a process started by another shell). In turn, this keeps the remote process running even when the user is disconnected from the remote computer (i.e. after its login shell has terminated). Several open-source terminal multiplexers are available, with **screen** and **tmux** being the most popular ones. In this lecture, the primary focus and all examples are provided for **screen**. 
 
-To start a **screen** one executes in the terminal:
+To start a **screen,** one executes in the terminal:
 
 ```bash
 $ screen -S test
 ```
 
-However, at least at first glance, nothing seems to change. But the important difference is that now we are in a new process, independent from the parent shell, which will keep running even if the parent shell terminates. At any point later, and from any other shell on this computer, we can reattach to this **screen** session named "test", and all processes started in it will be running uninterrupted. To illustrate this, we can in the **screen** session start the following command:
+However, at least at first glance, nothing appears to have changed. But the important difference is that now we are in a new process, independent from the parent shell, which will keep running even if the parent shell terminates. At any point later, and from any other shell on this computer, we can reattach to this **screen** session named "test", and all processes started in it will be running uninterrupted. To illustrate this, we can in the **screen** session start the following command:
 
 ````bash
 $ while :; do date; sleep 10s; done
@@ -36,14 +36,14 @@ Mo 22. Sep 08:32:01 CEST 2025
 ...
 ````
 
-The above code snippet will after each 10 seconds print the timestamp in an infinite loop. To detach from this **screen** session, we execute:
+The above code snippet will print the timestamp every 10 seconds in an infinite loop. To detach from this **screen** session, we execute:
 
 ```bash
 $ Ctrl+a+d # hit this combination of keystrokes to detach from screen session
 [detached from 536338.test]
 ```
 
-From the info message "detached from 536338.test" we can read off the process ID (536338) of the **screen** session which we just left, and its name "test". We now illustrate the main point: at any point later we can login again on this computer, and reattach to this very same **screen** session, in the following way:
+From the info message "detached from 536338.test", we can read off the process ID (536338) of the **screen** session which we just left, and its name "test". We now illustrate the main point: at any point later, we can login again on this computer, and reattach to this very same **screen** session, in the following way:
 
 ```bash 
 # List all running screen sessions on this computer:
@@ -70,22 +70,39 @@ Mo 22. Sep 08:33:01 CEST 2025
 
 As we can see, the process started in **screen** was running uninterrupted in the meantime, even after we detached from it. 
 
-Below is the summary of basic **screen** commands, which can be executed either from the terminal, or within **screen** session.
+Below is the summary of basic **screen** commands, which can be executed depending on the context either from the terminal, or within a **screen** session.
 
 * When in a terminal:
   * ```screen -S someName``` # start a new screen with name "someName"
   * ```screen -ls``` # list all running screen sessions on this computer
   * ```screen -rd someScreenName``` # reattach to screen session with the name "someScreenName" (alternatively, screen PID can be used)
   * ```kill -9 screenPID``` # terminate screen session from the terminal. Its PID can can be obtained from ```screen -ls```, e.g. in "536338.test", screenPID is 536338
-  * ```screen -wipe someScreenName``` # after you killed the certain screen, this step may be necessary &mdash; use this command to wipe out the killed **screen** session from history
-  * ```screen -S screenPID.oldName -X sessionname newName``` &mdash; rename screen session after it was created 
+  * ```screen -wipe someScreenName``` # after you killed a certain screen, this step may be necessary &mdash; use this command to wipe out the killed **screen** session from history
+  * ```screen -S screenPID.oldName -X sessionname newName``` # rename screen session after it was created, for instance:
+  
+    ```bash
+    # check existing 'screen' sessions: 
+    $ screen -ls 
+    There is a screen on:
+            105.test        (01/14/26 20:32:15)     (Detached)
+    1 Socket in /run/screen/S-abilandz.
+    
+    # rename 'screen' session 'test' into 'finalSystematics'
+    screen -S 105.test -X sessionname finalSystematics
+    
+    # check existing 'screen' sessions: 
+    $ screen -ls
+    There is a screen on:
+            105.finalSystematics    (01/14/26 20:32:15)     (Detached)
+    1 Socket in /run/screen/S-abilandz.
+    ```
 
 
 * When in **screen** ("+" in the syntax below is a metacharacter, and stands for "_and press_"):
 
   * ```Ctrl+a+d``` # detach from **screen**
 
-  * ```Ctrl+a+c``` # make new window in the **screen**, running its own process
+  * ```Ctrl+a+c``` # make a new window in the **screen**, running its own process
 
   * ```Ctrl+a Shift+a``` # set a title for a new window in the **screen**
 
@@ -95,15 +112,15 @@ Below is the summary of basic **screen** commands, which can be executed either 
   
   * ```Ctrl+a+ESC``` # enters the vertical scroll mode in the current window &mdash; use up and arrow keys, or mouse wheel, to scroll back and forth vertically (press ```ESC``` to go back to the normal mode)
   
-  * ```Ctrl+a+:``` # gives internal **screen** prompt starting with ```:``` which accepts internal **screen** commands, for instance: 
+  * ```Ctrl+a+:``` # gives an internal **screen** prompt starting with ```:``` which accepts internal **screen** commands, for instance: 
   
     ```
     :title someTitle # now this window has title “someTitle”
     ```
   
-    Summary of other keywords which **screen** interprets as internal commands can be found at this [link](https://www.gnu.org/software/screen/manual/screen.html#Command-Summary).		  	 
+    A summary of other keywords that **screen** interprets as internal commands can be found at this [link](https://www.gnu.org/software/screen/manual/screen.html#Command-Summary).		  	 
 
-In practice, in a given **screen** session, we establish several windows (see ```Ctrl+a Shift+a``` above), each of running its own process. If within **screen** session we hit the combination ```Ctrl+a Shift+"```, we get the menu of all independent processes running in that **screen**:
+In practice, in a given **screen** session, we establish several windows (see ```Ctrl+a Shift+a``` above), each of which runs its own process. If within a **screen** session we hit the combination ```Ctrl+a Shift+"```, we get the menu of all independent processes running in that **screen**:
 
 ```bash
  Num Name
@@ -113,7 +130,7 @@ In practice, in a given **screen** session, we establish several windows (see ``
    3 Move  
 ```
 
-Simply selecting 0, 1, 2, or 3, will move us to the environment where any of these processes is executed. When we detach and reattach from the **screen** session, all independent processes in each window keep running uninterrupted. In the very same spirit, if you have a process running in a **screen** on your desktop machine in the office, then you can detach from that **screen** session, go somewhere else, and reattach to that **screen** session remotely from any other computer, and continue your work just like you are still sitting in front of your desktop machine.
+Simply selecting 0, 1, 2, or 3 will move us to the environment where any of these processes is executed. When we detach and reattach from the **screen** session, all independent processes in each window continue to run uninterrupted. In the very same spirit, if you have a process running in a **screen** on your desktop machine in the office, then you can detach from that **screen** session, go somewhere else, and reattach to that **screen** session remotely from any other computer, and continue your work just like you are still sitting in front of your desktop machine.
 
 Finally, we remark on the environment: since a **screen** session runs in its own process, it will inherit at creation time from the parent shell only the settings of variables exported in the parent shell, and afterward cannot modify them globally. Since each **screen** window runs in its own process, each **screen** window maintains its own independent environment within a given **screen** session.
 
@@ -164,9 +181,9 @@ PING 10.152.133.25 (10.152.133.25) 56(84) bytes of data.
 ...
 ```
 
-The above printout can be interpreted as follows: It takes less than 1 ms for the packet of 64 bytes to get to the remote host be responded to (everything less than 1 s is usually perfectly fine). The variable ```icmp_seq``` is the number of packet, and if there is no problem with the routing, packets will be enlisted in consecutive order. 
+The above printout can be interpreted as follows: It takes less than 1 ms for the packet of 64 bytes to reach the remote host and be responded to (everything less than 1 s is usually perfectly fine). The variable ```icmp_seq``` is the number of a packet, and if there is no problem with the routing, packets will be listed in consecutive order. 
 
-Finally, we remark on the IP ("Internet Protocol") address. This is a numerical label uniquely assigned to each computer connected to a network. If we know the host name, we can read off its IP address using for instance either **ping** or **nslookup** commands:
+Finally, we remark on the IP ("Internet Protocol") address. This is a numerical label uniquely assigned to each computer connected to a network. If we know the hostname, we can read off its IP address using, for instance, either **ping** or **nslookup** commands:
 
 ```bash
 $ ping nidoqueen.ktas.ph.tum.de
@@ -185,15 +202,13 @@ Address: 10.152.133.25
 # => IP address of 'nidoqueen' is 10.152.133.25
 ```
 
-If we need IP address of the computer we are currently working on, it's even simple by using **hostname** command: 
+If we need the IP address of the computer we are currently working on, it's even simpler by using the **hostname** command: 
 
 ```bash
 # Print IP address of this computer:
-ga45mof@nidoqueen:~$ hostname -i
+ga45mof@nidoqueen:~$ hostname -I
 10.152.133.25
 ```
-
-TBI 20250923 See if I want still to add something here, or at least make a bridge towards next section
 
 
 
@@ -203,17 +218,17 @@ TBI 20250923 See if I want still to add something here, or at least make a bridg
 
 ### 3. ssh, scp, sftp <a name="ssh.scp.sftp"></a>
 
-Secure Shell (SSH) protocol was designed in 1995 by Tatu Ylönen as a secure way of accessing and executing commands on a remote computer, over unsecured network. Through the use of encryption mechanisms, authentication across a public network (i.e. sending username and password to remote computer), is made safe. The **ssh** command is typically used to log into a remote computer's shell and to execute commands remotely after connection is established.
+Secure Shell (SSH) protocol was designed in 1995 by Tatu Ylönen as a secure way of accessing and executing commands on a remote computer, over an unsecured network. Through the use of encryption mechanisms, authentication across a public network (i.e. sending username and password to a remote computer), is made safe. The **ssh** command is typically used to log into a remote computer's shell and to execute commands remotely after a connection is established.
 
-Technically, the **ssh** command establishes _encrypted tunnel_ between two computers, using client/server architecture based on TCP/IP (Transmission Control Protocol/Internet Protocol). The **ssh** server, which in essence is the **sshd** process running in the background (i.e. _daemon_), runs on one machine where it listens for incoming connections on TCP port 22. The client then uses TCP port 22 to connect to the server. When connection between two computers is established, a few things happen in the background:
+Technically, the **ssh** command establishes _encrypted tunnel_ between two computers, using client/server architecture based on TCP/IP (Transmission Control Protocol/Internet Protocol). The **ssh** server, which in essence is the **sshd** process running in the background (i.e. _daemon_), runs on one machine where it listens for incoming connections on TCP port 22. The client then uses TCP port 22 to establish a connection to the server. When a connection between two computers is established, a few things happen in the background:
 
-- server and client exchange information about supported protocols for encrypted communication (SSH2 is default nowadays); 
+- server and client exchange information about supported protocols for encrypted communication (SSH2 is the default nowadays); 
 
 - server and client negotiate the algorithm, followed by the key that both will use for data transfer;
 
-- the key is used only once, for the current connection, and both ends will destroy it when connection terminates;
+- the key is used only once, for the current connection, and both ends will destroy it when the connection terminates;
 
-- for extended sessions the key will change regularly (with 1 hour being the default interval).
+- for extended sessions, the key will change regularly (with 1 hour being the default interval).
 
 We now summarize all steps needed to use **ssh** for remote access and remote command execution:
 
@@ -225,7 +240,7 @@ We now summarize all steps needed to use **ssh** for remote access and remote co
 $ sudo apt-get install openssh-server
 ```
 
-This step is rarely needed for remote computer, because an admin responsible for it will install OpenSSH server among the first things on that computer. However, if you want to allow remote access to your own computer (also to yourself), you need to install OpenSSH server with root privileges on your computer. 
+This step is rarely needed for a remote computer, as an administrator responsible for it will typically install the OpenSSH server among the first things on that computer. However, if you want to allow remote access to your own computer (also to yourself), you need to install the OpenSSH server with root privileges on your computer. 
 
 
 
@@ -270,7 +285,7 @@ ga45mof@nidoqueen:~$
 # ... do your thing in a shell running on a remote computer ...
 ```
 
-The flag ```-Y``` will enable trusted graphics (the X Window System or X11) forwarding, i.e. executing graphics on remote computer. On the first login, the client will not know the server's host key, and will prompt you to confirm that you really want to establish a connection with this remote computer. After confirming, the program generates the fingerprint. TBI 20251006 do I need to clarify this better/further?
+The flag ```-Y``` will enable trusted graphics (the X Window System or X11) forwarding, i.e. executing graphics on a remote computer. On the first login, the client will not know the server's host key, and will prompt you to confirm that you really want to establish a connection with this remote computer. After confirming, the program generates the fingerprint.
 
 
 
@@ -301,15 +316,15 @@ nidoqueen.ktas.ph.tum.de
 Wed Sep 24 09:14:30 CEST 2025
 ```
 
-Each time the **ssh** command was executed, the password prompt appeared to re-authenticate, before new connection can be established. This step can be circumvented by using public key for authentication as an alternative &mdash; this is explained in subsection "Public and private keys" further below. 
+Each time the **ssh** command was executed, the password prompt appeared to re-authenticate, before a new connection could be established. This step can be circumvented by using a public key for authentication as an alternative &mdash; this is explained in the subsection "Public and private keys" further below. 
 
-The **scp** ("Secure Copy") command comes within the SSH package, and it can be used to securely copy files between computers on a network. Most importantly, this includes the case when one wants to copy a file from a local computer to remote computer, or vice versa. 
+The **scp** ("Secure Copy") command is part of the SSH package, and it can be used to securely copy files between computers on a network. Most importantly, this includes the case when one wants to copy a file from a local computer to a remote computer, or vice versa. 
 
-The metacharacters ```@``` and ```:``` have a special meaning in the syntax of **scp** command:
+The metacharacters ```@``` and ```:``` have a special meaning in the syntax of the **scp** command:
 
-* ```@``` &mdash; separates the user name and the name of remote computer;
+* ```@``` &mdash; separates the user name and the name of the remote computer;
 
-* ```:``` &mdash; separates the name of remote computer from some pathname on that computer. 
+* ```:``` &mdash; separates the name of the remote computer from some pathname on that computer. 
 
 Basic use cases of the **scp** command are summarized as follows:  
 
@@ -331,7 +346,7 @@ ga45mof@nidoqueen.ktas.ph.tum.de's password:
 someFile.txt                                   100%    0     0.0KB/s   00:00 
 ```
 
-Note that for a home directory on remote computer, we have used metacharacter ```~```, and not the environment variable ```$HOME```, because the latter would have been expanded by a shell on a local computer. On a contrary, `~` is interpreted as a metacharacter and is expanded only if it is the first character of a word and it is unquoted:
+Note that for a home directory on a remote computer, we have used the metacharacter ```~```, and not the environment variable ```$HOME```, because the latter would have been expanded by a shell on a local computer. On the contrary, `~` is interpreted as a metacharacter and is expanded only if it is the first character of a word and it is unquoted:
 
 ```bash
 $ echo $HOME
@@ -363,9 +378,9 @@ ga45mof@nidoqueen.ktas.ph.tum.de's password:
 someDir                                   100%    0     0.0KB/s   00:00 
 ```
 
-As a rule of thumb, when using the **scp** command, refer to home directory on a local computer with ```${HOME}```, and on remote computer with ```~``` metacharacter. The **scp** command can be only used for transferring files from one computer to another, and cannot do other things like list directories on remote computer or delete files remotely. That can be achieved with the **sftp** ("Secure File Transfer Protocol") command, which is introduced next.
+As a rule of thumb, when using the **scp** command, refer to the home directory on a local computer with ```${HOME}```, and on a remote computer with ```~``` metacharacter. The **scp** command can be only used for transferring files from one computer to another, and cannot do other things like list directories on remote computer or delete files remotely. That can be achieved with the **sftp** ("Secure File Transfer Protocol") command, which is introduced next.
 
-The **sftp** command can be used interactively on a remote computer, and is basically a secure version of an old **ftp** command. One establishes an interactive session on a remote computer by using the following generic syntax:
+The **sftp** command can be used interactively on a remote computer, and is basically a secure version of the old **ftp** command. One establishes an interactive session on a remote computer by using the following generic syntax:
 
 ```bash
 sftp userName@remoteComputer
@@ -436,7 +451,7 @@ Most of **sftp** commands are self-explanatory, or analogous to **Bash** shell. 
 
 
 
-* **get** and **mget** &mdash; use to download files or directories from remote computer to local computer
+* **get** and **mget** &mdash; use to download files or directories from a remote computer to a local computer
 
 ```bash
 # Download 'someFile' from the current remote directory into the current local directory:
@@ -454,7 +469,7 @@ sftp> mget someFile_?
 # Remark: Use mget only when arguments can be condensed with wildcards (like "?" in the above example)
 ```
 
-The above examples apply also when one wants to copy a directory from remote computer locally, only **get** and **mget** have to be replaced with **get -r** and **mget -r**, respectively.
+The above examples apply also when one wants to copy a directory from a remote computer locally, only **get** and **mget** have to be replaced with **get -r** and **mget -r**, respectively.
 
 
 
@@ -562,7 +577,7 @@ EOF
 }
 ```
 
-For completeness sake, we outline that alternatively by using **git** one can achieve the same goal, albeit it will take much longer, and the local disk usage will be order of magnitude larger, if one clones the whole **git** repository locally. Instead, one needs to clone differentially only that specific version, as follows:    
+For completeness sake, we outline that alternatively by using **git** one can achieve the same goal, albeit it will take much longer, and the local disk usage will be an order of magnitude larger, if one clones the whole **git** repository locally. Instead, one needs to clone differentially only that specific version, as follows:    
 
 ```bash
 # Clone only Bash version 5.2 locally:
@@ -584,9 +599,7 @@ Receiving objects:  12% (191/1474), 2.86 MiB | 20.00 KiB/s
 
 #### a) Public and private keys  <a name="public.and.private.keys"></a>
 
-In this section, all steps needed for an authentication via public keys are summarized. TBI 20250930 expand a bit this intro, it's too terse at the moment
-
-
+In this section, all steps needed for an authentication via public keys are summarized.
 
 **Step 1** &mdash; generate a pair of keys on your local computer:
 
@@ -605,11 +618,11 @@ The key fingerprint is:
 ... some more specific info for this key pair ...
 ```
 
-This command created a keypair with a public and a private key, based on RSA ("Rivest–Shamir–Adleman") cryptosystem, with a length of 2048 bits. The recommended key length as of 2020 is 2048 bits (the key length doesn't influence the speed of data transfer because this key is not used to encrypt the data). By default, the public key is stored in the file ```${HOME}/.ssh/id_rsa.pub```.
+This command created a keypair with a public and a private key, based on the RSA ("Rivest–Shamir–Adleman") cryptosystem, with a length of 2048 bits. The recommended key length as of 2020 is 2048 bits (the key length doesn't influence the speed of data transfer because this key is not used to encrypt the data). By default, the public key is stored in the file ```${HOME}/.ssh/id_rsa.pub```.
 
 
 
-**Step 2** &mdash; copy the public key to remote computer:  
+**Step 2** &mdash; copy the public key to the remote computer:  
 
 Add the content of file  ```${HOME}/.ssh/id_rsa.pub``` on your local computer, to the file ```$HOME/.ssh/authorized_keys``` on a remote computer (in this example, a user named 'ga45mof' is connecting remotely on a computer named 'nidoqueen.ktas.ph.tum.de'): 
 
@@ -632,7 +645,7 @@ $ rm ${HOME}/id_rsa.pub
 
 
 
-**Step 3** &mdash; check if you can connect to remote computer, without being prompted for a password:  
+**Step 3** &mdash; check if you can connect to the remote computer, without being prompted for a password:  
 
 ```bash
 $ ssh -Y ga45mof@nidoqueen.ktas.ph.tum.de
@@ -652,7 +665,7 @@ someFile                             100%    123     228.0KB/s   00:00
 # Remark: To copy directories this way, use scp -r
 ```
 
-Key-based, password-free logins are often used to automate copying to remote machines, backuping some local date on remote machine, etc.
+Key-based, password-free logins are often used to automate copying to remote machines, backuping some local data on a remote computer, etc.
 
 
 
@@ -663,4 +676,4 @@ Key-based, password-free logins are often used to automate copying to remote mac
 
 ### 4. References <a name="references"></a>
 
-* TBI 20251008 references are missing
+* 'Screen User's Manual' &mdash; see this [link](https://www.gnu.org/software/screen/manual/screen.html#Top)
