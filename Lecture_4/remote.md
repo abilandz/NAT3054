@@ -1,6 +1,6 @@
 # Working remotely
 
-**Last update**: 20260114-1
+**Last update**: 20260115-1
 
 
 ### Table of Contents
@@ -395,10 +395,10 @@ Connected to nidoqueen.ktas.ph.tum.de.
 sftp> 
 ```
 
-We are now running interactive session remotely, and **sftp** command is waiting to interpret our command input. To see which commands **sftp** can accept, hit TAB + TAB in the **sftp** promt:
+We are now running interactive session remotely, and **sftp** command is waiting to interpret our command input. To see which commands **sftp** can accept, hit TAB in the **sftp** prompt:
 
 ```
-sftp> TAB + TAB
+sftp> TAB
 bye       cd        chdir     chgrp     chmod     
 chown     df        dir       exit      get       
 help      lcd       lchdir    lls       lmkdir    
@@ -514,7 +514,7 @@ Local working directory: /home/abilandz
 
 Finally, we remark that for cases where an anonymous access is expected, one needs to use **ftp** instead of **sftp**, because the latter relies on authentication. To achieve anonymous access via **ftp**, customarily as a username one needs to use either "ftp" or "anonymous".
 
-**Example:** Download the source code of the latest **Bash** release via **ftp**. 
+**Example 3:** Download the source code of the latest **Bash** release via **ftp**. 
 
 The latest **Bash** release is typically announced by the main **Bash** developer and maintainer, Chet Ramey, in the following way:
 
@@ -571,7 +571,8 @@ function Download
   get /pub/gnu/bash/${Version}.tar.gz ${HOME}/${Version}.tar.gz
   bye
 EOF
-# The above "EOF" end-delimiter of here-doc should NOT be surrounded with empty characters.
+# Remark: The above "EOF" end-delimiter of here-doc environment
+#         should NOT be surrounded with empty characters.
 
  return 0;
 }
