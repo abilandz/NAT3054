@@ -2,7 +2,7 @@
 
 # Valgrind
 
-**Last update**: 20260117
+**Last update**: 20260119
 
 
 ### Table of Contents
@@ -360,13 +360,258 @@ There exists, however, a new experimental tool **exp-sgcheck**, for a stack and 
 
 
 
-#### Use after free
+#### Use after free and dangling pointers
+
+This case happens when a pointer is referencing a memory which was already deallocated (i.e. freed). Such a pointer is called a _dangling pointer_. It can be illustrated with the following code snippet saved in the file _free.C_:
+
+```C++
+int main(void)
+{
+  float *arr = new float[2];
+  arr[0] = 1.23; // ok  
+
+  delete [] arr; // deallocate memory back
+  arr[0] = 1.23; // use after free, this will work only accidentally, i.e.
+                 // until the memory relased back in the previous line 
+                 // wasn't overwritten by something else
+  return 0;
+}
+```
+
+The above code can be compiled and executed, but **memcheck** will spot and report the problem:
+
+```bash
+# No compilation error:
+$ g++ -o free free.C
+
+# No execution error (accidentally):
+$ ./free 
+
+# However, memcheck spots the problem:
+$ valgrind ./free 
+==1078954== Memcheck, a memory error detector
+==1078954== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==1078954== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==1078954== Command: ./free
+==1078954== 
+==1078954== Invalid write of size 4
+==1078954==    at 0x1091B2: main (in /home/abilandz/git/lectures/NAT3054/examples/free)
+==1078954==  Address 0x4de6c80 is 0 bytes inside a block of size 8 free'd
+==1078954==    at 0x484CA8F: operator delete[](void*) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1078954==    by 0x1091A5: main (in /home/abilandz/git/lectures/NAT3054/examples/free)
+==1078954==  Block was alloc'd at
+==1078954==    at 0x484A2F3: operator new[](unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1078954==    by 0x10917E: main (in /home/abilandz/git/lectures/NAT3054/examples/free)
+==1078954== 
+==1078954== 
+==1078954== HEAP SUMMARY:
+==1078954==     in use at exit: 0 bytes in 0 blocks
+==1078954==   total heap usage: 2 allocs, 2 frees, 72,712 bytes allocated
+==1078954== 
+==1078954== All heap blocks were freed -- no leaks are possible
+==1078954== 
+==1078954== For lists of detected and suppressed errors, rerun with: -s
+==1078954== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+```
+
+As a side remark, if an object which is deleted doesn't have a destructor (like built-in types), it's a good programming practice to set it to ```NULL``` explicitly, to force an execution error it if is used after it was deleted:
+
+```C++
+delete [] arr; // deallocate memory back    
+arr = NULL;    // set pointer to NULL explicitly after 'delete'
+```
+
+
 
 #### Uninitialized memory access
 
-#### Double-free and dangling pointers
+This case happens when an object was declared but never initialized, and it used later in the code uninitialized. We first illustrate this case with the following correct code snippet saved in the file _initilized.C_:
+
+```C++
+#include <stdio.h>
+int main(void)
+{
+  float *arr = new float[2]{1.23, -44.}; // array is declared and initialized 
+  printf("\n %f ", arr[0]);  
+  printf("\n %f \n\n", arr[1]);  
+
+  delete [] arr; // deallocate memory back    
+  arr = NULL;    // set pointer to NULL explicitly after 'delete'
+
+  return 0;
+}
+```
+
+This code snippet can be compiled and executed without any errors, and **memcheck** doesn't report any error either:
+
+```bash
+# No compilation error:
+$ g++ -o initilized initilized.C
+
+# No execution error:
+$ ./initilized 
+
+ 1.230000 
+ -44.000000 
+
+# Finally, clearance from 'memcheck':
+$ valgrind ./initilized 
+==1080261== Memcheck, a memory error detector
+==1080261== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==1080261== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==1080261== Command: ./initilized
+==1080261== 
+
+ 1.230000 
+ -44.000000 
+
+==1080261== 
+==1080261== HEAP SUMMARY:
+==1080261==     in use at exit: 0 bytes in 0 blocks
+==1080261==   total heap usage: 3 allocs, 3 frees, 73,736 bytes allocated
+==1080261== 
+==1080261== All heap blocks were freed -- no leaks are possible
+==1080261== 
+==1080261== For lists of detected and suppressed errors, rerun with: -s
+==1080261== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+```
+
+We now re-use the above example, only array is NOT initialized, and save in the file _uninitialized.C_ the following code snippet:
+
+```C++
+#include <stdio.h>
+int main(void)
+{
+  float *arr = new float[2]; // array is declared, but NOT initialized 
+  printf("\n %f ", arr[0]);  
+  printf("\n %f \n\n", arr[1]);  
+
+  delete [] arr; // deallocate memory back    
+  arr = NULL;    // set pointer to NULL explicitly after 'delete'
+
+  return 0;
+}
+```
+
+This code snippet can be compiled without any errors. When executed, it doesn't produce any errors accidentally, because built-in types, like ```float``` in this example, can get initialized to 0.0 by a specific compiler, but in general this is an undefined behavior. But **memcheck** does report an error when declared and uninitialized objects are used:
+
+```bash
+# No compilation error:
+$ g++ -o uninitilized uninitilized.C
+
+# No execution error:
+$ ./uninitilized 
+
+ 0.000000 
+ 0.000000 
+
+# However, 'memcheck' is alert (and surprisingly verbose!):
+$ valgrind ./uninitilized 
+==1081158== Memcheck, a memory error detector
+==1081158== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==1081158== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==1081158== Command: ./uninitilized
+==1081158== 
+
+==1081158== Conditional jump or move depends on uninitialised value(s)
+==1081158==    at 0x4AFACB8: __printf_fp_l (printf_fp.c:396)
+==1081158==    by 0x4B1692C: __printf_fp_spec (vfprintf-internal.c:354)
+==1081158==    by 0x4B1692C: __vfprintf_internal (vfprintf-internal.c:1558)
+==1081158==    by 0x4B0079E: printf (printf.c:33)
+==1081158==    by 0x1091D0: main (in /home/abilandz/git/lectures/NAT3054/examples/uninitilized)
+
+... many more lines ...
+
+==1081158== Conditional jump or move depends on uninitialised value(s)
+==1081158==    at 0x4AFBEFB: __printf_fp_l (printf_fp.c:1230)
+==1081158==    by 0x4B1692C: __printf_fp_spec (vfprintf-internal.c:354)
+==1081158==    by 0x4B1692C: __vfprintf_internal (vfprintf-internal.c:1558)
+==1081158==    by 0x4B0079E: printf (printf.c:33)
+==1081158==    by 0x109202: main (in /home/abilandz/git/lectures/NAT3054/examples/uninitilized)
+==1081158== 
+ 0.000000 
+
+==1081158== 
+==1081158== HEAP SUMMARY:
+==1081158==     in use at exit: 0 bytes in 0 blocks
+==1081158==   total heap usage: 3 allocs, 3 frees, 73,736 bytes allocated
+==1081158== 
+==1081158== All heap blocks were freed -- no leaks are possible
+==1081158== 
+==1081158== Use --track-origins=yes to see where uninitialised values come from
+==1081158== For lists of detected and suppressed errors, rerun with: -s
+==1081158== ERROR SUMMARY: 58 errors from 22 contexts (suppressed: 0 from 0)
+```
+
+
+
+#### Double-free
+
+This case corresponds to the situation when the same memory is deallocated two or more times. It can be illustrated with the following code snippet saved in the file _doubleFree.C_:
+
+```C++
+int main(void)
+{
+  float *arr = new float[2]{1.23, -44.}; // array is declared and initialized 
+
+  // ... do something with this array ...
+    
+  delete [] arr; // deallocate memory back    
+  delete [] arr; // deallocate memory back again    
+    
+  return 0;
+}
+```
+
+The code can be compiled without any error, but we will get an error at execution, and when the code is checked with **memcheck**:
+
+```bash
+# No compilation error:
+$ g++ -o doubleFree doubleFree.C 
+
+# Execution error:
+$ ./doubleFree 
+free(): double free detected in tcache 2
+Aborted (core dumped)
+
+# Diagnosics from 'memcheck':
+$ valgrind ./doubleFree 
+==1082444== Memcheck, a memory error detector
+==1082444== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==1082444== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==1082444== Command: ./doubleFree
+==1082444== 
+==1082444== Invalid free() / delete / delete[] / realloc()
+==1082444==    at 0x484CA8F: operator delete[](void*) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1082444==    by 0x1091C7: main (in /home/abilandz/git/lectures/NAT3054/examples/doubleFree)
+==1082444==  Address 0x4de6c80 is 0 bytes inside a block of size 8 free'd
+==1082444==    at 0x484CA8F: operator delete[](void*) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1082444==    by 0x1091B4: main (in /home/abilandz/git/lectures/NAT3054/examples/doubleFree)
+==1082444==  Block was alloc'd at
+==1082444==    at 0x484A2F3: operator new[](unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1082444==    by 0x10917E: main (in /home/abilandz/git/lectures/NAT3054/examples/doubleFree)
+==1082444== 
+==1082444== 
+==1082444== HEAP SUMMARY:
+==1082444==     in use at exit: 0 bytes in 0 blocks
+==1082444==   total heap usage: 2 allocs, 3 frees, 72,712 bytes allocated
+==1082444== 
+==1082444== All heap blocks were freed -- no leaks are possible
+==1082444== 
+==1082444== For lists of detected and suppressed errors, rerun with: -s
+==1082444== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+```
+
+
+
+
 
 #### Incorrect casting
+
+
+
+
 
 #### Incorrect pointer arithmetic
 
