@@ -2,7 +2,7 @@
 
 # Valgrind
 
-**Last update**: 20260120
+**Last update**: 20260120-2
 
 
 ### Table of Contents
@@ -327,16 +327,18 @@ $ valgrind ./outOfBound
 ==8663== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
 ```
 
-Ideally, one would also like to get immediately in the **valgrind** output the line number of the source code which is causing an error. This can be in some cases achieved by using an option ```-g``` when the code is compiled. In the ```gcc``` manual one finds the following documentation for option ```-g```:
+Ideally, one would also like to get immediately in the **valgrind** output the line number of the source code that is causing an error. This can be achieved in some cases by using the ```-g``` option when the code is compiled. In the **gcc** manual, one finds the following documentation for the option ```-g```:
 
-```
--g  Produce debugging information in the operating system's native format (stabs, COFF, XCOFF, or DWARF).  GDB can work with this debugging information.
+```bash
+-g 		Produce debugging information in the operating systems native format (stabs, COFF, XCOFF, or DWARF).  
+		GDB can work with this debugging information.
 ```
 
-If we re-run the previous example with this flags enabled at compilation, it follows:
+If we re-run the previous example with the option ```-g``` enabled at compilation, it follows:
 
 ```bash
 $ g++ -g -o outOfBound outOfBound.C
+
 $ valgrind ./outOfBound
 ==1175163== Memcheck, a memory error detector
 ==1175163== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
@@ -366,13 +368,13 @@ We see the important piece of new information in the line:
 ==1175163==    at 0x1091B7: main (outOfBound.C:6)
 ```
 
-This line tells that within the _main()_ function, at line 6 in the source-code file _outOfBound.C_, there is a problem. Indeed, that line corresponds to in the used code snippet:
+This line in the **valgrind** report indicates that within the _main()_ function, at line 6 in the source-code file _outOfBound.C_, there is a problem. Indeed, that line number corresponds to the following problematic code in the above code snippet:
 
 ```C++
  arr[2] = 22.123; // out-of-bound indexing
 ```
 
-As a side remark, on Linux the lines in a file can get enumerated with a core utility **cat** and its option ```-n```, for instance:
+As a side remark, on Linux, the lines in a file can get enumerated with the core utility **cat** and its option ```-n```, for instance:
 
 ```bash
 $ cat -n 
@@ -625,7 +627,7 @@ $ valgrind ./uninitilized
 
 #### Double-free
 
-This case corresponds to the situation when the same memory is deallocated two or more times. It can be illustrated with the following code snippet saved in the file _doubleFree.C_:
+This case occurs when the same memory is deallocated multiple times. It can be illustrated with the following code snippet saved in the file _doubleFree.C_:
 
 ```C++
 int main(void)
@@ -686,7 +688,9 @@ $ valgrind ./doubleFree
 
 #### Memory leak 
 
-Consider the following "classical" code snippet saved in the file _leak.C_:
+Memory leaks occur when dynamically allocated memory (e.g. using **malloc()** in ```C``` or operator **new** in ``C++``) is not properly deallocated (e.g. using **free()** in ```C``` or operator **delete** in ```C++```). As a consequence, a programme at runtime persistently claims memory it no longer needs. If such faulty memory allocation occurs within a loop, a programme at runtime persistently claims more and more memory it no longer needs, eventually exhausting all available memory on a computer. 
+
+To illustrate memory leak, consider the following "classical" erroneous code snippet saved in the file _leak.C_:
 
 ```C++
 #include <stdio.h>
@@ -702,7 +706,7 @@ int main(void)
 }
 ```
 
-The code is compiled and executed correctly, but **memcheck** detects the memory leak (we use the option ```--leak-check=full``` to see all details of leaked memory) :
+The code compiles and executes correctly, but only accidentally. If we increase the number of loop iterations and exacerbate the problem with faulty memory deallocation, the program would eventually be terminated ungraciously by the underlying operating system at runtime after claiming persistently too much memory. But **memcheck** is particularly suitable to detect such memory leaks, as the following example demonstrated (we use the option ```--leak-check=full``` to see all details of leaked memory) :
 
 ```bash
 $ g++ -g -o leak leak.C
@@ -741,6 +745,13 @@ $ sed -n 7p leak.C
 
 Indeed, at each loop iteration, the new chunk of memory was claimed persistently at this line in the source code from the underlying operating system, without releasing back that memory correctly.
 
+As the above output indicates, **memcheck** distinguishes between several categories of memory leaks:
+
+* _definitely lost_ &mdash; these are memory blocks over which the program has lost all pointers. They can be allocated to another program only when the current one terminates.
+* _indirectly lost_ &mdash; memory blocks which can only be reached through the definitely lost memory blocks.
+* _possibly lost_ &mdash; memory blocks for which pointers still exist, but point only to the middle (i.e. interior) of an allocated memory block. For instance, this could just be a random value in memory that happens to point into a memory block.
+* _still reachable_ &mdash; memory block that remains allocated at program termination, with a valid pointer to it. In general, this does not indicate an error, but it nevertheless hints to the programmer that such a memory block could be released back at the program's termination. 
+
 The corrected source code is:
 
 ```C++
@@ -753,7 +764,7 @@ int main(void)
      
     // ... do something with 'arr' ...  
       
-    delete [] arr; // release the memory back, each time it was claimed
+    delete [] arr; // release the memory back, each time after it was claimed
   }
 
   return 0;
