@@ -2,7 +2,7 @@
 
 # Valgrind
 
-**Last update**: 20260119
+**Last update**: 20260120
 
 
 ### Table of Contents
@@ -194,7 +194,7 @@ For instance, to compile the custom **valgrind** 3.26.0 from source, one proceed
 
 #### "Hello World!" example for Memcheck
 
-First, the following perfectly regular code snippet is used
+First, the following, perfectly regular code snippet is saved in a file _hello.C_ and used as a demonstration:
 
 ```C
 #include <stdio.h>
@@ -219,7 +219,7 @@ $ ./hello
  
 ```
 
-We can now inspect the executable with **valgrind**'s tool **memcheck**:
+We can now inspect the executable **hello** with **valgrind**'s tool **memcheck**:
 
 ```bash 
 $ valgrind --tool=memcheck ./hello
@@ -253,20 +253,28 @@ We use this simple "Hello World!" example to make a few general statements:
     ```bash
     # measure the execution time of standalone executable:
     $ time for i in {1..100}; do ./hello &>/dev/null; done
-    real    0m0.083s
-    user    0m0.054s
-    sys     0m0.028s
+    real	0m0.124s
+    user	0m0.089s
+    sys		0m0.039s
     
-    # measure the execution time of standalone executable within valgrind:
+    # measure the execution time of standalone executable within valgrind,
+    # using by default the tool 'memcheck':
     $ time for i in {1..100}; do valgrind ./hello &>/dev/null; done
-    real    0m36.229s
-    user    0m33.982s
-    sys     0m2.203s
+    real	0m26.531s
+    user	0m24.887s
+    sys		0m1.636s
+    
+    # measure the execution time of standalone executable within valgrind,
+    # not using any tool for memory checking:
+    $ time for i in {1..100}; do valgrind --tool=none ./hello &>/dev/null; done
+    real	0m11.558s
+    user	0m10.400s
+    sys		0m1.046s
     ```
 
-​	Several orders of magnitude, even for a simple executable like **hello**. TBI 20260117 finalize and embellish this comment
+	From above examples, we see there is several orders of magnitude of difference in performance when memory checks are performed with **memcheck**, even for a simple executable like **hello**. Even after disabling all checks with ```--tool=none``` option, when the code is merely executed in **valgrind**'s virtual machine, there is a non-negligible performance penalty.    
 
-Since we used the canonical "Hello World!" example, **memcheck** found no errors.
+4. Since we used the canonical "Hello World!" example without any errors in the code, **memcheck** found no errors.
 
 Next, examples are provided of invalid memory accesses, i.e. of invalid read and write operations, which can be detected by the **memcheck** tool.
 
@@ -317,6 +325,75 @@ $ valgrind ./outOfBound
 ==8663==
 ==8663== For lists of detected and suppressed errors, rerun with: -s
 ==8663== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+```
+
+Ideally, one would also like to get immediately in the **valgrind** output the line number of the source code which is causing an error. This can be in some cases achieved by using an option ```-g``` when the code is compiled. In the ```gcc``` manual one finds the following documentation for option ```-g```:
+
+```
+-g  Produce debugging information in the operating system's native format (stabs, COFF, XCOFF, or DWARF).  GDB can work with this debugging information.
+```
+
+If we re-run the previous example with this flags enabled at compilation, it follows:
+
+```bash
+$ g++ -g -o outOfBound outOfBound.C
+$ valgrind ./outOfBound
+==1175163== Memcheck, a memory error detector
+==1175163== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==1175163== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==1175163== Command: ./outOfBound
+==1175163== 
+==1175163== Invalid write of size 4
+==1175163==    at 0x1091B7: main (outOfBound.C:6)
+==1175163==  Address 0x4de6c88 is 0 bytes after a block of size 8 alloc'd
+==1175163==    at 0x484A2F3: operator new[](unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1175163==    by 0x10917E: main (outOfBound.C:3)
+==1175163== 
+==1175163== 
+==1175163== HEAP SUMMARY:
+==1175163==     in use at exit: 0 bytes in 0 blocks
+==1175163==   total heap usage: 2 allocs, 2 frees, 72,712 bytes allocated
+==1175163== 
+==1175163== All heap blocks were freed -- no leaks are possible
+==1175163== 
+==1175163== For lists of detected and suppressed errors, rerun with: -s
+==1175163== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+```
+
+We see the important piece of new information in the line:
+
+```bash
+==1175163==    at 0x1091B7: main (outOfBound.C:6)
+```
+
+This line tells that within the _main()_ function, at line 6 in the source-code file _outOfBound.C_, there is a problem. Indeed, that line corresponds to in the used code snippet:
+
+```C++
+ arr[2] = 22.123; // out-of-bound indexing
+```
+
+As a side remark, on Linux the lines in a file can get enumerated with a core utility **cat** and its option ```-n```, for instance:
+
+```bash
+$ cat -n 
+     1	int main() {
+     2	
+     3	  float *arr = new float[2];
+     4	  arr[0] = 1.23;
+     5	  arr[1] = -1.44
+     6	  arr[2] = 22.123; // out-of-bound indexing
+     7	  delete [] arr;
+     8	
+     9	  return 0;
+    10	}
+```
+
+Alternatively, one can directly isolate and print only the requested line with another core utility **sed**, for instance:
+
+```bash
+# print the 6th line of file outOfBound.C: 
+$ sed -n 6p outOfBound.C 
+  arr[2] = 22.123; // out-of-bound indexing
 ```
 
 Note, however, that **memcheck** doesn't check for out-of-bounds indexing of global arrays, or of array variables stored in a stack area:
@@ -607,6 +684,105 @@ $ valgrind ./doubleFree
 
 
 
+#### Memory leak 
+
+Consider the following "classical" code snippet saved in the file _leak.C_:
+
+```C++
+#include <stdio.h>
+int main(void)
+{
+  float *arr = NULL;
+  for(int i=0; i<10; i++) {
+    arr = new float[2]{1.23, -44.};
+  }
+  delete [] arr;
+
+  return 0;
+}
+```
+
+The code is compiled and executed correctly, but **memcheck** detects the memory leak (we use the option ```--leak-check=full``` to see all details of leaked memory) :
+
+```bash
+$ g++ -g -o leak leak.C
+
+$ valgrind --leak-check=full ./leak 
+==1181104== Memcheck, a memory error detector
+==1181104== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==1181104== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==1181104== Command: ./leak
+==1181104== 
+==1181104== 
+==1181104== HEAP SUMMARY:
+==1181104==     in use at exit: 72 bytes in 9 blocks
+==1181104==   total heap usage: 11 allocs, 2 frees, 72,784 bytes allocated
+==1181104== 
+==1181104== 72 bytes in 9 blocks are definitely lost in loss record 1 of 1
+==1181104==    at 0x484A2F3: operator new[](unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1181104==    by 0x10918F: main (leak.C:7)
+==1181104== 
+==1181104== LEAK SUMMARY:
+==1181104==    definitely lost: 72 bytes in 9 blocks
+==1181104==    indirectly lost: 0 bytes in 0 blocks
+==1181104==      possibly lost: 0 bytes in 0 blocks
+==1181104==    still reachable: 0 bytes in 0 blocks
+==1181104==         suppressed: 0 bytes in 0 blocks
+==1181104== 
+==1181104== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+```
+
+The problematic code is at line 7:
+
+```bash
+$ sed -n 7p leak.C
+    arr = new float[2]{1.23, -44.};
+```
+
+Indeed, at each loop iteration, the new chunk of memory was claimed persistently at this line in the source code from the underlying operating system, without releasing back that memory correctly.
+
+The corrected source code is:
+
+```C++
+#include <stdio.h>
+int main(void)
+{
+  float *arr = NULL;
+  for(int i=0; i<10; i++) {
+    arr = new float[2]{1.23, -44.};
+     
+    // ... do something with 'arr' ...  
+      
+    delete [] arr; // release the memory back, each time it was claimed
+  }
+
+  return 0;
+}
+```
+
+The **memcheck** detects no errors now:
+
+```bash
+$ g++ -g -o leak leak.C 
+$ valgrind --leak-check=full ./leak
+==1182881== Memcheck, a memory error detector
+==1182881== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==1182881== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==1182881== Command: ./leak_2
+==1182881== 
+==1182881== 
+==1182881== HEAP SUMMARY:
+==1182881==     in use at exit: 0 bytes in 0 blocks
+==1182881==   total heap usage: 11 allocs, 11 frees, 72,784 bytes allocated
+==1182881== 
+==1182881== All heap blocks were freed -- no leaks are possible
+==1182881== 
+==1182881== For lists of detected and suppressed errors, rerun with: -s
+==1182881== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+```
+
+
+
 #### Incorrect casting
 
 
@@ -614,6 +790,10 @@ $ valgrind ./doubleFree
 
 
 #### Incorrect pointer arithmetic
+
+
+
+
 
 ### 5. Heap profiling: **Massif** <a name="massif"></a>
 
