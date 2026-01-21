@@ -1,6 +1,6 @@
 # Working remotely
 
-**Last update**: 20260115-1
+**Last update**: 20260121-1
 
 
 ### Table of Contents
@@ -131,6 +131,24 @@ In practice, in a given **screen** session, we establish several windows (see ``
 ```
 
 Simply selecting 0, 1, 2, or 3 will move us to the environment where any of these processes is executed. When we detach and reattach from the **screen** session, all independent processes in each window continue to run uninterrupted. In the very same spirit, if you have a process running in a **screen** on your desktop machine in the office, then you can detach from that **screen** session, go somewhere else, and reattach to that **screen** session remotely from any other computer, and continue your work just like you are still sitting in front of your desktop machine.
+
+Even though the following features are not used frequently, we indicate them for completeness sake:
+
+1. It is possible to automatically configure all windows in **screen** at start, by using its default runtime configuration file ```${HOME}/.screenrc```. If in that specific file one adds an example content:
+
+    ```bash
+    screen -t "win 1" bash
+    screen -t "win 2" bash -c 'date; bash'
+    screen -t "win 3" zsh
+    ```
+
+    when the new **screen** session is created, it will be created automatically with 3 windows, with titles "win 1", "win 2", and "win 3". In the first window **bash** shell is enabled, in the 2nd window command **date** is executed and **bash** shell is kept running, while in the 3rd window another shell, namely **zsh** is used. The default configuration file ```${HOME}/.screenrc``` can be replaced by using an option ```-c``` with a custom configuration file, using the syntax:
+
+    ```bash
+     $ screen -c path-to-custom-configuration-file
+    ```
+
+2. Instead of creating a new window with ```Ctrl+a+c```, one can split the current window horizontally with ```Ctrl+a+S``` or vertically with ```Ctrl+a+|```. One can toggle from one region to another with ```Ctrl+a+TAB```, and to start a new shell in a given region, one needs to execute ```Ctrl+a+c``` on that region. With ```Ctrl+a+X``` one can close the current region, and with ```Ctrl+a+Q``` one can close all regions except the current one. By default, the split windows are not preserved after detaching and reattaching to the **screen** session.
 
 Finally, we remark on the environment: since a **screen** session runs in its own process, it will inherit at creation time from the parent shell only the settings of variables exported in the parent shell, and afterward cannot modify them globally. Since each **screen** window runs in its own process, each **screen** window maintains its own independent environment within a given **screen** session.
 
