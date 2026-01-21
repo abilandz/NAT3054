@@ -2,7 +2,7 @@
 
 # Valgrind
 
-**Last update**: 20260120-2
+**Last update**: 20260121-1
 
 
 ### Table of Contents
@@ -204,7 +204,7 @@ int main() {
 }
 ```
 
-The code is compiled into an executable **hello** in the standard way:
+The code is compiled into an executable **hello** in the standard way, using **gcc** for programs written in ```C```, and **g++** for programs written in ```C++```:
 
 ```bash
 $ gcc -o hello hello.C
@@ -244,7 +244,7 @@ $ valgrind --tool=memcheck ./hello
 
 We use this simple "Hello World!" example to make a few general statements:
 
-1. If the flag ```--tool``` is not used to specify the tool explicitly, it defaults to **memcheck**, therefore executing bare **valgrind** or **valgrind --tool=memcheck** gives the same result.
+1. If the flag ```--tool``` is not used to specify the tool explicitly, it defaults to **memcheck**. Therefore, executing bare **valgrind** or **valgrind --tool=memcheck** gives the same result.
 
 2. The number "369" at the beginning of each line above indicates the PID of the process in which **valgrind** has run.
 
@@ -257,30 +257,36 @@ We use this simple "Hello World!" example to make a few general statements:
     user	0m0.089s
     sys		0m0.039s
     
-    # measure the execution time of standalone executable within valgrind,
-    # using by default the tool 'memcheck':
+    # measure the execution time of standalone executable run within valgrind,
+    # using the default tool 'memcheck':
     $ time for i in {1..100}; do valgrind ./hello &>/dev/null; done
     real	0m26.531s
     user	0m24.887s
     sys		0m1.636s
     
-    # measure the execution time of standalone executable within valgrind,
-    # not using any tool for memory checking:
+    # measure the execution time of standalone executable run within valgrind,
+    # without using any tool for memory checking:
     $ time for i in {1..100}; do valgrind --tool=none ./hello &>/dev/null; done
     real	0m11.558s
     user	0m10.400s
     sys		0m1.046s
     ```
 
-	From above examples, we see there is several orders of magnitude of difference in performance when memory checks are performed with **memcheck**, even for a simple executable like **hello**. Even after disabling all checks with ```--tool=none``` option, when the code is merely executed in **valgrind**'s virtual machine, there is a non-negligible performance penalty.    
+    From above examples, we see there are several orders of magnitude of difference in performance when memory checks are performed with **memcheck**, even for a simple executable like **hello**. Even after disabling all checks with ```--tool=none``` option, when the code is merely executed in **valgrind**'s virtual machine, there is a non-negligible performance penalty.    
 
-4. Since we used the canonical "Hello World!" example without any errors in the code, **memcheck** found no errors.
+4. Since we used the canonical "Hello World!" example without any errors in the code, **memcheck** found no errors, but the printout was nevertheless very verbose. We can instruct **valgrind** to print only in case of errors with the flag ```-q``` (for "quiet"):
 
-Next, examples are provided of invalid memory accesses, i.e. of invalid read and write operations, which can be detected by the **memcheck** tool.
+    ```bash 
+    $ valgrind -q ./hello
+    
+     Hello World!
+    ```
+
+Next, various examples are provided of invalid memory accesses, i.e. of invalid read and write operations, which can be detected by the **memcheck** tool, even though they lead to no obvious errors neither during compilation nor execution.
 
 #### Out-of-bounds indexing
 
-This error typically occurs when an array index is used beyond the array's boundaries, and if memory for that array was allocated on the heap (e.g. using the keyword **new** in ```C++```). For instance, in the following code snippet _outOfBound.C_:
+This error typically occurs when an array index is used beyond the array's boundaries, and it can be detected by **memcheck** only if memory for that array was allocated on the heap (e.g. using the operator **new** in ```C++```  or **malloc()** in ```C```). That is demonstrated with the following code snippet _outOfBound.C_:
 
 ```C  
 int main() {
@@ -295,10 +301,19 @@ int main() {
 }
 ```
 
-The above code snippet is compiled without any compilation error or warning into an executable in the following standard way: 
+The above code snippet is compiled without any compilation error or warning into an executable: 
 
 ```bash
 $ g++ -o outOfBound outOfBound.C
+```
+
+Also, there is no error at execution:
+
+```bash
+$ ./outOfBound
+$ echo $?
+0 
+# the exit status is 0, set via 'return 0'
 ```
 
 However, **memcheck** will report an error:
@@ -327,14 +342,14 @@ $ valgrind ./outOfBound
 ==8663== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
 ```
 
-Ideally, one would also like to get immediately in the **valgrind** output the line number of the source code that is causing an error. This can be achieved in some cases by using the ```-g``` option when the code is compiled. In the **gcc** manual, one finds the following documentation for the option ```-g```:
+Looking at the above output report from **memcheck**, it is not clear which line in the source code is causing this error. Ideally, one would also like to get immediately in the **memcheck** output the line number of the source code that is causing an error. This can be achieved in some cases by using the ```-g``` option when the code is compiled. In the **gcc** manual, one finds the following documentation for the option ```-g```:
 
 ```bash
 -g 		Produce debugging information in the operating systems native format (stabs, COFF, XCOFF, or DWARF).  
 		GDB can work with this debugging information.
 ```
 
-If we re-run the previous example with the option ```-g``` enabled at compilation, it follows:
+If we recompile the previous example with the option ```-g``` enabled, it follows:
 
 ```bash
 $ g++ -g -o outOfBound outOfBound.C
@@ -368,13 +383,13 @@ We see the important piece of new information in the line:
 ==1175163==    at 0x1091B7: main (outOfBound.C:6)
 ```
 
-This line in the **valgrind** report indicates that within the _main()_ function, at line 6 in the source-code file _outOfBound.C_, there is a problem. Indeed, that line number corresponds to the following problematic code in the above code snippet:
+This line in the **memcheck** output report indicates that within the _main()_ function, at line 6 in the source-code file _outOfBound.C_, there is a problem. Indeed, that line number corresponds to the following erroneous code in the above code snippet:
 
 ```C++
  arr[2] = 22.123; // out-of-bound indexing
 ```
 
-As a side remark, on Linux, the lines in a file can get enumerated with the core utility **cat** and its option ```-n```, for instance:
+As a side remark, on Linux, the lines in a file can be printed enumerated with the core utility **cat** and its option ```-n```, for instance:
 
 ```bash
 $ cat -n 
@@ -390,7 +405,7 @@ $ cat -n
     10	}
 ```
 
-Alternatively, one can directly isolate and print only the requested line with another core utility **sed**, for instance:
+Alternatively, one can directly isolate and print only the requested line number with another core utility **sed**, for instance:
 
 ```bash
 # print the 6th line of file outOfBound.C: 
@@ -398,7 +413,9 @@ $ sed -n 6p outOfBound.C
   arr[2] = 22.123; // out-of-bound indexing
 ```
 
-Note, however, that **memcheck** doesn't check for out-of-bounds indexing of global arrays, or of array variables stored in a stack area:
+The above example demonstrates that **memcheck** can very precisely determine the cause of out-of-bounds indexing for dynamically allocated memory.
+
+Note, however, that **memcheck** doesn't check for out-of-bounds indexing of global arrays, or of array variables stored in a stack area, as the following code snippet demonstrates:
 
 ```C
 int globalArr[5];
@@ -417,7 +434,7 @@ int main(void)
 If the above code snippet is saved in a file _globalArray.C_ and compiled, neither the **gcc** compiler nor **memcheck** finds any error:
 
 ```bash 
-$ gcc -o globalArray globalArray.C
+$ gcc -g -o globalArray globalArray.C
 $ valgrind ./globalArray
 ==8577== Memcheck, a memory error detector
 ==8577== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
@@ -435,7 +452,7 @@ $ valgrind ./globalArray
 ==8577== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
 ```
 
-There exists, however, a new experimental tool **exp-sgcheck**, for a stack and a global array overrun detector, which is still under development (see its official documentation at this [link](https://valgrind.org/docs/manual/sg-manual.html)).
+In general, this category of problems related to out-of-bounds indexing cannot be tackled with the tool **memcheck**. There exists, however, a new experimental tool **exp-sgcheck**, for a stack and a global array overrun detector, which is still under development (see its official documentation and status at this [link](https://valgrind.org/docs/manual/sg-manual.html)).
 
 
 
