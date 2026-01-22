@@ -2,7 +2,7 @@
 
 # Valgrind
 
-**Last update**: 20260122-1
+**Last update**: 20260122-2
 
 
 ### Table of Contents
@@ -820,7 +820,7 @@ $ sudo apt install massif-visualizer
 
 
 
-### TBI. References <a name="references"></a>
+### 6. References <a name="references"></a>
 
 * "_Valgrind Unlocked: Hands‑On Memory Debugging and Performance Profiling for C and C++_", William E. Clark
   * This book was the main reference used in preparing the **valgrind** part of this lecture
