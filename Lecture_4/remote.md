@@ -1,13 +1,13 @@
 # Working remotely
 
-**Last update**: 20260122-1
+**Last update**: 20260122-2
 
 
 ### Table of Contents
 
 1. [Terminal multiplexers (screen, tmux)](#screen)
 2. [ping](#ping)
-3. [ssh, scp, sftp](#ssh.scp.sftp.sshfs)  
+3. [ssh, scp, sftp, sshfs](#ssh.scp.sftp.sshfs)  
      a) [Public and private keys](#public.and.private.keys)      	
 4. [References](#references)
 
