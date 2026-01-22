@@ -1,13 +1,13 @@
 # Working remotely
 
-**Last update**: 20260121-1
+**Last update**: 20260122-1
 
 
 ### Table of Contents
 
 1. [Terminal multiplexers (screen, tmux)](#screen)
 2. [ping](#ping)
-3. [ssh, scp, sftp](#ssh.scp.sftp)  
+3. [ssh, scp, sftp](#ssh.scp.sftp.sshfs)  
      a) [Public and private keys](#public.and.private.keys)      	
 4. [References](#references)
 
@@ -234,7 +234,7 @@ ga45mof@nidoqueen:~$ hostname -I
 
 
 
-### 3. ssh, scp, sftp <a name="ssh.scp.sftp"></a>
+### 3. ssh, scp, sftp, sshfs <a name="ssh.scp.sftp.sshfs"></a>
 
 Secure Shell (SSH) protocol was designed in 1995 by Tatu Ylönen as a secure way of accessing and executing commands on a remote computer, over an unsecured network. Through the use of encryption mechanisms, authentication across a public network (i.e. sending username and password to a remote computer), is made safe. The **ssh** command is typically used to log into a remote computer's shell and to execute commands remotely after a connection is established.
 
@@ -364,7 +364,7 @@ ga45mof@nidoqueen.ktas.ph.tum.de's password:
 someFile.txt                                   100%    0     0.0KB/s   00:00 
 ```
 
-Note that for a home directory on a remote computer, we have used the metacharacter ```~```, and not the environment variable ```$HOME```, because the latter would have been expanded by a shell on a local computer. On the contrary, `~` is interpreted as a metacharacter and is expanded only if it is the first character of a word and it is unquoted:
+Note that for a home directory on a remote computer, we have used the metacharacter ```~```, and not the environment variable ```$HOME```, because the latter would have been expanded by a shell on a local computer when shell parses the command input. On the contrary, `~` is interpreted as a metacharacter and is expanded only if it is the first character of a word and it is unquoted:
 
 ```bash
 $ echo $HOME
@@ -396,7 +396,7 @@ ga45mof@nidoqueen.ktas.ph.tum.de's password:
 someDir                                   100%    0     0.0KB/s   00:00 
 ```
 
-As a rule of thumb, when using the **scp** command, refer to the home directory on a local computer with ```${HOME}```, and on a remote computer with ```~``` metacharacter. The **scp** command can be only used for transferring files from one computer to another, and cannot do other things like list directories on remote computer or delete files remotely. That can be achieved with the **sftp** ("Secure File Transfer Protocol") command, which is introduced next.
+As a rule of thumb, when using the **scp** command, refer to the home directory on a local computer with the environment variable ```${HOME}```, and on a remote computer with ```~``` metacharacter. The **scp** command can be only used for transferring files from one computer to another, and cannot do other things like list directories on remote computer or delete files remotely. That can be achieved with the **sftp** ("Secure File Transfer Protocol") command, which is introduced next.
 
 The **sftp** command can be used interactively on a remote computer, and is basically a secure version of the old **ftp** command. One establishes an interactive session on a remote computer by using the following generic syntax:
 
@@ -524,7 +524,6 @@ Remote working directory: /home/ktas/ga45mof
 
 # Print the current working directory on a local computer:
 sftp> lpwd
-Remote working directory: /home/ktas/ga45mof
 Local working directory: /home/abilandz
 ```
 
@@ -610,7 +609,27 @@ Receiving objects:  12% (191/1474), 2.86 MiB | 20.00 KiB/s
 
 
 
+As the last SSH utility, we mention **sshfs**, which can be used to mount the file system of remote computer into the local directory tree:
 
+```bash 
+# Make a local directory in which remote directory 'TestDir' will be mounted:
+$ mkdir RemoteDir
+
+# Mount remote directory 'TestDir' into local directory 'RemoteDir' using sshfs:
+$ sshfs ga45mof@nidoqueen.ktas.ph.tum.de:/home/ktas/ga45mof/TestDir RemoteDir
+
+$ ls RemoteDir
+file_1.txt file_2.txt
+```
+
+Whatever we do now with the content of 'RemoteDir' on a local computer, will be executed in effect in the 'TestDir' on a remote computer. This can be terminated in the standard way by unmounting the local directory:
+
+```bash
+$ umount RemoteDir
+$ ls RemoteDir # it's empty now locally
+```
+
+Further details about **sshfs** can be found at its repository at this [link](https://github.com/libfuse/sshfs).
 
 
 
