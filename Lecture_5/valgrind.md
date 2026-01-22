@@ -2,7 +2,7 @@
 
 # Valgrind
 
-**Last update**: 20260121-1
+**Last update**: 20260122-1
 
 
 ### Table of Contents
@@ -158,53 +158,54 @@ For instance, to compile the custom **valgrind** 3.26.0 from source, one proceed
 
 ### 4. Memory management: **Memcheck** <a name="memcheck"></a>
 
-* shadow memory -- a replica of the application's memory space, typically defined with a mapping function from application memory addresses to shadow memory addresses.
-  * It contains metadata for every byte of the application's addressable memory, encoding information about the initialization state and accessibility permissions of the corresponding application's data
+The **valgrind** main tool for memory error detection is **memcheck**. Without going into the technical details of its internal implementation, below we summarize the most important parts of its design: 
 
-* Each byte of the application's memory is associated with two main pieces of information:
-  * _addressability tag_ &mdash; allocated, freed, unavailable, etc.
+* _shadow memory_ &mdash; **memcheck** creates a replica of the application's memory space, typically defined with a mapping function from application memory addresses to shadow memory addresses. It contains metadata for every byte of the application's addressable memory, encoding information about the initialization state and accessibility permissions of the corresponding application's data. Each byte of the application's memory is associated with two main pieces of information:
+  * _addressability tag_ &mdash; allocated, freed, unavailable, etc.;
   * _definedness tag_ &mdash; initialized or uninitialized.
+* _interception of memory instructions_ &mdash; similar to the design of virtual machine.
 
-* **Memcheck** stores for each byte of the application's memory its addressability and definedness tags into the shadow memory, using its own representation. This is achieved by intercepting every memory read and write instruction of the application and using the DBI technique to dynamically translate and rewrite the executing program into shadow memory. During this process, additional code may be injected into the shadow memory. 
-* Schematically, each memory access instruction of the application maps corresponds to the following action in the shadow memory:
-  1. map the application memory address in the corresponding shadow memory address;
-  2. for a **read** operation, load and verify addressability and definedness tags from shadow memory;
-  3. for a **write** operation, mark the corresponding shadow memory byte as initialized and ensure it's addressable.
+**Memcheck** stores for each byte of the application's memory its addressability and definedness tags into the shadow memory, using its own representation. This is achieved by intercepting every memory read and write instruction of the application and using the dynamic binary instrumentation (DBI) technique to dynamically translate and rewrite the executing program into shadow memory. During this process, additional code may be injected into the shadow memory. 
 
-* The above causes a significant performance penalty. 
+Schematically, each memory access instruction of the application maps corresponds to the following action in the shadow memory:
+1. map the application memory address in the corresponding shadow memory address;
+2. for a **read** operation, load and verify addressability and definedness tags from shadow memory;
+3. for a **write** operation, mark the corresponding shadow memory byte as initialized and ensure it's addressable.
 
-* For a **read** operation, the way **Memcheck** works by using the shadow memory can be represented with the following pseudo-code:
+The above actions are the main underlying cause of a significant performance penalty.  For a **read** operation, the way **Memcheck** works by using the shadow memory can be represented with the following pseudo-code:
 
-  ```C
-  shadow_addr = map_to_shadow(addr);
-  addressable = load_addressability_tag(shadow_addr);
-  if (!addressable) {
-  	report_error("Invalid read: memory not addressable!");    
-  }
-  defined = load_definedness_tag(shadow_addr);
-  if (!defined) {
-  	report_error("Use of unitialized memory!");    
-  }
-  load_real_memory(addr);
-  ```
+```C
+shadow_addr = map_to_shadow(addr);
+addressable = load_addressability_tag(shadow_addr);
+if (!addressable) {
+	report_error("Invalid read: memory not addressable!");    
+}
+defined = load_definedness_tag(shadow_addr);
+if (!defined) {
+	report_error("Use of unitialized memory!");    
+}
+load_real_memory(addr);
+```
 
-  and similarly for a **write** operation.
-  
-  
+and similarly for a **write** operation.
+
+
+
+
 
 #### "Hello World!" example for Memcheck
 
-First, the following, perfectly regular code snippet is saved in a file _hello.C_ and used as a demonstration:
+Firstly, the following and perfectly regular code snippet is saved in a file _hello.C_ and used merely as a demonstration how to run **valgrind**'s tool  **memcheck**:
 
 ```C
 #include <stdio.h>
-int main() {
+int main(void) {
   printf("\n Hello World! \n\n");
   return 0;
 }
 ```
 
-The code is compiled into an executable **hello** in the standard way, using **gcc** for programs written in ```C```, and **g++** for programs written in ```C++```:
+The code is compiled into an executable **hello** in the standard way (using **gcc** for programs written in ```C```, and **g++** for programs written in the ```C++``` programming language):
 
 ```bash
 $ gcc -o hello hello.C
@@ -244,7 +245,7 @@ $ valgrind --tool=memcheck ./hello
 
 We use this simple "Hello World!" example to make a few general statements:
 
-1. If the flag ```--tool``` is not used to specify the tool explicitly, it defaults to **memcheck**. Therefore, executing bare **valgrind** or **valgrind --tool=memcheck** gives the same result.
+1. If the flag ```--tool``` is not used to specify the tool explicitly, it defaults to **memcheck**. Therefore, executing the bare **valgrind** command or **valgrind --tool=memcheck** gives the same result.
 
 2. The number "369" at the beginning of each line above indicates the PID of the process in which **valgrind** has run.
 
@@ -272,9 +273,9 @@ We use this simple "Hello World!" example to make a few general statements:
     sys		0m1.046s
     ```
 
-    From above examples, we see there are several orders of magnitude of difference in performance when memory checks are performed with **memcheck**, even for a simple executable like **hello**. Even after disabling all checks with ```--tool=none``` option, when the code is merely executed in **valgrind**'s virtual machine, there is a non-negligible performance penalty.    
+    From above examples, we see there are several orders of magnitude of difference in performance when memory checks are performed with **memcheck**, even for a simple executable like **hello**. Even after disabling all checks with ```--tool=none``` option, when the code is merely executed in **valgrind**'s virtual machine, there is still a non-negligible performance penalty.    
 
-4. Since we used the canonical "Hello World!" example without any errors in the code, **memcheck** found no errors, but the printout was nevertheless very verbose. We can instruct **valgrind** to print only in case of errors with the flag ```-q``` (for "quiet"):
+4. Since we used the canonical "Hello World!" example without any errors in the code, **memcheck** did not find any errors, but the printout was nevertheless very verbose. We can instruct **valgrind** to provide its specific printout only in case of errors with the flag ```-q``` (for "quiet"):
 
     ```bash 
     $ valgrind -q ./hello
@@ -282,14 +283,18 @@ We use this simple "Hello World!" example to make a few general statements:
      Hello World!
     ```
 
-Next, various examples are provided of invalid memory accesses, i.e. of invalid read and write operations, which can be detected by the **memcheck** tool, even though they lead to no obvious errors neither during compilation nor execution.
+In what follows next, various examples are provided of invalid memory accesses, i.e. of invalid read and write operations, which can be detected by the **memcheck** tool, even though they lead to no obvious errors neither during compilation nor execution.
+
+
+
+
 
 #### Out-of-bounds indexing
 
-This error typically occurs when an array index is used beyond the array's boundaries, and it can be detected by **memcheck** only if memory for that array was allocated on the heap (e.g. using the operator **new** in ```C++```  or **malloc()** in ```C```). That is demonstrated with the following code snippet _outOfBound.C_:
+This error typically occurs when an array index is used beyond the array's boundaries. It can be detected by **memcheck** but only if memory for that array was allocated on the heap (i.e. memory is allocated persistently, by using the operator **new** in ```C++``` or **malloc()** in ```C```). That is demonstrated with the following code snippet _outOfBound.C_:
 
-```C  
-int main() {
+```c++
+int main(void) {
 
   float *arr = new float[2];
   arr[0] = 1.23;
@@ -301,7 +306,7 @@ int main() {
 }
 ```
 
-The above code snippet is compiled without any compilation error or warning into an executable: 
+The above code snippet uses functionalities of the ```C++``` programming language, and is compiled with **g++** instead of **gcc** compiler. The code compiles without any error or warning into an executable: 
 
 ```bash
 $ g++ -o outOfBound outOfBound.C
@@ -313,7 +318,7 @@ Also, there is no error at execution:
 $ ./outOfBound
 $ echo $?
 0 
-# the exit status is 0, set via 'return 0'
+# the exit status is 0, set via 'return 0' in the source code
 ```
 
 However, **memcheck** will report an error:
@@ -392,6 +397,7 @@ This line in the **memcheck** output report indicates that within the _main()_ f
 As a side remark, on Linux, the lines in a file can be printed enumerated with the core utility **cat** and its option ```-n```, for instance:
 
 ```bash
+# print on the screen the file content enumerated line-by-line:
 $ cat -n 
      1	int main() {
      2	
@@ -413,7 +419,7 @@ $ sed -n 6p outOfBound.C
   arr[2] = 22.123; // out-of-bound indexing
 ```
 
-The above example demonstrates that **memcheck** can very precisely determine the cause of out-of-bounds indexing for dynamically allocated memory.
+The above example demonstrates that **memcheck** can very precisely determine the cause of out-of-bounds indexing for dynamically allocated memory, when we have access to the source code and can recompile it with the option ```-g```.
 
 Note, however, that **memcheck** doesn't check for out-of-bounds indexing of global arrays, or of array variables stored in a stack area, as the following code snippet demonstrates:
 
@@ -452,13 +458,15 @@ $ valgrind ./globalArray
 ==8577== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
 ```
 
-In general, this category of problems related to out-of-bounds indexing cannot be tackled with the tool **memcheck**. There exists, however, a new experimental tool **exp-sgcheck**, for a stack and a global array overrun detector, which is still under development (see its official documentation and status at this [link](https://valgrind.org/docs/manual/sg-manual.html)).
+In general, this particular category of problems related to out-of-bounds indexing cannot be tackled with the tool **memcheck**. There exists, however, a new experimental tool **exp-sgcheck**, designed as an out-of-bounds detector for stack and global arrays, which is still under development (see its official documentation and status at this [link](https://valgrind.org/docs/manual/sg-manual.html)).
+
+
 
 
 
 #### Use after free and dangling pointers
 
-This case happens when a pointer is referencing a memory which was already deallocated (i.e. freed). Such a pointer is called a _dangling pointer_. It can be illustrated with the following code snippet saved in the file _free.C_:
+This case happens when a pointer is referencing a memory which was already deallocated (i.e. freed, or returned back to the underlying operating system). Such a pointer is called a _dangling pointer_. It can be illustrated with the following code snippet saved in the file _free.C_:
 
 ```C++
 int main(void)
@@ -478,51 +486,40 @@ The above code can be compiled and executed, but **memcheck** will spot and repo
 
 ```bash
 # No compilation error:
-$ g++ -o free free.C
+$ g++ -g -o free free.C
 
 # No execution error (accidentally):
 $ ./free 
 
-# However, memcheck spots the problem:
-$ valgrind ./free 
-==1078954== Memcheck, a memory error detector
-==1078954== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
-==1078954== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
-==1078954== Command: ./free
-==1078954== 
-==1078954== Invalid write of size 4
-==1078954==    at 0x1091B2: main (in /home/abilandz/git/lectures/NAT3054/examples/free)
-==1078954==  Address 0x4de6c80 is 0 bytes inside a block of size 8 free'd
-==1078954==    at 0x484CA8F: operator delete[](void*) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
-==1078954==    by 0x1091A5: main (in /home/abilandz/git/lectures/NAT3054/examples/free)
-==1078954==  Block was alloc'd at
-==1078954==    at 0x484A2F3: operator new[](unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
-==1078954==    by 0x10917E: main (in /home/abilandz/git/lectures/NAT3054/examples/free)
-==1078954== 
-==1078954== 
-==1078954== HEAP SUMMARY:
-==1078954==     in use at exit: 0 bytes in 0 blocks
-==1078954==   total heap usage: 2 allocs, 2 frees, 72,712 bytes allocated
-==1078954== 
-==1078954== All heap blocks were freed -- no leaks are possible
-==1078954== 
-==1078954== For lists of detected and suppressed errors, rerun with: -s
-==1078954== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
-
+# However, 'memcheck' spots the problem:
+$ valgrind -q ./free 
+==12013== Invalid write of size 4
+==12013==    at 0x40011B2: main (free.C:7)
+==12013==  Address 0x4de3c80 is 0 bytes inside a block of size 8 free'd
+==12013==    at 0x48539A3: operator delete[](void*) (vg_replace_malloc.c:1413)
+==12013==    by 0x40011A5: main (free.C:6)
+==12013==  Block was alloc'd at
+==12013==    at 0x484F723: operator new[](unsigned long) (vg_replace_malloc.c:730)
+==12013==    by 0x400117E: main (free.C:3)
+==12013==
 ```
+
+And it fact, this output report is very punctual, as its correctly highlights all relevant lines in the source code to fix this problem!  
 
 As a side remark, if an object which is deleted doesn't have a destructor (like built-in types), it's a good programming practice to set it to ```NULL``` explicitly, to force an execution error it if is used after it was deleted:
 
 ```C++
-delete [] arr; // deallocate memory back    
+delete [] arr; // deallocate array memory back    
 arr = NULL;    // set pointer to NULL explicitly after 'delete'
 ```
 
 
 
+
+
 #### Uninitialized memory access
 
-This case happens when an object was declared but never initialized, and it used later in the code uninitialized. We first illustrate this case with the following correct code snippet saved in the file _initilized.C_:
+This case happens when an object was declared but it was never initialized, and it was used later in the code uninitialized. We first illustrate this case with the following correct code snippet saved in the file _initilized.C_:
 
 ```C++
 #include <stdio.h>
@@ -543,7 +540,7 @@ This code snippet can be compiled and executed without any errors, and **memchec
 
 ```bash
 # No compilation error:
-$ g++ -o initilized initilized.C
+$ g++ -g -o initilized initilized.C
 
 # No execution error:
 $ ./initilized 
@@ -551,7 +548,7 @@ $ ./initilized
  1.230000 
  -44.000000 
 
-# Finally, clearance from 'memcheck':
+# Finally, the clearance from 'memcheck':
 $ valgrind ./initilized 
 ==1080261== Memcheck, a memory error detector
 ==1080261== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
@@ -573,7 +570,7 @@ $ valgrind ./initilized
 ==1080261== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
 ```
 
-We now re-use the above example, only array is NOT initialized, and save in the file _uninitialized.C_ the following code snippet:
+We now re-use the above example but without initializing array elements, and save it in the file _uninitialized.C_ the following code snippet:
 
 ```C++
 #include <stdio.h>
@@ -590,11 +587,11 @@ int main(void)
 }
 ```
 
-This code snippet can be compiled without any errors. When executed, it doesn't produce any errors accidentally, because built-in types, like ```float``` in this example, can get initialized to 0.0 by a specific compiler, but in general this is an undefined behavior. But **memcheck** does report an error when declared and uninitialized objects are used:
+This code snippet can be compiled without any errors. When executed, it doesn't produce any errors either, but only accidentally, because built-in types, like ```float``` in this example, can get initialized to ```0.0``` by a specific compiler. In general, however, this leads to an undefined behavior. But **memcheck** does report an error when declared and uninitialized objects are used:
 
 ```bash
 # No compilation error:
-$ g++ -o uninitilized uninitilized.C
+$ g++ -g -o uninitilized uninitilized.C
 
 # No execution error:
 $ ./uninitilized 
@@ -603,42 +600,43 @@ $ ./uninitilized
  0.000000 
 
 # However, 'memcheck' is alert (and surprisingly verbose!):
-$ valgrind ./uninitilized 
-==1081158== Memcheck, a memory error detector
-==1081158== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
-==1081158== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
-==1081158== Command: ./uninitilized
-==1081158== 
-
-==1081158== Conditional jump or move depends on uninitialised value(s)
-==1081158==    at 0x4AFACB8: __printf_fp_l (printf_fp.c:396)
-==1081158==    by 0x4B1692C: __printf_fp_spec (vfprintf-internal.c:354)
-==1081158==    by 0x4B1692C: __vfprintf_internal (vfprintf-internal.c:1558)
-==1081158==    by 0x4B0079E: printf (printf.c:33)
-==1081158==    by 0x1091D0: main (in /home/abilandz/git/lectures/NAT3054/examples/uninitilized)
+$ valgrind -q ./uninitilized 
+==12065== Conditional jump or move depends on uninitialised value(s)
+==12065==    at 0x4AF7CB8: __printf_fp_l (printf_fp.c:396)
+==12065==    by 0x4B1392C: __printf_fp_spec (vfprintf-internal.c:354)
+==12065==    by 0x4B1392C: __vfprintf_internal (vfprintf-internal.c:1558)
+==12065==    by 0x4AFD79E: printf (printf.c:33)
+==12065==    by 0x40011D0: main (uninitilized.C:5)
+==12065==
 
 ... many more lines ...
 
-==1081158== Conditional jump or move depends on uninitialised value(s)
-==1081158==    at 0x4AFBEFB: __printf_fp_l (printf_fp.c:1230)
-==1081158==    by 0x4B1692C: __printf_fp_spec (vfprintf-internal.c:354)
-==1081158==    by 0x4B1692C: __vfprintf_internal (vfprintf-internal.c:1558)
-==1081158==    by 0x4B0079E: printf (printf.c:33)
-==1081158==    by 0x109202: main (in /home/abilandz/git/lectures/NAT3054/examples/uninitilized)
-==1081158== 
- 0.000000 
+==12065== Syscall param write(buf) points to uninitialised byte(s)
+==12065==    at 0x4BB18F7: write (write.c:26)
+==12065==    by 0x4B27EEC: _IO_file_write@@GLIBC_2.2.5 (fileops.c:1180)
+==12065==    by 0x4B299E0: new_do_write (fileops.c:448)
+==12065==    by 0x4B299E0: _IO_new_do_write (fileops.c:425)
+==12065==    by 0x4B299E0: _IO_do_write@@GLIBC_2.2.5 (fileops.c:422)
+==12065==    by 0x4B286D4: _IO_new_file_xsputn (fileops.c:1243)
+==12065==    by 0x4B286D4: _IO_file_xsputn@@GLIBC_2.2.5 (fileops.c:1196)
+==12065==    by 0x4B1214C: outstring_func (vfprintf-internal.c:239)
+==12065==    by 0x4B1214C: __vfprintf_internal (vfprintf-internal.c:1263)
+==12065==    by 0x4AFD79E: printf (printf.c:33)
+==12065==    by 0x4001202: main (uninitilized.C:6)
 
-==1081158== 
-==1081158== HEAP SUMMARY:
-==1081158==     in use at exit: 0 bytes in 0 blocks
-==1081158==   total heap usage: 3 allocs, 3 frees, 73,736 bytes allocated
-==1081158== 
-==1081158== All heap blocks were freed -- no leaks are possible
-==1081158== 
-==1081158== Use --track-origins=yes to see where uninitialised values come from
-==1081158== For lists of detected and suppressed errors, rerun with: -s
-==1081158== ERROR SUMMARY: 58 errors from 22 contexts (suppressed: 0 from 0)
+... many more lines ...
+
+==12065== Conditional jump or move depends on uninitialised value(s)
+==12065==    at 0x4AF8EFB: __printf_fp_l (printf_fp.c:1230)
+==12065==    by 0x4B1392C: __printf_fp_spec (vfprintf-internal.c:354)
+==12065==    by 0x4B1392C: __vfprintf_internal (vfprintf-internal.c:1558)
+==12065==    by 0x4AFD79E: printf (printf.c:33)
+==12065==    by 0x4001202: main (uninitilized.C:6)
+==12065==
+ 0.000000
 ```
+
+
 
 
 
@@ -660,11 +658,11 @@ int main(void)
 }
 ```
 
-The code can be compiled without any error, but we will get an error at execution, and when the code is checked with **memcheck**:
+The code can be compiled without any error. On the other hand, we will get an error at execution, but the error message is rather terse and incomprehensible. When the code is checked with **memcheck**, we get a punctual report with the problematic lines of the code clearly highlighted.
 
 ```bash
 # No compilation error:
-$ g++ -o doubleFree doubleFree.C 
+$ g++ -g -o doubleFree doubleFree.C 
 
 # Execution error:
 $ ./doubleFree 
@@ -672,31 +670,17 @@ free(): double free detected in tcache 2
 Aborted (core dumped)
 
 # Diagnosics from 'memcheck':
-$ valgrind ./doubleFree 
-==1082444== Memcheck, a memory error detector
-==1082444== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
-==1082444== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
-==1082444== Command: ./doubleFree
-==1082444== 
-==1082444== Invalid free() / delete / delete[] / realloc()
-==1082444==    at 0x484CA8F: operator delete[](void*) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
-==1082444==    by 0x1091C7: main (in /home/abilandz/git/lectures/NAT3054/examples/doubleFree)
-==1082444==  Address 0x4de6c80 is 0 bytes inside a block of size 8 free'd
-==1082444==    at 0x484CA8F: operator delete[](void*) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
-==1082444==    by 0x1091B4: main (in /home/abilandz/git/lectures/NAT3054/examples/doubleFree)
-==1082444==  Block was alloc'd at
-==1082444==    at 0x484A2F3: operator new[](unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
-==1082444==    by 0x10917E: main (in /home/abilandz/git/lectures/NAT3054/examples/doubleFree)
-==1082444== 
-==1082444== 
-==1082444== HEAP SUMMARY:
-==1082444==     in use at exit: 0 bytes in 0 blocks
-==1082444==   total heap usage: 2 allocs, 3 frees, 72,712 bytes allocated
-==1082444== 
-==1082444== All heap blocks were freed -- no leaks are possible
-==1082444== 
-==1082444== For lists of detected and suppressed errors, rerun with: -s
-==1082444== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+$ valgrind -q ./doubleFree 
+==12088== Invalid free() / delete / delete[] / realloc()
+==12088==    at 0x48539A3: operator delete[](void*) (vg_replace_malloc.c:1413)
+==12088==    by 0x40011C7: main (doubleFree.C:8)
+==12088==  Address 0x4de3c80 is 0 bytes inside a block of size 8 free'd
+==12088==    at 0x48539A3: operator delete[](void*) (vg_replace_malloc.c:1413)
+==12088==    by 0x40011B4: main (doubleFree.C:7)
+==12088==  Block was alloc'd at
+==12088==    at 0x484F723: operator new[](unsigned long) (vg_replace_malloc.c:730)
+==12088==    by 0x400117E: main (doubleFree.C:3)
+==12088==
 ```
 
 
@@ -705,7 +689,7 @@ $ valgrind ./doubleFree
 
 #### Memory leak 
 
-Memory leaks occur when dynamically allocated memory (e.g. using **malloc()** in ```C``` or operator **new** in ``C++``) is not properly deallocated (e.g. using **free()** in ```C``` or operator **delete** in ```C++```). As a consequence, a programme at runtime persistently claims memory it no longer needs. If such faulty memory allocation occurs within a loop, a programme at runtime persistently claims more and more memory it no longer needs, eventually exhausting all available memory on a computer. 
+Memory leaks occur when dynamically allocated memory (e.g. using **malloc()** in ```C``` or operator **new** in the ``C++`` programming language) is not properly deallocated (e.g. using **free()** in ```C``` or operator **delete** in ```C++```). As a consequence, a programme at runtime persistently claims memory it no longer needs. If such faulty memory allocation occurs within a loop, a programme at runtime persistently claims more and more memory it no longer needs, eventually exhausting all available memory on a computer (as a consequence, the computer starts to slow down until it eventually freezes). 
 
 To illustrate memory leak, consider the following "classical" erroneous code snippet saved in the file _leak.C_:
 
@@ -723,44 +707,47 @@ int main(void)
 }
 ```
 
-The code compiles and executes correctly, but only accidentally. If we increase the number of loop iterations and exacerbate the problem with faulty memory deallocation, the program would eventually be terminated ungraciously by the underlying operating system at runtime after claiming persistently too much memory. But **memcheck** is particularly suitable to detect such memory leaks, as the following example demonstrated (we use the option ```--leak-check=full``` to see all details of leaked memory) :
+The code compiles and executes correctly, but only accidentally. If we increase the number of loop iterations and exacerbate the problem with faulty memory deallocation that way, the program would eventually be terminated ungraciously by the underlying operating system at runtime after claiming persistently too much memory. But **memcheck** is particularly suitable to detect such memory leaks, as the following example demonstrates:
 
 ```bash
 $ g++ -g -o leak leak.C
 
 $ valgrind --leak-check=full ./leak 
-==1181104== Memcheck, a memory error detector
-==1181104== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
-==1181104== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
-==1181104== Command: ./leak
-==1181104== 
-==1181104== 
-==1181104== HEAP SUMMARY:
-==1181104==     in use at exit: 72 bytes in 9 blocks
-==1181104==   total heap usage: 11 allocs, 2 frees, 72,784 bytes allocated
-==1181104== 
-==1181104== 72 bytes in 9 blocks are definitely lost in loss record 1 of 1
-==1181104==    at 0x484A2F3: operator new[](unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
-==1181104==    by 0x10918F: main (leak.C:7)
-==1181104== 
-==1181104== LEAK SUMMARY:
-==1181104==    definitely lost: 72 bytes in 9 blocks
-==1181104==    indirectly lost: 0 bytes in 0 blocks
-==1181104==      possibly lost: 0 bytes in 0 blocks
-==1181104==    still reachable: 0 bytes in 0 blocks
-==1181104==         suppressed: 0 bytes in 0 blocks
-==1181104== 
-==1181104== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+==12111== Memcheck, a memory error detector
+==12111== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==12111== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==12111== Command: ./leak
+==12111==
+==12111==
+==12111== HEAP SUMMARY:
+==12111==     in use at exit: 72 bytes in 9 blocks
+==12111==   total heap usage: 11 allocs, 2 frees, 72,784 bytes allocated
+==12111==
+==12111== 72 bytes in 9 blocks are definitely lost in loss record 1 of 1
+==12111==    at 0x484F723: operator new[](unsigned long) (vg_replace_malloc.c:730)
+==12111==    by 0x400118F: main (leak.C:6)
+==12111==
+==12111== LEAK SUMMARY:
+==12111==    definitely lost: 72 bytes in 9 blocks
+==12111==    indirectly lost: 0 bytes in 0 blocks
+==12111==      possibly lost: 0 bytes in 0 blocks
+==12111==    still reachable: 0 bytes in 0 blocks
+==12111==         suppressed: 0 bytes in 0 blocks
+==12111==
+==12111== For lists of detected and suppressed errors, rerun with: -s
+==12111== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
 ```
 
-The problematic code is at line 7:
+In the above example, we used the **valgrind**'s command-line option ```--leak-check=full``` to see all details of leaked memory. The documentation of all supported command-line options with their default settings can be found in the official documentation at the following [link](https://valgrind.org/docs/manual/manual-core.html). 
+
+The problematic code is at line 6:
 
 ```bash
-$ sed -n 7p leak.C
+$ sed -n 6p leak.C
     arr = new float[2]{1.23, -44.};
 ```
 
-Indeed, at each loop iteration, the new chunk of memory was claimed persistently at this line in the source code from the underlying operating system, without releasing back that memory correctly.
+Indeed, at each loop iteration, the new chunk of memory was claimed persistently at this line in the source code from the underlying operating system, without releasing that memory back.
 
 As the above output indicates, **memcheck** distinguishes between several categories of memory leaks:
 
@@ -769,7 +756,7 @@ As the above output indicates, **memcheck** distinguishes between several catego
 * _possibly lost_ &mdash; memory blocks for which pointers still exist, but point only to the middle (i.e. interior) of an allocated memory block. For instance, this could just be a random value in memory that happens to point into a memory block.
 * _still reachable_ &mdash; memory block that remains allocated at program termination, with a valid pointer to it. In general, this does not indicate an error, but it nevertheless hints to the programmer that such a memory block could be released back at the program's termination. 
 
-The corrected source code is:
+For completeness sake, the corrected corresponding source code without memory leak is saved in _noLeak.C_:
 
 ```C++
 #include <stdio.h>
@@ -791,12 +778,12 @@ int main(void)
 The **memcheck** detects no errors now:
 
 ```bash
-$ g++ -g -o leak leak.C 
+$ g++ -g -o noLak noLeak.C 
 $ valgrind --leak-check=full ./leak
 ==1182881== Memcheck, a memory error detector
 ==1182881== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
 ==1182881== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
-==1182881== Command: ./leak_2
+==1182881== Command: ./noLeak
 ==1182881== 
 ==1182881== 
 ==1182881== HEAP SUMMARY:
@@ -811,13 +798,7 @@ $ valgrind --leak-check=full ./leak
 
 
 
-#### Incorrect casting
 
-
-
-
-
-#### Incorrect pointer arithmetic
 
 
 
@@ -830,6 +811,10 @@ TBI 20260117 add a comment on installing visualizer
 ```bash
 $ sudo apt install massif-visualizer
 ```
+
+
+
+
 
 
 
