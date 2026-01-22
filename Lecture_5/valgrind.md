@@ -2,7 +2,7 @@
 
 # Valgrind
 
-**Last update**: 20260122-2
+**Last update**: 20260122-3
 
 
 ### Table of Contents
@@ -778,8 +778,8 @@ int main(void)
 The **memcheck** detects no errors now:
 
 ```bash
-$ g++ -g -o noLak noLeak.C 
-$ valgrind --leak-check=full ./leak
+$ g++ -g -o noLeak noLeak.C 
+$ valgrind --leak-check=full ./noLeak
 ==1182881== Memcheck, a memory error detector
 ==1182881== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
 ==1182881== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
