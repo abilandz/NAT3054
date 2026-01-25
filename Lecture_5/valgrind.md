@@ -2,7 +2,7 @@
 
 **Last update**: 20260125-4
 
-<img src="Valgrind_logo.png" alt="drawing" width="600" align="middle"/>
+<img src="Valgrind_logo.png" alt="drawing" width="600"/>
 
 ### Table of Contents
 

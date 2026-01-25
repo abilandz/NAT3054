@@ -8,7 +8,7 @@
 1. [Terminal multiplexers (screen, tmux)](#screen)
 2. [ping](#ping)
 3. [ssh, scp, sftp, sshfs](#ssh.scp.sftp.sshfs)  
-     a) [Public and private keys](#public.and.private.keys)      	
+	* [Public and private keys](#public.and.private.keys)      	
 4. [References](#references)
 
 
@@ -635,7 +635,7 @@ Further details about **sshfs** can be found at its repository at this [link](ht
 
 
 
-#### a) Public and private keys  <a name="public.and.private.keys"></a>
+#### Public and private keys  <a name="public.and.private.keys"></a>
 
 In this section, all steps needed for an authentication via public keys are summarized.
 
