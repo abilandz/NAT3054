@@ -1,6 +1,6 @@
 # Valgrind
 
-**Last update**: 20260125-4
+**Last update**: 20260125-6
 
 <img src="Valgrind_logo.png" alt="drawing" width="600"/>
 
@@ -741,7 +741,7 @@ $ valgrind --leak-check=full ./leak
 ==12111== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
 ```
 
-In the above example, we used the **valgrind**'s command-line option ```--leak-check=full``` to see all details of leaked memory. The documentation of all supported command-line options with their default settings can be found in the official documentation at the following [link](https://valgrind.org/docs/manual/manual-core.html). 
+In the above example, we used the **valgrind**'s command-line option ```--leak-check=full``` to get more verbose details of leaked memory. The documentation of all supported command-line options with their default settings can be found in the official documentation at the following [link](https://valgrind.org/docs/manual/manual-core.html). 
 
 The problematic code is at line 6:
 
