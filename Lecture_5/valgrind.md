@@ -1,7 +1,8 @@
 # Valgrind
 
-**Last update**: 20260125-3
+**Last update**: 20260125-4
 
+<img src="Valgrind_logo.png" alt="drawing" width="600" align="middle"/>
 
 ### Table of Contents
 
@@ -18,8 +19,6 @@
 5. [Heap profiling: **Massif**](#massif)
 	* ["Hello World!" example](#massif.hello)	
 6. [References](#references)
-
-<img src="Valgrind_logo.png" alt="drawing" width="800"/>
 
 
 ### 1. Introduction <a name="introduction"></a>
