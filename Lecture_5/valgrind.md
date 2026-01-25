@@ -1,6 +1,6 @@
 # Valgrind
 
-**Last update**: 20260125-2
+**Last update**: 20260125-3
 
 
 ### Table of Contents
@@ -10,10 +10,16 @@
 3. [Installation](#installation)
 4. [Memory management: **Memcheck**](#memcheck)
 	* ["Hello World!" example](#memcheck.hello)
+	* [Out-of-bounds indexing](#memcheck.bounds)
+	* [Use after free and dangling pointers](#memcheck.after)
+	* [Uninitialized memory access](#memcheck.unitialized)
+	* [Double-free](#memcheck.double)
+	* [Memory leak](#memcheck.leak)
 5. [Heap profiling: **Massif**](#massif)
+	* ["Hello World!" example](#massif.hello)	
 6. [References](#references)
 
-<img src="Valgrind_logo.png" alt="drawing" width="600"/>
+<img src="Valgrind_logo.png" alt="drawing" width="800"/>
 
 
 ### 1. Introduction <a name="introduction"></a>
@@ -284,10 +290,10 @@ We use this simple "Hello World!" example to make a few general statements:
 In what follows next, various examples are provided of invalid memory accesses, i.e. of invalid read and write operations, which can be detected by the **memcheck** tool, even though they lead to no obvious errors neither during compilation nor execution.
 
 
+​	
 
 
-
-#### Out-of-bounds indexing
+#### Out-of-bounds indexing <a name="memcheck.bounds"></a>
 
 This error typically occurs when an array index is used beyond the array's boundaries. It can be detected by **memcheck** but only if memory for that array was allocated on the heap (i.e. memory is allocated persistently, by using the operator **new** in ```C++``` or **malloc()** in ```C```). That is demonstrated with the following code snippet _outOfBound.C_:
 
@@ -462,7 +468,7 @@ In general, this particular category of problems related to out-of-bounds indexi
 
 
 
-#### Use after free and dangling pointers
+#### Use after free and dangling pointers <a name="memcheck.after"></a>
 
 This case happens when a pointer is referencing a memory which was already deallocated (i.e. freed, or returned back to the underlying operating system). Such a pointer is called a _dangling pointer_. It can be illustrated with the following code snippet saved in the file _free.C_:
 
@@ -515,7 +521,7 @@ arr = NULL;    // set pointer to NULL explicitly after 'delete'
 
 
 
-#### Uninitialized memory access
+#### Uninitialized memory access <a name="memcheck.unitialized"></a>
 
 This case happens when an object was declared but it was never initialized, and it was used later in the code uninitialized. We first illustrate this case with the following correct code snippet saved in the file _initilized.C_:
 
@@ -638,7 +644,7 @@ $ valgrind -q ./uninitilized
 
 
 
-#### Double-free
+#### Double-free <a name="memcheck.double"></a>
 
 This case occurs when the same memory is deallocated multiple times. It can be illustrated with the following code snippet saved in the file _doubleFree.C_:
 
@@ -685,7 +691,7 @@ $ valgrind -q ./doubleFree
 
 
 
-#### Memory leak 
+#### Memory leak <a name="memcheck.leak"></a> 
 
 Memory leaks occur when dynamically allocated memory (e.g. using **malloc()** in ```C``` or operator **new** in the ``C++`` programming language) is not properly deallocated (e.g. using **free()** in ```C``` or operator **delete** in ```C++```). As a consequence, a programme at runtime persistently claims memory it no longer needs. If such faulty memory allocation occurs within a loop, a programme at runtime persistently claims more and more memory it no longer needs, eventually exhausting all available memory on a computer (as a consequence, the computer starts to slow down until it eventually freezes). 
 
@@ -811,7 +817,7 @@ $ sudo apt install massif-visualizer
 ```
 
 
-
+#### "Hello World!" example <a name="massif.hello"></a>
 
 
 
