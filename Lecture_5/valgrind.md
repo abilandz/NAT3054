@@ -1,8 +1,6 @@
-<img src="Valgrind_logo.png" alt="drawing" width="600"/>
-
 # Valgrind
 
-**Last update**: 20260122-3
+**Last update**: 20260125-1
 
 
 ### Table of Contents
@@ -15,7 +13,7 @@
 6. [References](#references)
 
 
-
+<img src="Valgrind_logo.png" alt="drawing" width="600"/>
 
 
 ### 1. Introduction <a name="introduction"></a>
