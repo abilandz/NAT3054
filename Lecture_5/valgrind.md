@@ -1,6 +1,6 @@
 # Valgrind
 
-**Last update**: 20260125-1
+**Last update**: 20260125-2
 
 
 ### Table of Contents
@@ -9,9 +9,9 @@
 2. [A bit of history](#history)
 3. [Installation](#installation)
 4. [Memory management: **Memcheck**](#memcheck)
+	* ["Hello World!" example](#memcheck.hello)
 5. [Heap profiling: **Massif**](#massif)
 6. [References](#references)
-
 
 <img src="Valgrind_logo.png" alt="drawing" width="600"/>
 
@@ -191,7 +191,7 @@ and similarly for a **write** operation.
 
 
 
-#### "Hello World!" example for Memcheck
+#### "Hello World!" example <a name="memcheck.hello"></a>
 
 Firstly, the following and perfectly regular code snippet is saved in a file _hello.C_ and used merely as a demonstration how to run **valgrind**'s tool  **memcheck**:
 
