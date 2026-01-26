@@ -907,7 +907,7 @@ mem_stacks_B=0
 heap_tree=empty
 ```
 
-This raw data is not easy to decipher. Instead, one can process this raw output with **massif** visualizers, which are introduced next:
+This raw data is not easy to decipher. Instead, one can process the content of this raw output file with **massif** visualizers **ms_print** and **massif-visualizer**, which are introduced next:
 
 * **ms_print** &mdash; This is a **Perl** script which is a part of the main Valgrind software suite, and it doesn't have to be installed separately. Its documentation and example use cases can be found at the following [link](https://valgrind.org/docs/manual/ms-manual.html#ms-manual.running-ms_print). It is primarily used in an environment in which graphics is not available (e.g. when running remotely), in the following way:
 
@@ -983,6 +983,43 @@ This raw data is not easy to decipher. Instead, one can process this raw output 
   However, unlike **ms_print**, it produces a colorful graphical display of heap memory footprint in the left-hand side panel, and detailed call stack of all functions in the right-hand side panel:
 
   <img src="massif-visualizer-hello.png" alt="drawing" width="600"/>
+
+​	
+
+Before moving on to real-case scenarios of **massif** usage, we make the following general remarks:
+
+* In the output file, **massif** groups allocations per entire call stack, which enables identifying the specific function in which memory is allocated, as well as the whole chain of function invocations which preceded it. Schematically, in the output we can find:
+
+  ```bash
+  n bytes : someFunction() at someFile:someLine
+  		  anotherFunction() at anotherFile:someLine
+  		  main() at mainFile:someLine
+  ```
+
+  From the above schematic output, we can conclude that in the source code "_mainFile_" the **main()** function is called at indicated line. Within the **main()** function, there is a call to **anotherFunction()** in the source file named "_anotherFile_" at indicated line. Finally, within **anotherFunction()** there is a call to **someFunction()** in the source file named "_someFile_" at indicated line, where ```n``` bytes was dynamically allocated, at the time when this memory snapshot was made.
+
+* In the graphical plot, on y-axis is heap size in bytes, while on x-axis one can choose between three options using the flag ```--time-unit``` as follows:
+
+  * _instruction counts_ &mdash; the default option, or specified with ```--time-unit=i```. It counts the loading and dynamic linking of the program.
+  * _time_ &mdash; specified with the option ```--time-unit=ms```. It's a real (wallclock) time in miliseconds.
+  * _bytes_ &mdash; specified with the option ```--time-unit=B```. It counts number of bytes allocated/deallocated on the heap and stack(s).
+
+* By default, **massif** provides only heap profiling, i.e. dynamically allocated memory usage by using the operator **new** in ```C++``` or **malloc()** in ```C```. Instead, it can be instructed to provide profiling of stack and global variables with the non-default option ```--stack=yes```
+
+* As for the other Valgrind tools, **massif** will be more punctual and performant if the executable was compiled with `-g` option, for debugging purposes:
+
+  ```bash
+  # compile executable and save extra information for debugging:
+  $ g++ -g -o someExecutable someExecutable.C
+  ```
+
+  
+
+  ​	
+
+  
+
+
 
 
 
