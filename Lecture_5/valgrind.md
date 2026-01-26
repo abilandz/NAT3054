@@ -1,6 +1,6 @@
 # Valgrind
 
-**Last update**: 20260126-1
+**Last update**: 20260126-2
 
 <img src="Valgrind_logo.png" alt="drawing" width="600"/>
 
@@ -17,7 +17,8 @@
 	* [Double-free](#memcheck.double)
 	* [Memory leak](#memcheck.leak)
 5. [Heap profiling: **Massif**](#massif)
-	* ["Hello World!" example](#massif.hello)	
+	* ["Hello World!" example](#massif.hello)
+	* [Real-life scenarios](#massif.real)	
 6. [References](#references)
 
 
@@ -984,11 +985,10 @@ This raw data is not easy to decipher. Instead, one can process the content of t
 
   <img src="massif-visualizer-hello.png" alt="drawing" width="600"/>
 
-​	
 
 Before moving on to real-case scenarios of **massif** usage, we make the following general remarks:
 
-* In the output file, **massif** groups allocations per entire call stack, which enables identifying the specific function in which memory is allocated, as well as the whole chain of function invocations which preceded it. Schematically, in the output we can find:
+* In the output file, **massif** groups allocations per entire call stack, which enables identifying the specific function in which memory is allocated, as well as the whole chain of function invocations which preceded it. Schematically, in the **massif** output we can find:
 
   ```bash
   n bytes : someFunction() at someFile:someLine
@@ -996,13 +996,13 @@ Before moving on to real-case scenarios of **massif** usage, we make the followi
   		  main() at mainFile:someLine
   ```
 
-  From the above schematic output, we can conclude that in the source code "_mainFile_" the **main()** function is called at indicated line. Within the **main()** function, there is a call to **anotherFunction()** in the source file named "_anotherFile_" at indicated line. Finally, within **anotherFunction()** there is a call to **someFunction()** in the source file named "_someFile_" at indicated line, where ```n``` bytes was dynamically allocated, at the time when this memory snapshot was made.
+  From the above schematic output, we can conclude that in the source code "_mainFile_" the **main()** function is called at indicated line. Within the **main()** function, there is a call to **anotherFunction()** in the source file named "_anotherFile_" at indicated line. Finally, within **anotherFunction()** there is a call to **someFunction()** in the source file named "_someFile_" at indicated line, in which ```n``` bytes was dynamically allocated, at the time when this memory snapshot was made. We can see deduce clearly the specific function, **someFunction()**, in which memory was allocated, as well as the whole chain of function invocations, **main() => anotherFunction() => someFunction()**, which preceded it.
 
-* In the graphical plot, on y-axis is heap size in bytes, while on x-axis one can choose between three options using the flag ```--time-unit``` as follows:
+* In the graphical plot, on y-axis is heap size in bytes, while on x-axis one can choose between three supported options using the flag ```--time-unit``` as follows:
 
-  * _instruction counts_ &mdash; the default option, or specified with ```--time-unit=i```. It counts the loading and dynamic linking of the program.
-  * _time_ &mdash; specified with the option ```--time-unit=ms```. It's a real (wallclock) time in miliseconds.
-  * _bytes_ &mdash; specified with the option ```--time-unit=B```. It counts number of bytes allocated/deallocated on the heap and stack(s).
+  * _instruction counts_ &mdash; the default option, or specified with ```--time-unit=i```
+  * _time_ &mdash; specified with the option ```--time-unit=ms``` (the real (wallclock) time in miliseconds)
+  * _bytes_ &mdash; specified with the option ```--time-unit=B``` (the number of bytes allocated/deallocated)
 
 * By default, **massif** provides only heap profiling, i.e. dynamically allocated memory usage by using the operator **new** in ```C++``` or **malloc()** in ```C```. Instead, it can be instructed to provide profiling of stack and global variables with the non-default option ```--stack=yes```
 
@@ -1015,11 +1015,11 @@ Before moving on to real-case scenarios of **massif** usage, we make the followi
 
   
 
-  ​	
-
   
 
+#### Real-life scenarios <a name="massif.real"></a>
 
+TBC 20260126
 
 
 
