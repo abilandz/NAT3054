@@ -1,6 +1,6 @@
 # Valgrind
 
-**Last update**: 20260125-6
+**Last update**: 20260126-1
 
 <img src="Valgrind_logo.png" alt="drawing" width="600"/>
 
@@ -757,7 +757,7 @@ As the above output indicates, **memcheck** distinguishes between several catego
 * _definitely lost_ &mdash; these are memory blocks over which the program has lost all pointers. They can be allocated to another program only when the current one terminates.
 * _indirectly lost_ &mdash; memory blocks which can only be reached through the definitely lost memory blocks.
 * _possibly lost_ &mdash; memory blocks for which pointers still exist, but point only to the middle (i.e. interior) of an allocated memory block. For instance, this could just be a random value in memory that happens to point into a memory block.
-* _still reachable_ &mdash; memory block that remains allocated at program termination, with a valid pointer to it. In general, this does not indicate an error, but it nevertheless hints to the programmer that such a memory block could be released back at the program's termination. 
+* _still reachable_ &mdash; memory block that remains allocated at program termination, with a valid pointer to it. In general, this does not indicate an error, but it nevertheless hints to the programmer that such a memory block could be released back at the program's termination.
 
 For completeness sake, the corrected corresponding source code without memory leak is saved in _noLeak.C_:
 
@@ -809,14 +809,182 @@ $ valgrind --leak-check=full ./noLeak
 
 ### 5. Heap profiling: **Massif** <a name="massif"></a>
 
-TBI 20260117 add a comment on installing visualizer
+For the cases when memory usage needs to be profiled and optimized, **valgrind** provides the tool **massif**. By default, **massif** provides as its output the time dependence of dynamically allocated memory (heap profiling, or memory footprint), and identifies function calls in which memory was mostly allocated. Time dependence is provided in the final output file through snapshots of memory usage at specified time intervals. This raw output file can be visualized with tools like **ms_print** (without graphics) and **massif-visualizer** (with graphics).
 
-```bash
-$ sudo apt install massif-visualizer
-```
+
+
+
 
 
 #### "Hello World!" example <a name="massif.hello"></a>
+
+As always, we start with the simple example to merely illustrate how to use **valgrind**'s tool  **massif**. The following code snippet is saved in a file _hello.C_:
+
+```C
+#include <stdio.h>
+int main(void) {
+  printf("\n Hello World! \n\n");
+  return 0;
+}
+```
+
+The code is compiled into an executable **hello** in the standard way (using **gcc** for programs written in ```C```, and **g++** for programs written in the ```C++``` programming language):
+
+```bash
+$ gcc -o hello hello.C
+```
+
+The executable produces the expected output:
+
+```bash
+$ ./hello
+
+ Hello World!
+ 
+```
+
+We can now inspect the executable **hello** with **valgrind**'s tool **massif**:
+
+```bash
+$ valgrind --tool=massif ./hello
+==1333550== Massif, a heap profiler
+==1333550== Copyright (C) 2003-2017, and GNU GPL'd, by Nicholas Nethercote
+==1333550== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==1333550== Command: ./hello
+==1333550== 
+
+ Hello World! 
+
+==1333550== 
+```
+
+The tool **massif** saves its raw output in the file named "massif.out.somePID". Since the PID of the process in above example is "1333550", **massif** saved its raw output in the file "massif.out.1333550", with the following content:
+
+```bash
+$ cat massif.out.1333550
+desc: (none)
+cmd: ./hello
+time_unit: i
+#-----------
+snapshot=0
+#-----------
+time=0
+mem_heap_B=0
+mem_heap_extra_B=0
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=1
+#-----------
+time=162599
+mem_heap_B=1024
+mem_heap_extra_B=8
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=2
+#-----------
+time=166739
+mem_heap_B=1024
+mem_heap_extra_B=8
+mem_stacks_B=0
+heap_tree=peak
+n1: 1024 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 1024 0x48E8BA3: _IO_file_doallocate (filedoalloc.c:101)
+  n1: 1024 0x48F7CDF: _IO_doallocbuf (genops.c:347)
+   n1: 1024 0x48F6F5F: _IO_file_overflow@@GLIBC_2.2.5 (fileops.c:744)
+    n1: 1024 0x48F56D4: _IO_new_file_xsputn (fileops.c:1243)
+     n1: 1024 0x48F56D4: _IO_file_xsputn@@GLIBC_2.2.5 (fileops.c:1196)
+      n1: 1024 0x48EAF1B: puts (ioputs.c:40)
+       n0: 1024 0x10915F: main (in /home/abilandz/examples/massif/hello)
+#-----------
+snapshot=3
+#-----------
+time=166739
+mem_heap_B=0
+mem_heap_extra_B=0
+mem_stacks_B=0
+heap_tree=empty
+```
+
+This raw data is not easy to decipher. Instead, one can process this raw output with **massif** visualizers, which are introduced next:
+
+* **ms_print** &mdash; This is a **Perl** script which is a part of the main Valgrind software suite, and it doesn't have to be installed separately. Its documentation and example use cases can be found at the following [link](https://valgrind.org/docs/manual/ms-manual.html#ms-manual.running-ms_print). It is primarily used in an environment in which graphics is not available (e.g. when running remotely), in the following way:
+
+  ```bash
+  $ ms_print massif.out.1333550
+  --------------------------------------------------------------------------------
+  Command:            ./hello
+  Massif arguments:   (none)
+  ms_print arguments: massif.out.1333550
+  --------------------------------------------------------------------------------
+  
+  
+      KB
+  1.008^                                                                      :#
+       |                                                                      :#
+       |                                                                      :#
+       |                                                                      :#
+       |                                                                      :#
+       |                                                                      :#
+       |                                                                      :#
+       |                                                                      :#
+       |                                                                      :#
+       |                                                                      :#
+       |                                                                      :#
+       |                                                                      :#
+       |                                                                      :#
+       |                                                                      :#
+       |                                                                      :#
+       |                                                                      :#
+       |                                                                      :#
+       |                                                                      :#
+       |                                                                      :#
+       |                                                                      :#
+     0 +----------------------------------------------------------------------->ki
+       0                                                                   162.8
+  
+  Number of snapshots: 4
+   Detailed snapshots: [2 (peak)]
+  
+  --------------------------------------------------------------------------------
+    n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+  --------------------------------------------------------------------------------
+    0              0                0                0             0            0
+    1        162,599            1,032            1,024             8            0
+    2        166,739            1,032            1,024             8            0
+  99.22% (1,024B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+  ->99.22% (1,024B) 0x48E8BA3: _IO_file_doallocate (filedoalloc.c:101)
+    ->99.22% (1,024B) 0x48F7CDF: _IO_doallocbuf (genops.c:347)
+      ->99.22% (1,024B) 0x48F6F5F: _IO_file_overflow@@GLIBC_2.2.5 (fileops.c:744)
+        ->99.22% (1,024B) 0x48F56D4: _IO_new_file_xsputn (fileops.c:1243)
+          ->99.22% (1,024B) 0x48F56D4: _IO_file_xsputn@@GLIBC_2.2.5 (fileops.c:1196)
+            ->99.22% (1,024B) 0x48EAF1B: puts (ioputs.c:40)
+              ->99.22% (1,024B) 0x10915F: main (in /home/abilandz/examples/massif/hello)
+                
+  --------------------------------------------------------------------------------
+    n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+  --------------------------------------------------------------------------------
+    3        166,739                0                0             0            0
+  
+  ```
+
+* **massif-visualizer** &mdash; This is an external tool, and it has to be installed separately, for instance on Linux Ubuntu with:
+
+  ```bash
+  $ sudo apt install massif-visualizer
+  ```
+
+  The usage of **massif-visualizer** is recommended only in an environment in which graphics is enabled and can be run easily. Its documentation and more details about its usage can be found at the following [link](https://apps.kde.org/massif_visualizer/). For the above "Hello World!" example, it is executed in a similar way as **ms_print**, simply as:
+
+  ```bash
+  $ massif-visualizer massif.out.1333550
+  ```
+  However, unlike **ms_print**, it produces a colorful graphical display of heap memory footprint in the left-hand side panel, and detailed call stack of all functions in the right-hand side panel:
+
+  <img src="massif-visualizer-hello.png" alt="drawing" width="600"/>
+
+
 
 
 
