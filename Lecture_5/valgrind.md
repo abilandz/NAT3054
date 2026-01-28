@@ -1092,7 +1092,7 @@ int main(void) {
 }
 ```
 
-Basically, we have 2 functions, **fun_1()** and **fun_2()**, in each of which a lot of memory is allocated dynamically for 2D arrays. In function **fun_1()** two times more memory is allocated than in function **fun_2()**. Both functions are called in **main()** three times within a loop, so we expect to see three large jumps in memory allocation, each corresponding to a loop iteration.
+Basically, we have 2 functions, **fun_1()** and **fun_2()**, each of which allocates a lot of memory dynamically for 2D arrays. In function **fun_1()** twice as much  memory is allocated as in function **fun_2()** (simply by changing initialization of ```int sizeX``` by a factor of 2, everything else is kept the same). Both functions are called in the **main()** function three times within a loop, so we expect to see three large peaks in memory allocation/deallocation, each corresponding to one loop iteration.
 
 The code is compiled in the following way:
 
@@ -1100,9 +1100,9 @@ The code is compiled in the following way:
 $ g++ -g -o example_1 example_1.C
 ```
 
-As before, the flag ```-g``` is used only to save more information during compilation for debugging purposes, under normal circumstances this flag shouldn't be used, as it prevents compiler from optimizing the final executable.
+As before, the flag ```-g``` is used only to save more information during compilation for debugging purposes; under normal circumstances this flag shouldn't be used, as it prevents the compiler from optimizing the final executable.
 
-For demonstration purposes, we inspect the memory allocations of executable **example_1** by using three different options:
+For demonstration purposes, we inspect the memory allocations of executable **example_1** with the **massif** took by using three different options:
 
 * _instruction counts_ &mdash; in this case, which is recommended for short-duration executables, the executable is inspected with **massif** in the following way:
 
@@ -1110,7 +1110,7 @@ For demonstration purposes, we inspect the memory allocations of executable **ex
   $ valgrind --tool=massif --time-unit=i ./example_1
   ```
 
-  The output is stored in a raw format in the file "massif.out.1436742", where "1436742" is the PID of the above **valgrind** process. Its content can be visualized with **massif_visualizer**:
+  The output is stored in raw format in the file "massif.out.1436742", where "1436742" is the PID of the **valgrind** process above. Its content can be visualized with **massif_visualizer**:
 
   ```bash 
   $ massif_visualizer massif.out.1436742
@@ -1120,25 +1120,31 @@ For demonstration purposes, we inspect the memory allocations of executable **ex
 
   <img src="example_1-i.png" alt="drawing" width="600"/>
 
-	We see clearly 3 large memory allocations corresponding to the call to **fun_1()** function, and about factor of two smaller 3 memory allocations corresponding to the call to **fun_2()** function. In the expanded toggle on the RHS for peak snapshot, we can read off that maximum amount of memory was allocated in the call to function **fun_1()** at line 52 in the code. Indeed:
+	We see clearly 3 large memory allocations corresponding to the call to the **fun_1()** function, and about a factor of 2 smaller 3 memory allocations corresponding to the call to **fun_2()** function. In the expanded toggle on the RHS for peak snapshot (marked with the darkest color gradient), we can see that the maximum amount of memory was allocated in the call to function **fun_1()** at line 52 in the code. Indeed:
 	
-	```C++
+	```Bash
+	$ cat -n example_1.C
+	    ... some other lines ...
 	    51	    printf("\n Executing fun_1() ... \n");
 	    52	    fun_1();
 	    53	
+	    ... some other lines ...        
 	```
 	
 	Reading further the content of this toggle, within function **fun_1()** the memory was allocated at line 12 in the source code:
 	
-	```C++
-	    11	  for(int i = 0; i < sizeY; ++i) {
+	```Bash
+	$ cat -n example_1.C
+	    ... some other lines ...    
+		11	  for(int i = 0; i < sizeY; ++i) {
 	    12	     arr2D[i] = new double[sizeX];
 	    13	  }
+	    ... some other lines ...    
 	```
 	
-	Indeed, at line 12, a lot of memory was allocated on a heap with the **new** operator.
+	Indeed, at line 12, a lot of memory was allocated dynamically with the **new** operator.
 
-* _time_ &mdash; with this option, on x-axis the real (wallclock) time in milliseconds is used in the vizualizer:
+* _time_ &mdash; with this option, on x-axis the real (wallclock) time in milliseconds is used in the visualizer:
 
   ```bash
   $ valgrind --tool=massif --time-unit=ms ./example_1
@@ -1158,7 +1164,68 @@ For demonstration purposes, we inspect the memory allocations of executable **ex
 
   <img src="example_1-B.png" alt="drawing" width="600"/>
 
+For all 3 options, ```--time-unit=i``` , ```--time-unit=ms```, and ```--time-unit=B```,  we see clearly and consistently 3 large memory allocations corresponding to the call to **fun_1()** function, and about a factor of two smaller 3 memory allocations corresponding to the call to **fun_2()** function, albeit the details of graphical representation can differ, sometimes one offering more insights than another one. 
 
+For completeness, we visualize the above **massif** raw output (produced with the option ```--time-unit=B```) with **ms_print**:
+
+```bash
+$ ms_print massif.out.1437872 
+--------------------------------------------------------------------------------
+Command:            ./example_1
+Massif arguments:   --time-unit=B
+ms_print arguments: massif.out.1437872
+--------------------------------------------------------------------------------
+
+
+    MB
+76.52^        #                                                               
+     |        #                       ::                      :               
+     |        #                       :                       :               
+     |       :#                      ::                      ::               
+     |       :#::                    ::                      ::::             
+     |       :#:                     :: :                    :::              
+     |     :::#:                    ::: :                   ::::              
+     |     : :#:                    ::: :                   :::: @            
+     |     : :#:                    ::: ::                  :::: @            
+     |     : :#: ::                @::: ::                 @:::: @            
+     |    :: :#: :                 @::: ::                 @:::: @:           
+     |    :: :#: :        :        @::: :::       :        @:::: @:        :  
+     |    :: :#: :        :      ::@::: :::       :       :@:::: @:::     ::  
+     |    :: :#: : :      :      : @::: ::::     ::       :@:::: @::      ::  
+     |  :::: :#: : :      ::    :: @::: ::::     :::    :::@:::: @::      ::: 
+     |  : :: :#: : :    ::::    :: @::: ::::     :::    : :@:::: @::     :::: 
+     |  : :: :#: : ::   : ::    :: @::: :::::   ::::::  : :@:::: @::     :::::
+     | @: :: :#: : ::   : :::: ::: @::: :::::   :::::  :: :@:::: @:: :  @:::::
+     | @: :: :#: : ::  :: :::  ::: @::: :::::   :::::  :: :@:::: @:: :  @:::::
+     | @: :: :#: : ::  :: :::  ::: @::: :::::::::::::  :: :@:::: @:: :::@:::::
+   0 +----------------------------------------------------------------------->MB
+     0                                                                   681.0
+
+Number of snapshots: 59
+ Detailed snapshots: [1, 6 (peak), 21, 41, 46, 52]
+
+... skipping some lines ...
+
+--------------------------------------------------------------------------------
+  n        time(B)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+  2     24,530,104       24,530,104       24,505,728        24,376            0
+  3     40,930,488       40,930,488       40,889,728        40,760            0
+  4     57,330,872       57,330,872       57,273,728        57,144            0
+  5     70,528,056       70,528,056       70,457,728        70,328            0
+  6     80,233,752       80,233,752       80,153,728        80,024            0
+99.90% (80,153,728B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->99.71% (80,000,000B) 0x109252: fun_1() (example_1.C:12)
+| ->99.71% (80,000,000B) 0x10940B: main (example_1.C:52)
+|   
+->00.19% (153,728B) in 1+ places, all below ms_print's threshold (01.00%)
+
+... skipping some lines ...
+```
+
+With symbol ```:``` ordinary snapshots are represented, with symbol ```@``` detailed snapshots, and finally with symbol ```#``` the unique peak snapshot, at which the memory allocation was largest. Also, from the **ms_print** output, we can easily trace back to precisely where in the source code the large memory allocation occurred.  
+
+The meaning of information stored in other columns in the output of **ms_print** can be found in the official documentation at this [link](https://valgrind.org/docs/manual/ms-manual.html#ms-manual.thesnapshotdetails). We remark only on the "stacks" column, where all entries are 0, because stack profiling is off by default in **massif**, due to performance concerns. Stack profiling can be enabled with the `--stacks=yes` option, as illustrated with examples in the next section.
 
 
 
