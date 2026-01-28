@@ -1,6 +1,6 @@
 # Valgrind
 
-**Last update**: 20260128-2
+**Last update**: 20260128-3
 
 <img src="Valgrind_logo.png" alt="drawing" width="600"/>
 
@@ -1368,7 +1368,7 @@ For demonstration purposes, we inspect the stack memory allocations of executabl
 	... skipping some lines ...
 	```
 	
-	Most importantly, the "stacks" column is now filled, when **massif** was run with the option ```--stacks=yes``.
+	Most importantly, the "stacks" column is now filled, when **massif** was run with the option ```--stacks=yes```.
 	
 	
 
