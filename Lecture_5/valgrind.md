@@ -18,7 +18,8 @@
 	* [Memory leak](#memcheck.leak)
 5. [Heap profiling: **Massif**](#massif)
 	* ["Hello World!" example](#massif.hello)
-	* [Real-life scenarios](#massif.real)	
+	* [Real-life scenario: heap allocation](#massif.real.heap)	
+	* [Real-life scenario: stack allocation](#massif.real.stack)
 6. [References](#references)
 
 
@@ -1026,9 +1027,9 @@ In the next section, we provide a few real-life examples of **massif** usage.
 
 
 
-#### Real-life scenarios <a name="massif.real"></a>
+#### Real-life scenario: heap allocation  <a name="massif.real.heap"></a>
 
-In the first example, we use the following code snippet and save it in the file "_example_1.C_":
+In this example, we use the following code snippet and save it in the file "_example_1.C_":
 
 ```C++
 #include <stdio.h>
@@ -1166,7 +1167,7 @@ For demonstration purposes, we inspect the memory allocations of executable **ex
 
 For all 3 options, ```--time-unit=i``` , ```--time-unit=ms```, and ```--time-unit=B```,  we see clearly and consistently 3 large memory allocations corresponding to the call to **fun_1()** function, and about a factor of two smaller 3 memory allocations corresponding to the call to **fun_2()** function, albeit the details of graphical representation can differ, sometimes one offering more insights than another one. 
 
-For completeness, we visualize the above **massif** raw output (produced with the option ```--time-unit=B```) with **ms_print**:
+For completeness, we visualize the above **massif** raw output (produced with the option ```--time-unit=B```) with **ms_print** as well:
 
 ```bash
 $ ms_print massif.out.1437872 
@@ -1223,7 +1224,15 @@ Number of snapshots: 59
 ... skipping some lines ...
 ```
 
-With symbol ```:``` ordinary snapshots are represented, with symbol ```@``` detailed snapshots, and finally with symbol ```#``` the unique peak snapshot, at which the memory allocation was largest. Also, from the **ms_print** output, we can easily trace back to precisely where in the source code the large memory allocation occurred.  
+With symbol ```:``` ordinary snapshots are represented, with symbol ```@``` detailed snapshots, and finally with symbol ```#``` the unique peak snapshot, at which the memory allocation was largest. Also, from the **ms_print** output, we can easily trace back to precisely where in the source code the large memory allocation occurred, for instance by inspecting these lines in the output:
+
+```bash
+99.90% (80,153,728B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->99.71% (80,000,000B) 0x109252: fun_1() (example_1.C:12)
+| ->99.71% (80,000,000B) 0x10940B: main (example_1.C:52)
+|   
+->00.19% (153,728B) in 1+ places, all below ms_print's threshold (01.00%)
+```
 
 The meaning of information stored in other columns in the output of **ms_print** can be found in the official documentation at this [link](https://valgrind.org/docs/manual/ms-manual.html#ms-manual.thesnapshotdetails). We remark only on the "stacks" column, where all entries are 0, because stack profiling is off by default in **massif**, due to performance concerns. Stack profiling can be enabled with the `--stacks=yes` option, as illustrated with examples in the next section.
 
@@ -1231,7 +1240,81 @@ The meaning of information stored in other columns in the output of **ms_print**
 
 
 
-TBC 20260128
+
+
+#### Real-life scenario: stack allocation  <a name="massif.real.stack"></a>
+
+In this example, we use the following code snippet and save it in the file "_example_2.C_":
+
+```C++
+#include <stdio.h>
+#include <unistd.h>
+
+void fun_1() {
+
+  int sizeX = 100;
+  int sizeY = 1000;
+
+  // declare dynamically 2D array:
+  double arr2D[sizeX][sizeY] = {{0.}};
+
+  // do something with this 2D array:
+  sleep(1);
+
+}
+
+void fun_2() {
+
+  int sizeX = 50;
+  int sizeY = 1000;
+
+  // declare dynamically 2D array:
+  double arr2D[sizeX][sizeY] = {{0.}};
+ 
+  // do something with this 2D array:
+  sleep(1);
+
+}
+
+int main(void) {
+
+  for(int i=0; i<3; i++) {
+    printf("\n Executing fun_1() ... \n");
+    fun_1();
+
+    printf("\n Executing fun_2() ... \n\n");
+    fun_2();
+  }
+
+  return 0;
+}
+```
+As in the previous example, we have 2 functions, **fun_1()** and **fun_2()**, each of which now allocates a lot of memory for 2D arrays on the stack. To trace down stack memory consumption using **massif**, the code is compiled in the same was as before:
+
+```bash
+$ g++ -g -o example_2 example_2.C
+```
+
+For demonstration purposes, we inspect the stack memory allocations of executable **example_2** with the **massif** took by using an option ```--time-unit=B```, and additionally we have to use the option ```--stacks=yes```:
+
+* _instruction counts_ &mdash; in this case, which is recommended for short-duration executables, the executable is inspected with **massif** in the following way:
+
+  ```bash
+  $ valgrind --tool=massif --time-unit=B --stacks=yes ./example_2
+  ```
+
+  The output is stored in raw format in the file "massif.out.1441068", where "1441068" is the PID of the **valgrind** process above. Its content can be visualized with **massif_visualizer**:
+
+  ```bash 
+  $ massif_visualizer massif.out.1441068
+  ```
+
+  Finally, the output graph is:
+
+  <img src="example_2-B.png" alt="drawing" width="600"/>
+
+	The interpretation of this graph is the same as in the previous examples for heap memory allocation.
+
 
 
 
