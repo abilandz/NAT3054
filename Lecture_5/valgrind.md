@@ -1,6 +1,6 @@
 # Valgrind
 
-**Last update**: 20260126-2
+**Last update**: 20260128-1
 
 <img src="Valgrind_logo.png" alt="drawing" width="600"/>
 
@@ -810,7 +810,7 @@ $ valgrind --leak-check=full ./noLeak
 
 ### 5. Heap profiling: **Massif** <a name="massif"></a>
 
-For the cases when memory usage needs to be profiled and optimized, **valgrind** provides the tool **massif**. By default, **massif** provides as its output the time dependence of dynamically allocated memory (heap profiling, or memory footprint), and identifies function calls in which memory was mostly allocated. Time dependence is provided in the final output file through snapshots of memory usage at specified time intervals. This raw output file can be visualized with tools like **ms_print** (without graphics) and **massif-visualizer** (with graphics).
+When memory usage needs to be profiled and optimized, **valgrind** provides the tool called **massif**. By default, **massif** produces output showing the time dependence of dynamically allocated memory (heap profiling, or memory footprint), and identifies the function calls that allocated most memory. Time dependence is provided in the final output file through snapshots of memory usage at specified time intervals. This raw output file can be visualized with tools such as **ms_print** (no graphics) and **massif-visualizer** (with graphics).
 
 
 
@@ -819,7 +819,7 @@ For the cases when memory usage needs to be profiled and optimized, **valgrind**
 
 #### "Hello World!" example <a name="massif.hello"></a>
 
-As always, we start with the simple example to merely illustrate how to use **valgrind**'s tool  **massif**. The following code snippet is saved in a file _hello.C_:
+As always, we start with a simple example to illustrate how to use **valgrind**'s tool **massif**. The following code snippet is saved in a file _hello.C_:
 
 ```C
 #include <stdio.h>
@@ -859,7 +859,7 @@ $ valgrind --tool=massif ./hello
 ==1333550== 
 ```
 
-The tool **massif** saves its raw output in the file named "massif.out.somePID". Since the PID of the process in above example is "1333550", **massif** saved its raw output in the file "massif.out.1333550", with the following content:
+The tool **massif** saves its raw output in the file named "massif.out.somePID". Since the PID of the process in the above example is "1333550", **massif** saved its raw output in the file "massif.out.1333550", with the following content:
 
 ```bash
 $ cat massif.out.1333550
@@ -910,7 +910,7 @@ heap_tree=empty
 
 This raw data is not easy to decipher. Instead, one can process the content of this raw output file with **massif** visualizers **ms_print** and **massif-visualizer**, which are introduced next:
 
-* **ms_print** &mdash; This is a **Perl** script which is a part of the main Valgrind software suite, and it doesn't have to be installed separately. Its documentation and example use cases can be found at the following [link](https://valgrind.org/docs/manual/ms-manual.html#ms-manual.running-ms_print). It is primarily used in an environment in which graphics is not available (e.g. when running remotely), in the following way:
+* **ms_print** &mdash; This is a **Perl** script that is a part of the main Valgrind software suite, and it doesn't have to be installed separately. Its documentation and example use cases can be found at the following [link](https://valgrind.org/docs/manual/ms-manual.html#ms-manual.running-ms_print). It is primarily used in an environment in which graphics is not available (e.g. when running remotely), in the following way:
 
   ```bash
   $ ms_print massif.out.1333550
@@ -970,6 +970,12 @@ This raw data is not easy to decipher. Instead, one can process the content of t
   
   ```
 
+  In the above example, 4 snapshots of memory usage were performed by **massif**. By default, there is always one snapshot made per heap memory  allocation or deallocation, plus a couple of extra snapshots. The maximum number of snapshots is 100, which means that **massif** will discard older snapshots as the program runs, but this limit can be increased with the option ```--max-snapshots```. Not all snapshots are detailed, by default each 10th snapshot is detailed (in the above example the 3rd one), and only for them **massif** will record details of memory allocations. Finally, there is always one special snapshot, the peak snapshot, which is a detailed snapshot recording the point where memory consumption was greatest. In the **ms_print** visualization, the following special symbols are used for these three categories of snapshots:
+
+  *  ```:``` &mdash; ordinary snapshot (no information of where memory was allocated);
+  * ```@``` &mdash; detailed snapshot (full information of where memory was allocated);
+  * ```#``` &mdash; peak snapshot (detailed snapshot where memory consumption was greatest).
+
 * **massif-visualizer** &mdash; This is an external tool, and it has to be installed separately, for instance on Linux Ubuntu with:
 
   ```bash
@@ -988,7 +994,7 @@ This raw data is not easy to decipher. Instead, one can process the content of t
 
 Before moving on to real-case scenarios of **massif** usage, we make the following general remarks:
 
-* In the output file, **massif** groups allocations per entire call stack, which enables identifying the specific function in which memory is allocated, as well as the whole chain of function invocations which preceded it. Schematically, in the **massif** output we can find:
+* In the output file, **massif** groups allocations per entire call stack, which enables identifying the specific function in which memory is allocated, as well as the whole chain of function invocations that preceded it. Schematically, in the **massif** output we can find:
 
   ```bash
   n bytes : someFunction() at someFile:someLine
@@ -996,30 +1002,169 @@ Before moving on to real-case scenarios of **massif** usage, we make the followi
   		  main() at mainFile:someLine
   ```
 
-  From the above schematic output, we can conclude that in the source code "_mainFile_" the **main()** function is called at indicated line. Within the **main()** function, there is a call to **anotherFunction()** in the source file named "_anotherFile_" at indicated line. Finally, within **anotherFunction()** there is a call to **someFunction()** in the source file named "_someFile_" at indicated line, in which ```n``` bytes was dynamically allocated, at the time when this memory snapshot was made. We can see deduce clearly the specific function, **someFunction()**, in which memory was allocated, as well as the whole chain of function invocations, **main() => anotherFunction() => someFunction()**, which preceded it.
+  From the above schematic output, we can conclude that in the source code "_mainFile_" the **main()** function is called at the indicated line. Within the **main()** function, there is a call to **anotherFunction()** in the source file named "_anotherFile_" at the indicated line. Finally, within **anotherFunction()** there is a call to **someFunction()** in the source file named "_someFile_" at the indicated line, in which ```n``` bytes were dynamically allocated, at the time when this memory snapshot was made. We can clearly deduce the specific function, **someFunction()**, in which memory was allocated, as well as the whole chain of function invocations, **main() => anotherFunction() => someFunction()**, which preceded it.
 
-* In the graphical plot, on y-axis is heap size in bytes, while on x-axis one can choose between three supported options using the flag ```--time-unit``` as follows:
+* In the graphical plot, on the y-axis is heap size in bytes, while on the x-axis one can choose between three supported options using the flag ```--time-unit``` as follows:
 
   * _instruction counts_ &mdash; the default option, or specified with ```--time-unit=i```
-  * _time_ &mdash; specified with the option ```--time-unit=ms``` (the real (wallclock) time in miliseconds)
+  * _time_ &mdash; specified with the option ```--time-unit=ms``` (the real (wallclock) time in milliseconds)
   * _bytes_ &mdash; specified with the option ```--time-unit=B``` (the number of bytes allocated/deallocated)
 
-* By default, **massif** provides only heap profiling, i.e. dynamically allocated memory usage by using the operator **new** in ```C++``` or **malloc()** in ```C```. Instead, it can be instructed to provide profiling of stack and global variables with the non-default option ```--stack=yes```
+* By default, **massif** provides only heap profiling, i.e. dynamically allocated memory usage via the operator **new** in ```C++``` or **malloc()** in ```C```. Instead, it can be instructed to provide profiling of stack and global variables with the non-default option ```--stack=yes```
 
-* As for the other Valgrind tools, **massif** will be more punctual and performant if the executable was compiled with `-g` option, for debugging purposes:
+* As for the other Valgrind tools, **massif** will be more punctual and performant if the executable was compiled with the `-g` option, for debugging purposes:
 
   ```bash
   # compile executable and save extra information for debugging:
   $ g++ -g -o someExecutable someExecutable.C
   ```
 
-  
 
-  
+In the next section, we provide a few real-life examples of **massif** usage.
+
+
+
+
 
 #### Real-life scenarios <a name="massif.real"></a>
 
-TBC 20260126
+In the first example, we use the following code snippet and save it in the file "_example_1.C_":
+
+```C++
+#include <stdio.h>
+#include <unistd.h>
+
+void fun_1() {
+
+  int sizeX = 1000;
+  int sizeY = 10000;
+
+  // declare dynamically 2D array:
+  double **arr2D = new double*[sizeY];
+  for(int i = 0; i < sizeY; ++i) {
+     arr2D[i] = new double[sizeX];
+  }
+
+  // do something with this 2D array:
+  sleep(1);
+
+  // release memory back:
+  for(int i = 0; i < sizeY; ++i) {
+    delete [] arr2D[i];
+  }
+  delete [] arr2D;
+
+}
+
+void fun_2() {
+
+  int sizeX = 500;
+  int sizeY = 10000;
+
+  // declare dynamically 2D array:
+  double **arr2D = new double*[sizeY];
+  for(int i = 0; i < sizeY; ++i) {
+     arr2D[i] = new double[sizeX];
+  }
+
+  // do something with this 2D array:
+  sleep(1);
+
+  // release memory back:
+  for(int i = 0; i < sizeY; ++i) {
+    delete [] arr2D[i];
+  }
+  delete [] arr2D;
+
+}
+
+int main(void) {
+
+  for(int i=0; i<3; i++) {
+    printf("\n Executing fun_1() ... \n");
+    fun_1();
+
+    printf("\n Executing fun_2() ... \n\n");
+    fun_2();
+  }
+
+  return 0;
+}
+```
+
+Basically, we have 2 functions, **fun_1()** and **fun_2()**, in each of which a lot of memory is allocated dynamically for 2D arrays. In function **fun_1()** two times more memory is allocated than in function **fun_2()**. Both functions are called in **main()** three times within a loop, so we expect to see three large jumps in memory allocation, each corresponding to a loop iteration.
+
+The code is compiled in the following way:
+
+```bash
+$ g++ -g -o example_1 example_1.C
+```
+
+As before, the flag ```-g``` is used only to save more information during compilation for debugging purposes, under normal circumstances this flag shouldn't be used, as it prevents compiler from optimizing the final executable.
+
+For demonstration purposes, we inspect the memory allocations of executable **example_1** by using three different options:
+
+* _instruction counts_ &mdash; in this case, which is recommended for short-duration executables, the executable is inspected with **massif** in the following way:
+
+  ```bash
+  $ valgrind --tool=massif --time-unit=i ./example_1
+  ```
+
+  The output is stored in a raw format in the file "massif.out.1436742", where "1436742" is the PID of the above **valgrind** process. Its content can be visualized with **massif_visualizer**:
+
+  ```bash 
+  $ massif_visualizer massif.out.1436742
+  ```
+
+  Finally, the output graph is:
+
+  <img src="example_1-i.png" alt="drawing" width="600"/>
+
+	We see clearly 3 large memory allocations corresponding to the call to **fun_1()** function, and about factor of two smaller 3 memory allocations corresponding to the call to **fun_2()** function. In the expanded toggle on the RHS for peak snapshot, we can read off that maximum amount of memory was allocated in the call to function **fun_1()** at line 52 in the code. Indeed:
+	
+	```C++
+	    51	    printf("\n Executing fun_1() ... \n");
+	    52	    fun_1();
+	    53	
+	```
+	
+	Reading further the content of this toggle, within function **fun_1()** the memory was allocated at line 12 in the source code:
+	
+	```C++
+	    11	  for(int i = 0; i < sizeY; ++i) {
+	    12	     arr2D[i] = new double[sizeX];
+	    13	  }
+	```
+	
+	Indeed, at line 12, a lot of memory was allocated on a heap with the **new** operator.
+
+* _time_ &mdash; with this option, on x-axis the real (wallclock) time in milliseconds is used in the vizualizer:
+
+  ```bash
+  $ valgrind --tool=massif --time-unit=ms ./example_1
+  ```
+
+  The resulting graphical display is:
+
+  <img src="example_1-ms.png" alt="drawing" width="600"/>
+
+* _bytes_ &mdash; with this option, on x-axis the number allocated/deallocated bytes is shown:
+
+  ```bash
+  $ valgrind --tool=massif --time-unit=B ./example_1
+  ```
+
+  The resulting graphical display is:
+
+  <img src="example_1-B.png" alt="drawing" width="600"/>
+
+
+
+
+
+
+
+TBC 20260128
 
 
 
