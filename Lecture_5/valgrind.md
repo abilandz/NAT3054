@@ -1313,7 +1313,64 @@ For demonstration purposes, we inspect the stack memory allocations of executabl
 
   <img src="example_2-B.png" alt="drawing" width="600"/>
 
-	The interpretation of this graph is the same as in the previous examples for heap memory allocation.
+	The interpretation of this graph is the same as in the previous examples for heap memory allocation. For completeness, we provide the output of **ms_print** as well for the above example:
+	
+	```bash
+	$ ms_print massif.out.1441068
+	--------------------------------------------------------------------------------
+	Command:            ./example_2
+	Massif arguments:   --time-unit=B --stacks=yes
+	ms_print arguments: massif.out.1441068
+	--------------------------------------------------------------------------------
+	
+	
+	    KB
+	782.8^         ########                                                       
+	     |         #                      @@@@@@@@                ::::::::        
+	     |        :#                      @                      ::               
+	     |        :#                      @                      ::               
+	     |        :#                     :@                      ::               
+	     |        :#                     :@                     :::               
+	     |       ::#                     :@                     :::               
+	     |      :::#                    ::@                     :::               
+	     |      :::#                    @:@                    ::::               
+	     |      :::#                    @:@                    ::::               
+	     |      :::#                   :@:@           ::::     ::::               
+	     |     @:::#           ::::   ::@:@           :       :::::          :::: 
+	     |     @:::#           :      ::@:@           :       :::::          :    
+	     |     @:::#          @:      ::@:@          ::      ::::::          :    
+	     |    :@:::#         :@:     :::@:@          @:      ::::::         ::    
+	     |    :@:::#         :@:     :::@:@         :@:     :::::::         ::    
+	     |   ::@:::#         :@:     :::@:@         :@:     :::::::         ::    
+	     |   ::@:::#         :@:    ::::@:@         :@:     :::::::        :::    
+	     |   ::@:::#        ::@:    ::::@:@        ::@:    ::::::::        :::    
+	     |  :::@:::#       :::@:   @::::@:@        ::@:    ::::::::       @:::    
+	   0 +----------------------------------------------------------------------->MB
+	     0                                                                   7.062
+	
+	Number of snapshots: 65
+	 Detailed snapshots: [8, 14 (peak), 20, 23, 29, 34, 39, 57]
+	
+	... skipping some lines ...
+	
+	--------------------------------------------------------------------------------
+	  n        time(B)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+	--------------------------------------------------------------------------------
+	  9        652,760          460,168            1,024             8      459,136
+	 10        718,296          525,704            1,024             8      524,672
+	 11        783,832          591,240            1,024             8      590,208
+	 12        849,368          656,776            1,024             8      655,744
+	 13        914,904          722,312            1,024             8      721,280
+	 14        994,216          801,624            1,024             8      800,592
+	00.13% (1,024B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+	->00.13% (1,024B) in 1+ places, all below ms_print's threshold (01.00%)
+	
+	... skipping some lines ...
+	```
+	
+	Most importantly, the "stacks" column is now filled. 
+	
+	
 
 
 
