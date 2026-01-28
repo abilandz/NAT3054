@@ -1,6 +1,6 @@
 # Valgrind
 
-**Last update**: 20260128-1
+**Last update**: 20260128-2
 
 <img src="Valgrind_logo.png" alt="drawing" width="600"/>
 
@@ -1255,7 +1255,7 @@ void fun_1() {
   int sizeX = 100;
   int sizeY = 1000;
 
-  // declare dynamically 2D array:
+  // declare 2D array:
   double arr2D[sizeX][sizeY] = {{0.}};
 
   // do something with this 2D array:
@@ -1268,7 +1268,7 @@ void fun_2() {
   int sizeX = 50;
   int sizeY = 1000;
 
-  // declare dynamically 2D array:
+  // declare 2D array:
   double arr2D[sizeX][sizeY] = {{0.}};
  
   // do something with this 2D array:
@@ -1368,7 +1368,7 @@ For demonstration purposes, we inspect the stack memory allocations of executabl
 	... skipping some lines ...
 	```
 	
-	Most importantly, the "stacks" column is now filled. 
+	Most importantly, the "stacks" column is now filled, when **massif** was run with the option ```--stacks=yes``.
 	
 	
 
