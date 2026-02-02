@@ -1,6 +1,6 @@
 # Valgrind
 
-**Last update**: 20260128-3
+**Last update**: 20260202-1
 
 <img src="Valgrind_logo.png" alt="drawing" width="600"/>
 
@@ -822,7 +822,7 @@ When memory usage needs to be profiled and optimized, **valgrind** provides the 
 
 As always, we start with a simple example to illustrate how to use **valgrind**'s tool **massif**. The following code snippet is saved in a file _hello.C_:
 
-```C
+```c
 #include <stdio.h>
 int main(void) {
   printf("\n Hello World! \n\n");
@@ -909,7 +909,7 @@ mem_stacks_B=0
 heap_tree=empty
 ```
 
-This raw data is not easy to decipher. Instead, one can process the content of this raw output file with **massif** visualizers **ms_print** and **massif-visualizer**, which are introduced next:
+This raw data is not easy to decipher. Instead, one can process the content of this raw output file with **massif** visualizers **ms_print** and **massif-visualizer**, which are introduced next.
 
 * **ms_print** &mdash; This is a **Perl** script that is a part of the main Valgrind software suite, and it doesn't have to be installed separately. Its documentation and example use cases can be found at the following [link](https://valgrind.org/docs/manual/ms-manual.html#ms-manual.running-ms_print). It is primarily used in an environment in which graphics is not available (e.g. when running remotely), in the following way:
 
@@ -977,7 +977,7 @@ This raw data is not easy to decipher. Instead, one can process the content of t
   * ```@``` &mdash; detailed snapshot (full information of where memory was allocated);
   * ```#``` &mdash; peak snapshot (detailed snapshot where memory consumption was greatest).
 
-* **massif-visualizer** &mdash; This is an external tool, and it has to be installed separately, for instance on Linux Ubuntu with:
+* **massif-visualizer** &mdash; This is an external tool, and it has to be installed separately, for instance on Linux Ubuntu with its package manager **apt**:
 
   ```bash
   $ sudo apt install massif-visualizer
@@ -995,7 +995,7 @@ This raw data is not easy to decipher. Instead, one can process the content of t
 
 Before moving on to real-case scenarios of **massif** usage, we make the following general remarks:
 
-* In the output file, **massif** groups allocations per entire call stack, which enables identifying the specific function in which memory is allocated, as well as the whole chain of function invocations that preceded it. Schematically, in the **massif** output we can find:
+* In the output file, **massif** groups allocations per entire call stack, which enables identifying the specific function in which memory is allocated, as well as the whole chain of function invocations that preceded it. Schematically, in the **massif** output we find:
 
   ```bash
   n bytes : someFunction() at someFile:someLine
@@ -1011,7 +1011,10 @@ Before moving on to real-case scenarios of **massif** usage, we make the followi
   * _time_ &mdash; specified with the option ```--time-unit=ms``` (the real (wallclock) time in milliseconds)
   * _bytes_ &mdash; specified with the option ```--time-unit=B``` (the number of bytes allocated/deallocated)
 
-* By default, **massif** provides only heap profiling, i.e. dynamically allocated memory usage via the operator **new** in ```C++``` or **malloc()** in ```C```. Instead, it can be instructed to provide profiling of stack and global variables with the non-default option ```--stack=yes```
+	For programs whose execution at runtime is very short, only the first option is suitable. 
+
+
+* By default, **massif** provides only heap profiling, i.e. dynamically allocated memory usage via the operator **new** in ```C++``` or **malloc()** in ```C```. But it can be instructed to provide profiling of stack and global variables with the non-default option ```--stack=yes```
 
 * As for the other Valgrind tools, **massif** will be more punctual and performant if the executable was compiled with the `-g` option, for debugging purposes:
 
@@ -1020,6 +1023,7 @@ Before moving on to real-case scenarios of **massif** usage, we make the followi
   $ g++ -g -o someExecutable someExecutable.C
   ```
 
+	After debugging session is over, the executable needs to be recompiled again without ```-g``` option, so that compiler can maximize the execution performance of the final executable, without creating unnecessary overhead by embedding debugging symbols inside it.  	
 
 In the next section, we provide a few real-life examples of **massif** usage.
 
@@ -1093,7 +1097,7 @@ int main(void) {
 }
 ```
 
-Basically, we have 2 functions, **fun_1()** and **fun_2()**, each of which allocates a lot of memory dynamically for 2D arrays. In function **fun_1()** twice as much  memory is allocated as in function **fun_2()** (simply by changing initialization of ```int sizeX``` by a factor of 2, everything else is kept the same). Both functions are called in the **main()** function three times within a loop, so we expect to see three large peaks in memory allocation/deallocation, each corresponding to one loop iteration.
+Basically, we have 2 functions, **fun_1()** and **fun_2()**, each of which allocates a lot of memory dynamically for 2D arrays. In function **fun_1()** twice as much  memory is allocated as in function **fun_2()** (simply by changing initialization of ```int sizeX``` by a factor of 2, everything else is kept the same in these two functions). Both functions are called in the **main()** function three times within a loop, so we expect to see three large peaks in memory allocation/deallocation, each corresponding to one loop iteration.
 
 The code is compiled in the following way:
 
@@ -1103,7 +1107,7 @@ $ g++ -g -o example_1 example_1.C
 
 As before, the flag ```-g``` is used only to save more information during compilation for debugging purposes; under normal circumstances this flag shouldn't be used, as it prevents the compiler from optimizing the final executable.
 
-For demonstration purposes, we inspect the memory allocations of executable **example_1** with the **massif** took by using three different options:
+For demonstration purposes, we inspect the memory allocations of executable **example_1** with the tool **massif** by using three different options:
 
 * _instruction counts_ &mdash; in this case, which is recommended for short-duration executables, the executable is inspected with **massif** in the following way:
 
@@ -1111,7 +1115,7 @@ For demonstration purposes, we inspect the memory allocations of executable **ex
   $ valgrind --tool=massif --time-unit=i ./example_1
   ```
 
-  The output is stored in raw format in the file "massif.out.1436742", where "1436742" is the PID of the **valgrind** process above. Its content can be visualized with **massif_visualizer**:
+  The output is stored in a raw format in the file "massif.out.1436742", where "1436742" is the PID of the **valgrind** process above. Its content can be visualized with **massif_visualizer**:
 
   ```bash 
   $ massif_visualizer massif.out.1436742
@@ -1167,7 +1171,7 @@ For demonstration purposes, we inspect the memory allocations of executable **ex
 
 For all 3 options, ```--time-unit=i``` , ```--time-unit=ms```, and ```--time-unit=B```,  we see clearly and consistently 3 large memory allocations corresponding to the call to **fun_1()** function, and about a factor of two smaller 3 memory allocations corresponding to the call to **fun_2()** function, albeit the details of graphical representation can differ, sometimes one offering more insights than another one. 
 
-For completeness, we visualize the above **massif** raw output (produced with the option ```--time-unit=B```) with **ms_print** as well:
+For completeness, we visualize the above **massif** raw output produced with the option ```--time-unit=B``` with **ms_print** as well:
 
 ```bash
 $ ms_print massif.out.1437872 
@@ -1295,82 +1299,80 @@ As in the previous example, we have 2 functions, **fun_1()** and **fun_2()**, ea
 $ g++ -g -o example_2 example_2.C
 ```
 
-For demonstration purposes, we inspect the stack memory allocations of executable **example_2** with the **massif** took by using an option ```--time-unit=B```, and additionally we have to use the option ```--stacks=yes```:
+For demonstration purposes, we inspect the stack memory allocations of executable **example_2** with the **massif** tool by using an option ```--time-unit=B```, and additionally, we have to use the option ```--stacks=yes```:
 
-* _instruction counts_ &mdash; in this case, which is recommended for short-duration executables, the executable is inspected with **massif** in the following way:
+```bash
+$ valgrind --tool=massif --time-unit=B --stacks=yes ./example_2
+```
 
-  ```bash
-  $ valgrind --tool=massif --time-unit=B --stacks=yes ./example_2
-  ```
+The output is stored in raw format in the file "massif.out.1441068", where "1441068" is the PID of the **valgrind** process above. Its content can be visualized with **massif_visualizer**:
 
-  The output is stored in raw format in the file "massif.out.1441068", where "1441068" is the PID of the **valgrind** process above. Its content can be visualized with **massif_visualizer**:
+```bash 
+$ massif_visualizer massif.out.1441068
+```
 
-  ```bash 
-  $ massif_visualizer massif.out.1441068
-  ```
+The final output graph is:
 
-  Finally, the output graph is:
+<img src="example_2-B.png" alt="drawing" width="600"/>
 
-  <img src="example_2-B.png" alt="drawing" width="600"/>
+The interpretation of this graph is the same as in the previous examples for heap memory allocation. For completeness, we provide the output of **ms_print** as well for the above example:
 
-	The interpretation of this graph is the same as in the previous examples for heap memory allocation. For completeness, we provide the output of **ms_print** as well for the above example:
-	
-	```bash
-	$ ms_print massif.out.1441068
-	--------------------------------------------------------------------------------
-	Command:            ./example_2
-	Massif arguments:   --time-unit=B --stacks=yes
-	ms_print arguments: massif.out.1441068
-	--------------------------------------------------------------------------------
-	
-	
-	    KB
-	782.8^         ########                                                       
-	     |         #                      @@@@@@@@                ::::::::        
-	     |        :#                      @                      ::               
-	     |        :#                      @                      ::               
-	     |        :#                     :@                      ::               
-	     |        :#                     :@                     :::               
-	     |       ::#                     :@                     :::               
-	     |      :::#                    ::@                     :::               
-	     |      :::#                    @:@                    ::::               
-	     |      :::#                    @:@                    ::::               
-	     |      :::#                   :@:@           ::::     ::::               
-	     |     @:::#           ::::   ::@:@           :       :::::          :::: 
-	     |     @:::#           :      ::@:@           :       :::::          :    
-	     |     @:::#          @:      ::@:@          ::      ::::::          :    
-	     |    :@:::#         :@:     :::@:@          @:      ::::::         ::    
-	     |    :@:::#         :@:     :::@:@         :@:     :::::::         ::    
-	     |   ::@:::#         :@:     :::@:@         :@:     :::::::         ::    
-	     |   ::@:::#         :@:    ::::@:@         :@:     :::::::        :::    
-	     |   ::@:::#        ::@:    ::::@:@        ::@:    ::::::::        :::    
-	     |  :::@:::#       :::@:   @::::@:@        ::@:    ::::::::       @:::    
-	   0 +----------------------------------------------------------------------->MB
-	     0                                                                   7.062
-	
-	Number of snapshots: 65
-	 Detailed snapshots: [8, 14 (peak), 20, 23, 29, 34, 39, 57]
-	
-	... skipping some lines ...
-	
-	--------------------------------------------------------------------------------
-	  n        time(B)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
-	--------------------------------------------------------------------------------
-	  9        652,760          460,168            1,024             8      459,136
-	 10        718,296          525,704            1,024             8      524,672
-	 11        783,832          591,240            1,024             8      590,208
-	 12        849,368          656,776            1,024             8      655,744
-	 13        914,904          722,312            1,024             8      721,280
-	 14        994,216          801,624            1,024             8      800,592
-	00.13% (1,024B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
-	->00.13% (1,024B) in 1+ places, all below ms_print's threshold (01.00%)
-	
-	... skipping some lines ...
-	```
-	
-	Most importantly, the "stacks" column is now filled, when **massif** was run with the option ```--stacks=yes```.
-	
-	
+```bash
+$ ms_print massif.out.1441068
+--------------------------------------------------------------------------------
+Command:            ./example_2
+Massif arguments:   --time-unit=B --stacks=yes
+ms_print arguments: massif.out.1441068
+--------------------------------------------------------------------------------
+
+
+    KB
+782.8^         ########                                                       
+     |         #                      @@@@@@@@                ::::::::        
+     |        :#                      @                      ::               
+     |        :#                      @                      ::               
+     |        :#                     :@                      ::               
+     |        :#                     :@                     :::               
+     |       ::#                     :@                     :::               
+     |      :::#                    ::@                     :::               
+     |      :::#                    @:@                    ::::               
+     |      :::#                    @:@                    ::::               
+     |      :::#                   :@:@           ::::     ::::               
+     |     @:::#           ::::   ::@:@           :       :::::          :::: 
+     |     @:::#           :      ::@:@           :       :::::          :    
+     |     @:::#          @:      ::@:@          ::      ::::::          :    
+     |    :@:::#         :@:     :::@:@          @:      ::::::         ::    
+     |    :@:::#         :@:     :::@:@         :@:     :::::::         ::    
+     |   ::@:::#         :@:     :::@:@         :@:     :::::::         ::    
+     |   ::@:::#         :@:    ::::@:@         :@:     :::::::        :::    
+     |   ::@:::#        ::@:    ::::@:@        ::@:    ::::::::        :::    
+     |  :::@:::#       :::@:   @::::@:@        ::@:    ::::::::       @:::    
+   0 +----------------------------------------------------------------------->MB
+     0                                                                   7.062
+
+Number of snapshots: 65
+ Detailed snapshots: [8, 14 (peak), 20, 23, 29, 34, 39, 57]
+
+... skipping some lines ...
+
+--------------------------------------------------------------------------------
+  n        time(B)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+  9        652,760          460,168            1,024             8      459,136
+ 10        718,296          525,704            1,024             8      524,672
+ 11        783,832          591,240            1,024             8      590,208
+ 12        849,368          656,776            1,024             8      655,744
+ 13        914,904          722,312            1,024             8      721,280
+ 14        994,216          801,624            1,024             8      800,592
+00.13% (1,024B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->00.13% (1,024B) in 1+ places, all below ms_print's threshold (01.00%)
+
+... skipping some lines ...
+```
+
+Most importantly, the "stacks" column is now filled, when **massif** was run with the option ```--stacks=yes```.
+
+
 
 
 
