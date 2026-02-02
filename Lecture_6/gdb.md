@@ -1,6 +1,6 @@
 # gdb: The GNU Debugger
 
-**Last update**: 20260202-2
+**Last update**: 20260202-3
 
 <img src="gdb_logo.png" alt="drawing" width="600"/>
 
@@ -46,6 +46,6 @@ The original author of **gdb** is Richard Stallman, and it was first written in 
 
 ### TBI. References <a name="references"></a>
 
-* **gdb** website: [https://www.sourceware.org/gdb/documentation/](https://www.sourceware.org/gdb/documentation/) (manuals both in [html](https://sourceware.org/gdb/current/onlinedocs/gdb) and [pdf](https://sourceware.org/gdb/current/onlinedocs/gdb.pdf))
+* **gdb** website: [https://www.sourceware.org/gdb/documentation/](https://www.sourceware.org/gdb/documentation/) (manuals in [html](https://sourceware.org/gdb/current/onlinedocs/gdb) and [pdf](https://sourceware.org/gdb/current/onlinedocs/gdb.pdf))
 * **gdb** source code repository: [https://sourceware.org/git/gitweb.cgi?p=binutils-gdb.git]()
 * Wikipedia: [https://en.wikipedia.org/wiki/GNU_Debugger](https://en.wikipedia.org/wiki/GNU_Debugger)
