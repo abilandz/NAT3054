@@ -1,6 +1,6 @@
 # gdb: The GNU Debugger
 
-**Last update**: 20260202-1
+**Last update**: 20260202-2
 
 <img src="gdb_logo.png" alt="drawing" width="600"/>
 
