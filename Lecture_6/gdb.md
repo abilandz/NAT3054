@@ -1,6 +1,6 @@
 # gdb: The GNU Debugger
 
-**Last update**: 20260204-1
+**Last update**: 20260204-3
 
 <img src="gdb_logo.png" alt="drawing" width="600"/>
 
@@ -337,20 +337,20 @@ Continuing.
 [Inferior 1 (process 1647610) exited normally]
 ```
 
-If the program is rerun in **gdb** within the same session, it will be halted at the already set breakpoint(s). To remove all breakpoints, one can use the command **disable** (or **d** for short) without any arguments:
+If the program is rerun in **gdb** within the same session, it will be halted at the already set breakpoint(s). To disable temporarily or delete permanently all breakpoints, one can use either the commands **disable** (or **dis** for short), or **delete** (or **d** for short), without any arguments:
 
 ```bash
 (gdb) disable
 Delete all breakpoints? (y or n)
 ```
 
-To remove differentially specific breakpoints, e.g. the first set breakpoint:
+To disable differentially specific breakpoints, e.g. the first set breakpoint:
 
 ```bash
 (gdb) disable 1
 ```
 
-It is possible to re-enable the accidentally disabled breakpoint with the command **enable**:
+It is possible to re-enable the disabled breakpoint with the command **enable**:
 
 ```bash
 $ gdb -q --args ./example 10 20
@@ -453,41 +453,171 @@ Breakpoint 1, fun_2 (var=10) at example.c:9
 $1 = 10
 ```
 
+Instead of setting manually several breakpoints and continue interactively program execution by stepping from one breakpoint to another, it is also possible to set only the first breakpoint, and then afterward continue to the next source line in the code by using commands **next** (or **n** for short) and **step** (or **s** for short). This is illustrated with the following example, in which the breakpoint is set at the beginning of the **main()** function, and afterward execution if the program is advanced line-by-line by using the **next** command:
 
+```bash
+$ gdb -q --args ./example 10 20
+Reading symbols from ./example...
 
+(gdb) break main
+Breakpoint 1 at 0x11f1: file example.c, line 14.
 
+(gdb) run
+Starting program: /home/abilandz/gdb/example 10 20
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
 
-TBC 20260203
+Breakpoint 1, main (argc=3, argv=0x7fffffffde78) at example.c:14
+14	  if(argc <= 1) {
 
+(gdb) next
+19	  for(int arg = 1; arg < argc; arg++) {
 
+(gdb) next
+20	    double var = atof(argv[arg]);
 
-* **attaching**
+(gdb) next
+21	    printf("\n Calling functions for var = %f\n", var);
 
-And alternative way to start **gdb** is to attach to an already running process ... 
+(gdb) next
 
+ Calling functions for var = 10.000000
+22	    fun_1();
 
+(gdb) next
+ ... hello from fun_1 
+23	    fun_2(var);
 
-* **gdb scripts**
-  * `gdb` executes local file `.gdbinit` after running.  + check this SO https://stackoverflow.com/questions/10748501/what-are-the-best-ways-to-automate-a-gdb-debugging-session
-    * Command definitions placed in the local file **.gdbinit** are automatically loaded at the beginning of the gdb session. Command definitions can also be saved in ordinary files and loaded using the **source** command.
-  * `gdb` executes file `.gdbinit` after running.
+(gdb) next
+ ... hello from fun_2, var = 10.000000 
 
+19	  for(int arg = 1; arg < argc; arg++) {
+```
 
+The code execution doesn't have to be advanced line-by-line &mdash; we can use **next _someInteger_** to advance the code execution by _someInteger_ lines in the source code. When the command **next** is used, function calls that appear within the line of code are executed without stopping. Related command is **step**, which enters a function and performs stopping inside the code of that function:
 
-* commands:
-  * **backtrace** (or **bt** for short) &mdash; request backtrace if program crashed
-  * We can use the  command (which can also be spelled bt), to see where we are in the stack as a whole: the
-    backtrace command displays a stack frame for each active subroutine.
+```bash
+$ gdb -q --args ./example 10 20
+Reading symbols from ./example...
 
-* **next _n_**
-  * command n (next) to advance execution to the next line of the current
-    function.
-* **step** (or **s** for short)  -- does it take argument
-  * step goes to the next line to be executed in any subroutine
-* **skip _n_**
-* **jump _location_**
+(gdb) break main
+Breakpoint 1 at 0x11f1: file example.c, line 14.
 
+(gdb) run
+Starting program: /home/abilandz/gdb/example 10 20
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
 
+Breakpoint 1, main (argc=3, argv=0x7fffffffde78) at example.c:14
+14	  if(argc <= 1) {
+
+(gdb) step
+19	  for(int arg = 1; arg < argc; arg++) {
+
+(gdb) step
+20	    double var = atof(argv[arg]);
+
+(gdb) step
+atof (nptr=0x7fffffffe248 "10") at ./stdlib/atof.c:26
+26	./stdlib/atof.c: No such file or directory.
+
+(gdb) step
+27	in ./stdlib/atof.c
+
+(gdb) step
+__GI_strtod (nptr=0x7fffffffe248 "10", endptr=0x0) at ./stdlib/strtod.c:81
+81	./stdlib/strtod.c: No such file or directory.
+```
+
+As the above example demonstrates, the command **step** also enters the source code of functions from standard libraries. Therefore, in practice one uses **next** and **step** interchangeably during debugging, the latter only when the user-defined function is encountered in the source code. 
+
+This section is concluded by examining with **gdb** the faulty code in which the same memory is deallocated multiple times. The following code snippet written in the ```C++``` programming language is saved in the file named _doubleFree.C_:
+
+```C++
+int main(void)
+{
+  float *arr = new float[2]{1.23, -44.}; // array is declared and initialized 
+
+  // ... do something with this array ...
+    
+  delete [] arr; // deallocate memory back    
+  delete [] arr; // deallocate memory back again    
+    
+  return 0;
+}
+```
+
+The source code is compiled as follows, without any errors detected by the compiler:
+
+```bash
+$ g++ -g -o doubleFree doubleFree.C 
+```
+
+However, at execution, the code crashes:
+
+```bash
+$ ./doubleFree 
+free(): double free detected in tcache 2
+Aborted (core dumped)
+```
+
+We now inspect with **gdb** what is causing the above failure:
+
+```bash
+$ gdb -q ./doubleFree 
+Reading symbols from ./doubleFree...
+
+(gdb) run
+Starting program: /home/abilandz/gdb/doubleFree 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+free(): double free detected in tcache 2
+
+Program received signal SIGABRT, Aborted.
+__pthread_kill_implementation (no_tid=0, signo=6, threadid=140737352672192) at ./nptl/pthread_kill.c:44
+44	./nptl/pthread_kill.c: No such file or directory.
+```
+
+This is not very informative either, but we can request within the **gdb** session the backtrace of program execution with the command **backtrace** (or **bt** for short):
+
+```bash
+(gdb) backtrace
+#0  __pthread_kill_implementation (no_tid=0, signo=6, threadid=140737352672192) at ./nptl/pthread_kill.c:44
+#1  __pthread_kill_internal (signo=6, threadid=140737352672192) at ./nptl/pthread_kill.c:78
+#2  __GI___pthread_kill (threadid=140737352672192, signo=signo@entry=6) at ./nptl/pthread_kill.c:89
+#3  0x00007ffff7842476 in __GI_raise (sig=sig@entry=6) at ../sysdeps/posix/raise.c:26
+#4  0x00007ffff78287f3 in __GI_abort () at ./stdlib/abort.c:79
+#5  0x00007ffff7889677 in __libc_message (action=action@entry=do_abort, fmt=fmt@entry=0x7ffff79dbb77 "%s\n") at ../sysdeps/posix/libc_fatal.c:156
+#6  0x00007ffff78a0cfc in malloc_printerr (str=str@entry=0x7ffff79de6f0 "free(): double free detected in tcache 2") at ./malloc/malloc.c:5664
+#7  0x00007ffff78a30ab in _int_free (av=0x7ffff7a1ac80 <main_arena>, p=0x55555556aea0, have_lock=0) at ./malloc/malloc.c:4473
+#8  0x00007ffff78a5453 in __GI___libc_free (mem=<optimized out>) at ./malloc/malloc.c:3391
+#9  0x00005555555551c8 in main () at doubleFree.C:8
+```
+
+From the above printout, the crucial piece of information is in the last line, namely:
+
+```bash 
+#9  0x00005555555551c8 in main () at doubleFree.C:8
+```
+
+We see that the problem originated in the file _doubleFree.C_, at its 8th line:
+
+```bash
+(gdb) ! cat -n doubleFree.C
+     1	int main(void)
+     2	{
+     3	  float *arr = new float[2]{1.23, -44.}; // array is declared and initialized
+     4	
+     5	  // ... do something with this array ...
+     6	
+     7	  delete [] arr; // deallocate memory back
+     8	  delete [] arr; // deallocate memory back again
+     9	
+    10	  return 0;
+    11	}
+```
+
+Indeed, at the 8th line of the source code, the same memory was freed for the 2nd time.
 
 
 
