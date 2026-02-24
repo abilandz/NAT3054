@@ -1,6 +1,6 @@
 # Valgrind
 
-**Last update**: 20260202-1
+**Last update**: 20260224-1
 
 <img src="Valgrind_logo.png" alt="drawing" width="600"/>
 
@@ -403,7 +403,7 @@ As a side remark, on Linux, the lines in a file can be printed enumerated with t
 
 ```bash
 # print on the screen the file content enumerated line-by-line:
-$ cat -n 
+$ cat -n outOfBound.C
      1	int main() {
      2	
      3	  float *arr = new float[2];
@@ -1014,7 +1014,7 @@ Before moving on to real-case scenarios of **massif** usage, we make the followi
 	For programs whose execution at runtime is very short, only the first option is suitable. 
 
 
-* By default, **massif** provides only heap profiling, i.e. dynamically allocated memory usage via the operator **new** in ```C++``` or **malloc()** in ```C```. But it can be instructed to provide profiling of stack and global variables with the non-default option ```--stack=yes```
+* By default, **massif** provides only heap profiling, i.e. dynamically allocated memory usage via the operator **new** in ```C++``` or **malloc()** in ```C```. But it can be instructed to provide profiling of stack and global variables with the non-default option ```--stacks=yes```
 
 * As for the other Valgrind tools, **massif** will be more punctual and performant if the executable was compiled with the `-g` option, for debugging purposes:
 
