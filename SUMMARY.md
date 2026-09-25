@@ -6,3 +6,6 @@
 * [Lecture 4: Working remotely](src/remote.md)
 * [Lecture 5: Valgrind](src/valgrind.md)
 * [Lecture 6: gdb: The GNU Debugger](src/gdb.md)
+* [Homeworks](src/Homeworks/Scoresheet.md)
+    * [Scoresheet](src/Homeworks/Scoresheet.md)
+    * [Homework 1: TBI](src/Homeworks/Homework_1.md)
