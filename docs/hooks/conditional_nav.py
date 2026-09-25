@@ -26,12 +26,12 @@ def on_config(config):
         config.nav = [
             {"Introduction": "index.md"}, # this file "index.md" must be in docs/
             {"Lectures": [  
-                {"Lecture 1: Regular Expressions": "regex.md"},
-                {"Lecture 2: Git": "git.md"},
-                {"Lecture 3: make & cmake": "make.md"},
-                {"Lecture 4: Working remotely": "remote.md"},
-                {"Lecture 5: Valgrind": "valgrind.md"},
-                {"Lecture 6: gdb: The GNU Debugger": "gdb.md"},
+                {"1. Regular Expressions": "regex.md"},
+                {"2. Git": "git.md"},
+                {"3. make & cmake": "make.md"},
+                {"4. Working remotely": "remote.md"},
+                {"5. Valgrind": "valgrind.md"},
+                {"6. gdb: The GNU Debugger": "gdb.md"},
             ]},
             {"Homeworks": [  
                 {"Scoresheet": "Homeworks/Scoresheet.md"},
