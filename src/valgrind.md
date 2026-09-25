@@ -2,7 +2,7 @@
 
 **Last update**: 20260224-1
 
-<img src="Valgrind_logo.png" alt="drawing" width="600"/>
+<img src="Figures/Valgrind_logo.png" alt="drawing" width="600"/>
 
 ### Table of Contents
 
@@ -990,7 +990,7 @@ This raw data is not easy to decipher. Instead, one can process the content of t
   ```
   However, unlike **ms_print**, it produces a colorful graphical display of heap memory footprint in the left-hand side panel, and detailed call stack of all functions in the right-hand side panel:
 
-  <img src="massif-visualizer-hello.png" alt="drawing" width="600"/>
+  <img src="Figures/massif-visualizer-hello.png" alt="drawing" width="600"/>
 
 
 Before moving on to real-case scenarios of **massif** usage, we make the following general remarks:
@@ -1123,7 +1123,7 @@ For demonstration purposes, we inspect the memory allocations of executable **ex
 
   Finally, the output graph is:
 
-  <img src="example_1-i.png" alt="drawing" width="600"/>
+  <img src="Figures/example_1-i.png" alt="drawing" width="600"/>
 
 	We see clearly 3 large memory allocations corresponding to the call to the **fun_1()** function, and about a factor of 2 smaller 3 memory allocations corresponding to the call to **fun_2()** function. In the expanded toggle on the RHS for peak snapshot (marked with the darkest color gradient), we can see that the maximum amount of memory was allocated in the call to function **fun_1()** at line 52 in the code. Indeed:
 	
@@ -1157,7 +1157,7 @@ For demonstration purposes, we inspect the memory allocations of executable **ex
 
   The resulting graphical display is:
 
-  <img src="example_1-ms.png" alt="drawing" width="600"/>
+  <img src="Figures/example_1-ms.png" alt="drawing" width="600"/>
 
 * _bytes_ &mdash; with this option, on x-axis the number allocated/deallocated bytes is shown:
 
@@ -1167,7 +1167,7 @@ For demonstration purposes, we inspect the memory allocations of executable **ex
 
   The resulting graphical display is:
 
-  <img src="example_1-B.png" alt="drawing" width="600"/>
+  <img src="Figures/example_1-B.png" alt="drawing" width="600"/>
 
 For all 3 options, ```--time-unit=i``` , ```--time-unit=ms```, and ```--time-unit=B```,  we see clearly and consistently 3 large memory allocations corresponding to the call to **fun_1()** function, and about a factor of two smaller 3 memory allocations corresponding to the call to **fun_2()** function, albeit the details of graphical representation can differ, sometimes one offering more insights than another one. 
 
@@ -1313,7 +1313,7 @@ $ massif_visualizer massif.out.1441068
 
 The final output graph is:
 
-<img src="example_2-B.png" alt="drawing" width="600"/>
+<img src="Figures/example_2-B.png" alt="drawing" width="600"/>
 
 The interpretation of this graph is the same as in the previous examples for heap memory allocation. For completeness, we provide the output of **ms_print** as well for the above example:
 

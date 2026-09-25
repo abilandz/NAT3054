@@ -1,0 +1,14 @@
+# This config is used to configure layout only for "GitHub Pages". 
+# To configure all layouts for mkdocs themes, use mkdocs.yml.
+
+title: "NAT3054 Advanced Programming Tools in High-Energy Physics"
+#description: Project documentation
+theme: jekyll-theme-primer # this gives the same default layout, if _config.yml is not used
+show_downloads: false
+
+# Needed for math support:
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default

@@ -3,7 +3,7 @@
 
 **Last update**: 20260125-1
 
-<img src="git.png" alt="drawing" width="400"/>
+<img src="Figures/git.png" alt="drawing" width="400"/>
 
 ### Table of Contents
 1. [Introduction to version control system](#introduction.to.version.control.system)
@@ -1811,7 +1811,7 @@ With a series of examples, sorted in alphabetical order, we now illustrate how t
 
 ```bash
 $ git blame -L 1,5 Lecture_2/git.md
-cfd0b003 (abilandz 2025-09-15 09:35:15 +0200 1) <img src="git.png" alt="drawing" width="400"/>
+cfd0b003 (abilandz 2025-09-15 09:35:15 +0200 1) <img src="Figures/git.png" alt="drawing" width="400"/>
 46ac50dc (abilandz 2025-09-08 11:41:51 +0200 2)
 46ac50dc (abilandz 2025-09-08 11:41:51 +0200 3) # Git - a distributed version control system
 46ac50dc (abilandz 2025-09-08 11:41:51 +0200 4)

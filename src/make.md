@@ -2,7 +2,7 @@
 
 **Last update**: 20260125-1
 
-<img src="make_cmake.png" alt="drawing" width="600"/>
+<img src="Figures/make_cmake.png" alt="drawing" width="600"/>
 
 ### Table of Contents
 
@@ -1744,7 +1744,7 @@ An executive summary of the main design decisions:
 
   If the above script is executed, we obtain the coloured printout:
 
-  <img src="coloredPrintout.png" alt="drawing" width="250"/>  
+  <img src="Figures/coloredPrintout.png" alt="drawing" width="250"/>  
 
 In the examples above, we have used some predefined **cmake** commands, without introducing them in detail. In the next section, the overview of the most frequently used commands in that category is provided. 
 

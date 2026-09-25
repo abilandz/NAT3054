@@ -2,7 +2,7 @@
 
 **Last update**: 20260204-3
 
-<img src="gdb_logo.png" alt="drawing" width="600"/>
+<img src="Figures/gdb_logo.png" alt="drawing" width="600"/>
 
 ### Table of Contents
 
