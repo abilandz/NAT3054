@@ -1,10 +1,12 @@
 # Valgrind
 
-**Last update**: 20260224-1
+**Last update**: 20260925-1
 
-<img src="Figures/Valgrind_logo.png" alt="drawing" width="600"/>
+<!-- <img src="Figures/Valgrind_logo.png" alt="drawing" width="600"/> -->
+![](./Figures/Valgrind_logo.png)
 
-### Table of Contents
+
+### Outline
 
 1. [Introduction](#introduction)
 2. [A bit of history](#history)

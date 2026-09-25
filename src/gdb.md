@@ -1,10 +1,12 @@
 # gdb: The GNU Debugger
 
-**Last update**: 20260204-3
+**Last update**: 20260925-1
 
-<img src="Figures/gdb_logo.png" alt="drawing" width="600"/>
+<!-- <img src="Figures/gdb_logo.png" alt="drawing" width="600"/> -->
 
-### Table of Contents
+![](./Figures/gdb_logo.png)
+
+### Outline
 
 1. [Introduction](#introduction)
 2. [A bit of history](#history)

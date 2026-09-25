@@ -23,7 +23,11 @@ markdown_extensions:
   - pymdownx.arithmatex: # math
       generic: true
   - pymdownx.highlight # syntax highlighting
-  - pymdownx.superfences # syntax highlighting
+  - pymdownx.superfences: # syntax highlighting
+      custom_fences: # support for mermaid diagrams
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - attr_list # to resize figures
   - md_in_html # to resize figures
 

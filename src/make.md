@@ -1,10 +1,12 @@
 # make & cmake
 
-**Last update**: 20260125-1
+**Last update**: 20260925-1
 
-<img src="Figures/make_cmake.png" alt="drawing" width="600"/>
+<!-- <img src="Figures/make_cmake.png" alt="drawing" width="600"/> -->
 
-### Table of Contents
+![](./Figures/make_cmake.png)
+
+### Outline
 
 1. [Introduction](#introduction)
 2. [Makefile](#makefile)
