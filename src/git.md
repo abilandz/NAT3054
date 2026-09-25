@@ -1,11 +1,11 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20260125-1
+**Last update**: 20260925-1
 
-<img src="Figures/git.png" alt="drawing" width="400"/>
+![drawing](Figures/git.png){ width="400" }
 
-### Table of Contents
+### Outline
 1. [Introduction to version control system](#introduction.to.version.control.system)
 
 2. [Git design and main goals](#git.design.and.main.goals)

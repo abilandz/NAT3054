@@ -1,0 +1,27 @@
+/* Use these seetings only when ReadTheDocs them is used */
+
+.wy-nav-content {
+    max-width: none;
+    /* max-width: 1200px; */
+}
+
+/* Narrow the sidebar (default is ~300px) */
+/* 
+.wy-nav-side {
+    width: 250px;
+}
+*/ 
+
+/* Adjust the content area so it shifts correctly, must be the same value as above */
+/*
+.wy-nav-content-wrap {
+    margin-left: 250px; 
+}
+*/
+
+/* Also update the mobile shift behavior */
+/*
+.wy-nav-side.shift {
+    width: 250px;
+}
+*/

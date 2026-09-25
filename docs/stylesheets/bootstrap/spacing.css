@@ -1,0 +1,10 @@
+/* Use these seetings only when bootstrap them is used */
+
+/* Optional: center the table if it is narrower than the content area */
+.md-typeset__table {
+  display: block;
+  width: fit-content;               /* or max-content */
+  max-width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+}

@@ -1,0 +1,53 @@
+/* GitHub / native Markdown style tables for Material */
+
+.md-typeset table:not([class]) {
+  width: auto;
+  max-width: 100%;
+  margin: 1em 0;
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+/* Cells */
+.md-typeset table:not([class]) th,
+.md-typeset table:not([class]) td {
+  padding: 6px 13px;                    /* classic GitHub padding */
+  border: 1px solid var(--md-typeset-table-color);
+  vertical-align: top;
+}
+
+/* Header */
+.md-typeset table:not([class]) thead th {
+  font-weight: 600;
+  background-color: rgba(0, 0, 0, 0.03);
+  border-bottom: 2px solid var(--md-typeset-table-color);
+}
+
+/* Alternating rows (GitHub style) */
+.md-typeset table:not([class]) tbody tr:nth-child(2n) {
+  background-color: rgba(0, 0, 0, 0.025);
+}
+
+/* Dark mode adjustments */
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) thead th {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) tbody tr:nth-child(2n) {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* Wrapper */
+.md-typeset__table {
+  display: block;
+  width: fit-content;          /* or max-content */
+  max-width: 100%;
+  overflow-x: auto;
+  margin-left: auto;
+  margin-right: auto;
+}

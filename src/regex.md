@@ -1,9 +1,9 @@
 # Regular expressions
 
-**Last update**: 20251029-1
+**Last update**: 20260925-1
 
 
-### Table of Contents
+### Outline
 1. [What is a regular expression?](#what.is.regex)
 	
 	* [Shell's wildcard expansion in filenames (globbing)](#globbing)

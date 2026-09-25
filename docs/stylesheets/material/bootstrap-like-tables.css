@@ -1,0 +1,85 @@
+/* Make Material tables closer to Bootstrap’s default look */
+
+.md-typeset table:not([class]) {
+  width: auto;
+  max-width: 100%;
+  margin-bottom: 1rem;
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 0.75rem;               /* Bootstrap-ish */
+  line-height: 1.3;
+  background-color: var(--md-default-bg-color);
+  box-shadow: none;                /* remove Material’s soft shadow */
+  border-radius: 0;
+}
+
+/* Force compact horizontal spacing in Material tables */
+.md-typeset table:not([class]) th,
+.md-typeset table:not([class]) td,
+.md-typeset .md-typeset__table table:not([class]) th,
+.md-typeset .md-typeset__table table:not([class]) td {
+  padding-top: 0.28rem !important;
+  padding-bottom: 0.28rem !important;
+  padding-left: 0.75rem !important;     /* ← reduce this */
+  padding-right: 0.75rem !important;    /* ← reduce this */
+  min-width: 0 !important;              /* important: removes Material’s min-width */
+}
+
+/* Optional: center the table if it is narrower than the content area */
+.md-typeset__table {
+  display: block;
+  width: fit-content;               /* or max-content */
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Optional: make the whole table a bit denser */
+.md-typeset table:not([class]) {
+  font-size: 0.78rem !important;
+  line-height: 1.3 !important;
+}
+
+/* Header */
+.md-typeset table:not([class]) thead th {
+  vertical-align: bottom;
+  border-bottom: 2px solid var(--md-typeset-table-color);
+  font-weight: 600;
+  background-color: transparent;   /* or a light gray if you prefer */
+}
+
+/* Optional: full borders (Bootstrap .table-bordered style) */
+/*
+.md-typeset table:not([class]) th,
+.md-typeset table:not([class]) td {
+  border: 1px solid var(--md-typeset-table-color);
+}
+.md-typeset table:not([class]) thead th {
+  border-bottom-width: 2px;
+}
+*/
+
+/* Striped rows (Bootstrap .table-striped) */
+.md-typeset table:not([class]) tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.03);   /* light mode */
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) tbody tr:nth-of-type(odd) {
+  background-color: rgba(255, 255, 255, 0.04);  /* dark mode */
+}
+
+/* Hover effect (Bootstrap .table-hover) */
+.md-typeset table:not([class]) tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.07);
+}
+
+/* Keep Material’s responsive behaviour */
+.md-typeset__table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}

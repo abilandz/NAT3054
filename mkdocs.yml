@@ -1,0 +1,33 @@
+site_name: "NAT3054: Advanced Programming Tools in High-Energy Physics"
+
+theme:
+#  name: mkdocs
+  name: material
+#  name: readthedocs
+
+# common navigation settings for all themes:
+#nav:
+#  - Home: index.md
+
+# common extra CSS for all themes:
+extra_css:
+  - stylesheets/extra.css
+
+# specific settings for individually themes:
+hooks:
+  - docs/hooks/conditional_nav.py # navigation settings but conditional and specific for each theme
+  - docs/hooks/conditional_css.py # extra CSS but conditional and specific for each theme
+
+# support for math and code syntax highlihting:
+markdown_extensions:
+  - pymdownx.arithmatex: # math
+      generic: true
+  - pymdownx.highlight # syntax highlighting
+  - pymdownx.superfences # syntax highlighting
+  - attr_list # to resize figures
+  - md_in_html # to resize figures
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js # online math
+#  - javascripts/tex-mml-chtml.js # offline math
