@@ -20,6 +20,7 @@ def on_config(config):
                 {"Scoresheet": "Homeworks/Scoresheet.md"},
                 {"Homework 1: TBI" : "Homeworks/Homework_1.md"},
             ]},
+            {"Past semesters": "history.md"},
         ]
 
     elif theme_name == "material": # Navigation for "Material" theme
@@ -37,6 +38,7 @@ def on_config(config):
                 {"Scoresheet": "Homeworks/Scoresheet.md"},
                 {"Homework 1: TBI" : "Homeworks/Homework_1.md"},
             ]},
+            {"Past semesters": "history.md"},
         ]
 
     elif theme_name == "readthedocs": # Different structure for "ReadTheDocs" theme
@@ -53,6 +55,10 @@ def on_config(config):
             {"Homeworks": [  
                 {"Scoresheet": "Homeworks/Scoresheet.md"},
                 {"Homework 1: TBI" : "Homeworks/Homework_1.md"},
+            ]},
+
+            {"Past semesters": [  
+                {"History": "history.md"},
             ]},
         ]
 
