@@ -9,3 +9,4 @@
 * [Homeworks](src/Homeworks/Scoresheet.md)
     * [Scoresheet](src/Homeworks/Scoresheet.md)
     * [Homework 1: TBI](src/Homeworks/Homework_1.md)
+* [Past semesters](src/history.md)
