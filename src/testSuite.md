@@ -1,10 +1,11 @@
 # Test suite
 
-**Last update**: 20261003-1
+**Last update**: 20261004-1
 
 #### 1. Rendering of native markdown tables
 
 ##### Example 1
+
 | Student ID | #1   | #2   | #3   | #4   | #5   | #6   | #7   | #8   | #9   | #10  | Sum  |
 | ---------- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | 01234567   | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  |
@@ -13,6 +14,7 @@
 | 01234567   | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  |
 
 ##### Example 2
+
 | permission |  r   |  w   |  x   |  -   |
 | :--------- | :--: | :--: | :--: | :--: |
 | **value**  |  4   |  2   |  1   |  0   |
@@ -43,9 +45,9 @@ We all know that!
 
 #### 4. Resizing the figure size
 
-<img src="Figures/make_cmake.png" alt="drawing" width="600"/>
-<img src="Figures/make_cmake.png" alt="drawing" width="400"/>
-<img src="Figures/make_cmake.png" alt="drawing" width="200"/>
+<img src="Figures/gdb_logo.png" alt="drawing" width="600"/>
+<img src="Figures/gdb_logo.png" alt="drawing" width="400"/>
+<img src="Figures/gdb_logo.png" alt="drawing" width="200"/>
 
 
 
@@ -101,7 +103,7 @@ int main() {
     printf("Hello, World!\n");
     return 0;
 }
-``` 
+```
 
 ##### C++
 ```C++
