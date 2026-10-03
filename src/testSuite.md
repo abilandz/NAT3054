@@ -1,6 +1,6 @@
 # Test suite
 
-**Last update**: 20261004-1
+**Last update**: 20261003-2
 
 #### 1. Rendering of native markdown tables
 
@@ -43,7 +43,7 @@ We all know that!
 
 
 
-#### 4. Resizing the figure size
+#### 4. Resizing the figure size using the native html source code
 
 <img src="Figures/gdb_logo.png" alt="drawing" width="600"/>
 <img src="Figures/gdb_logo.png" alt="drawing" width="400"/>
