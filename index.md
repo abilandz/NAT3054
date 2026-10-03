@@ -21,3 +21,4 @@ The formal course description can be found at the TUM website at the following p
     * [Scoresheet](src/Homeworks/Scoresheet.md)
     * [Homework 1: TBI](src/Homeworks/Homework_1.md) 
 * [Past semesters](src/history.md)
+* [Test suite](src/testSuite.md)

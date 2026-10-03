@@ -1,0 +1,35 @@
+# myst.yml
+version: 1
+
+project:
+  title: "NAT3054: Advanced Programming Tools in High-Energy Physics"
+#  description: A simple MyST static site
+  toc:
+    - file: content/index.md
+    - title: Lectures
+      children:
+        - file: content/regex.md
+          title: "1. Regular Expressions"
+        - file: content/git.md
+          title: "2. Git"
+        - file: content/make.md
+          title: "3. make & cmake"
+        - file: content/remote.md
+          title: "4. Working remotely"
+        - file: content/valgrind.md
+          title: "5. Valgrind"
+        - file: content/gdb.md
+          title: "6. gdb: The GNU Debugger"
+    - title: Homeworks
+      children:
+        - file: content/Homeworks/Scoresheet.md
+          title: "Scoresheet"
+        - file: content/Homeworks/Homework_1.md
+          title: "Homework 1: TBI"
+    - file: content/history.md
+    - file: content/testSuite.md
+
+site:
+  template: book-theme
+#  template: article-theme
+  title: "NAT3054: Advanced Programming Tools in High-Energy Physics"

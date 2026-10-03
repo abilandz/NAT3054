@@ -21,6 +21,7 @@ def on_config(config):
                 {"Homework 1: TBI" : "Homeworks/Homework_1.md"},
             ]},
             {"Past semesters": "history.md"},
+            {"Test suite": "testSuite.md"},
         ]
 
     elif theme_name == "material": # Navigation for "Material" theme
@@ -39,6 +40,7 @@ def on_config(config):
                 {"Homework 1: TBI" : "Homeworks/Homework_1.md"},
             ]},
             {"Past semesters": "history.md"},
+            {"Test suite": "testSuite.md"},
         ]
 
     elif theme_name == "readthedocs": # Different structure for "ReadTheDocs" theme
@@ -60,6 +62,7 @@ def on_config(config):
             {"Past semesters": [  
                 {"History": "history.md"},
             ]},
+            {"Test suite": "testSuite.md"},
         ]
 
     else: # Optional: fallback for unknown themes
