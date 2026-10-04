@@ -1,6 +1,6 @@
 # Test suite
 
-**Last update**: 20261004-5
+**Last update**: 20261004-6
 
 #### 1. Rendering of native markdown tables
 
@@ -122,7 +122,7 @@ int main() {
 ```
 
 ##### make
-```makefile
+```make
 all : test1 test2
 test1 : test1.C
 	gcc test1.C -o test1 && echo "compilation of test1 succeeded"
@@ -163,7 +163,7 @@ endwhile()
 * ```minor``` &mdash; new backward compatible functionality is introduced;
 * ```patch``` &mdash; new backward compatible fix (typically a minor bug fix) is introduced.
 
-##### arows
+##### arrows
 
 a &rightarrow; b (using LaTeX-style 'rightarrow')  
 
