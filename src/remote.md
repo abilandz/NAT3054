@@ -1,12 +1,14 @@
 # Working remotely
 
-**Last update**: 20261004-1
+**Last update**: 20261004-2
 
 
 
 <!-- this is a comment -->
 
-<!-- <img src="./Figures/make_cmake.png" alt="" width="400" style="display: block; margin-left: 5em; margin-right: auto; margin-top: 2.0em; margin-bottom: auto;"/> -->
+<img src="./Figures/remoteLogo.png" alt="Logo generated using AI assistance." width="300" style="display: block; margin-left: 5em; margin-right: auto; margin-top: 1.0em; margin-bottom: 0.5em;"/>
+
+*_Credits for the image: AI_
 
 
 

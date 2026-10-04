@@ -1,4 +1,4 @@
-**Last update**: 20261002-1
+**Last update**: 20261004-1
 
 ### Introduction
 
@@ -11,7 +11,7 @@ The formal course description can be found at the TUM website at the following p
 
 ### Lectures
 
-* [Lecture 1: Regular Expressions](src/regex.md)
+* [Lecture 1: Regular expressions](src/regex.md)
 * [Lecture 2: Git](src/git.md)
 * [Lecture 3: make & cmake](src/make.md)
 * [Lecture 4: Working remotely](src/remote.md)

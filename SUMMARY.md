@@ -1,6 +1,6 @@
 # Summary
 
-* [Lecture 1: Regular Expressions](src/regex.md)
+* [Lecture 1: Regular expressions](src/regex.md)
 * [Lecture 2: Git](src/git.md)
 * [Lecture 3: make & cmake](src/make.md)
 * [Lecture 4: Working remotely](src/remote.md)

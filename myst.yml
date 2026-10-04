@@ -2,14 +2,14 @@
 version: 1
 
 project:
-  title: "NAT3054: Advanced Programming Tools in High-Energy Physics"
+  title: "Introduction" # this is a temporary hack
 #  description: A simple MyST static site
   toc:
     - file: content/index.md
     - title: Lectures
       children:
         - file: content/regex.md
-          title: "1. Regular Expressions"
+          title: "1. Regular expressions"
         - file: content/git.md
           title: "2. Git"
         - file: content/make.md
@@ -32,4 +32,8 @@ project:
 site:
   template: book-theme
 #  template: article-theme
-  title: "NAT3054: Advanced Programming Tools in High-Energy Physics"
+  title: "NAT30..54: Advanced Programming Tools in High-Energy Physics"
+  options:
+    favicon: content/Figures/favicon.png
+    logo: content/Figures/favicon.png
+    logo_text: "NAT3054: Advanced Programming Tools in High-Energy Physics"

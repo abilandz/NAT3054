@@ -9,7 +9,7 @@ def on_config(config):
         config.nav = [
             {"Introduction": "index.md"}, # this file "index.md" must be in docs/
             {"Lectures": [  
-                {"Lecture 1: Regular Expressions": "regex.md"},
+                {"Lecture 1: Regular expressions": "regex.md"},
                 {"Lecture 2: Git": "git.md"},
                 {"Lecture 3: make & cmake": "make.md"},
                 {"Lecture 4: Working remotely": "remote.md"},
@@ -28,7 +28,7 @@ def on_config(config):
         config.nav = [
             {"Introduction": "index.md"}, # this file "index.md" must be in docs/
             {"Lectures": [  
-                {"1. Regular Expressions": "regex.md"},
+                {"1. Regular expressions": "regex.md"},
                 {"2. Git": "git.md"},
                 {"3. make & cmake": "make.md"},
                 {"4. Working remotely": "remote.md"},
@@ -47,7 +47,7 @@ def on_config(config):
         config.nav = [
             {"Introduction": "index.md"}, # this file "index.md" must be in docs/
             {"Lectures": [  
-                {"Lecture 1: Regular Expressions": "regex.md"},
+                {"Lecture 1: Regular expressions": "regex.md"},
                 {"Lecture 2: Git": "git.md"},
                 {"Lecture 3: make & cmake": "make.md"},
                 {"Lecture 4: Working remotely": "remote.md"},
