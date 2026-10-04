@@ -1,6 +1,4 @@
-**Last update**: 20261002-1
-
-### Introduction
+**Last update**: 20261004-1
 
 This webpage contains the lecturing material for the course **"NAT3054: Advanced Programming Tools in High-Energy Physics"**, offered in WS 2026/27.
 

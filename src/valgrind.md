@@ -1,9 +1,10 @@
 # Valgrind
 
-**Last update**: 20260925-1
+**Last update**: 20261004-1
 
-<!-- <img src="Figures/Valgrind_logo.png" alt="drawing" width="600"/> -->
-![](./Figures/Valgrind_logo.png)
+<!-- this is a comment -->
+
+<img src="./Figures/Valgrind_logo.png" alt="" width="300" style="display: block; margin-left: 8em; margin-right: auto; margin-top: 1.em; margin-bottom: auto;"/>
 
 
 ### Outline

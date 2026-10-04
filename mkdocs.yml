@@ -4,10 +4,15 @@ theme:
 #  name: mkdocs
   name: material
 #  name: readthedocs
+  favicon: Figures/favicon.png
+  logo: Figures/favicon.png
 
 # common navigation settings for all themes:
 #nav:
 #  - Home: index.md
+
+# workaround to get figures via ./Figures, and not via ../Figures, even though the former is a correct relative path"
+use_directory_urls: false
 
 # common extra CSS for all themes:
 extra_css:

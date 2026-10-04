@@ -1,6 +1,10 @@
 # Regular expressions
 
-**Last update**: 20260925-1
+**Last update**: 20261004-2
+
+<!-- this is a comment -->
+
+<img src="./Figures/regexLogo.png" alt="" width="300" style="display: block; margin-left: 5em; margin-right: auto; margin-top: 1.5em; margin-bottom: auto;"/>
 
 
 ### Outline

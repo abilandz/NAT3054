@@ -1,1 +1,6 @@
 /* Use this file to set the common settings for all themes supported in Mkdocs */
+
+/* Hide the site name in the left sidebar */
+.md-nav--primary .md-nav__title {
+  display: none;
+}

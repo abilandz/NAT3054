@@ -1,10 +1,11 @@
 # make & cmake
 
-**Last update**: 20260925-1
+**Last update**: 20261004-1
 
-<!-- <img src="Figures/make_cmake.png" alt="drawing" width="600"/> -->
+<!-- this is a comment -->
 
-![](./Figures/make_cmake.png)
+<img src="./Figures/make_cmake.png" alt="" width="415" style="display: block; margin-left: 8em; margin-right: auto; margin-top: 2.0em; margin-bottom: auto;"/>
+
 
 ### Outline
 

@@ -1,6 +1,6 @@
 # Test suite
 
-**Last update**: 20261003-2
+**Last update**: 20261004-2
 
 #### 1. Rendering of native markdown tables
 
@@ -43,11 +43,17 @@ We all know that!
 
 
 
-#### 4. Resizing the figure size using the native html source code
+#### 4. Resizing and repositioning of the figures using the native html source code
 
-<img src="Figures/gdb_logo.png" alt="drawing" width="600"/>
-<img src="Figures/gdb_logo.png" alt="drawing" width="400"/>
-<img src="Figures/gdb_logo.png" alt="drawing" width="200"/>
+##### Resizing
+<img src="./Figures/gdb_logo.png" alt="" width="300" style="display: block; margin-left: auto; margin-right: auto; margin-top: auto; margin-bottom: auto;"/>
+<img src="./Figures/gdb_logo.png" alt="" width="200" style="display: block; margin-left: auto; margin-right: auto; margin-top: auto; margin-bottom: auto;"/>
+<img src="./Figures/gdb_logo.png" alt="" width="100" style="display: block; margin-left: auto; margin-right: auto; margin-top: auto; margin-bottom: auto;"/>
+
+##### Repositioning
+<img src="./Figures/gdb_logo.png" alt="" width="200" style="display: block; margin-left: 5em; margin-right: auto; margin-top: auto; margin-bottom: auto;"/>
+<img src="./Figures/gdb_logo.png" alt="" width="200" style="display: block; margin-left: 10em; margin-right: auto; margin-top: auto; margin-bottom: auto;"/>
+<img src="./Figures/gdb_logo.png" alt="" width="200" style="display: block; margin-left: 20em; margin-right: auto; margin-top: auto; margin-bottom: auto;"/>
 
 
 

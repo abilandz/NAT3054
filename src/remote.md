@@ -1,6 +1,13 @@
 # Working remotely
 
-**Last update**: 20260122-2
+**Last update**: 20261004-1
+
+
+
+<!-- this is a comment -->
+
+<!-- <img src="./Figures/make_cmake.png" alt="" width="400" style="display: block; margin-left: 5em; margin-right: auto; margin-top: 2.0em; margin-bottom: auto;"/> -->
+
 
 
 ### Table of Contents
