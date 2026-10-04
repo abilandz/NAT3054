@@ -1,6 +1,6 @@
 # Test suite
 
-**Last update**: 20261004-4
+**Last update**: 20261004-5
 
 #### 1. Rendering of native markdown tables
 
@@ -102,7 +102,7 @@ return
 ```
 
 ##### C
-```C
+```c
 #include <stdio.h>
 
 int main() {
@@ -112,7 +112,7 @@ int main() {
 ```
 
 ##### C++
-```C++
+```cpp
 #include <iostream>
 
 int main() {
