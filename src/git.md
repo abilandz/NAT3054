@@ -5,7 +5,7 @@
 
 <!-- this is a comment -->
 
-<img src="./Figures/git.png" alt="drawing" width="300" style="display: block; margin-left: 5em; margin-right: auto; margin-top: 2.0em; margin-bottom: auto;"/>
+<img src="./Figures/git.png" alt="drawing" width="300" style="display: block; margin-left: 4em; margin-right: auto; margin-top: 2.0em; margin-bottom: auto;"/>
 
 ### Outline
 1. [Introduction to version control system](#introduction.to.version.control.system)

@@ -4,7 +4,7 @@
 
 <!-- this is a comment -->
 
-<img src="./Figures/gdb_logo.png" alt="" width="300" style="display: block; margin-left: 9em; margin-right: auto; margin-top: 1.5em; margin-bottom: auto;"/>
+<img src="./Figures/gdb_logo.png" alt="" width="300" style="display: block; margin-left: 7em; margin-right: auto; margin-top: 1.5em; margin-bottom: auto;"/>
 
 
 ### Outline

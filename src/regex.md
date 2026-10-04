@@ -4,7 +4,7 @@
 
 <!-- this is a comment -->
 
-<img src="./Figures/regexLogo.png" alt="" width="300" style="display: block; margin-left: 5em; margin-right: auto; margin-top: 1.5em; margin-bottom: auto;"/>
+<img src="./Figures/regexLogo.png" alt="" width="300" style="display: block; margin-left: 4em; margin-right: auto; margin-top: 1.5em; margin-bottom: -0.5em;"/>
 
 
 ### Outline

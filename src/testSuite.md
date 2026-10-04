@@ -1,6 +1,6 @@
 # Test suite
 
-**Last update**: 20261004-2
+**Last update**: 20261004-4
 
 #### 1. Rendering of native markdown tables
 
@@ -165,6 +165,14 @@ endwhile()
 
 ##### arows
 
-a &rightarrow; b
+a &rightarrow; b (using LaTeX-style 'rightarrow')  
 
-a &Rightarrow; b
+a &rarr; b (using HTML-style 'rarr') 
+
+a &#8594; b (using Unicode)  
+
+a &Rightarrow; b (using LaTeX-style 'Rightarrow') 
+
+a &rArr; b (using HTML-style 'rArr') 
+
+a &#8658; b (using Unicode) 

@@ -4,7 +4,7 @@
 
 <!-- this is a comment -->
 
-<img src="./Figures/make_cmake.png" alt="" width="415" style="display: block; margin-left: 8em; margin-right: auto; margin-top: 2.0em; margin-bottom: auto;"/>
+<img src="./Figures/make_cmake.png" alt="" width="415" style="display: block; margin-left: 6em; margin-right: auto; margin-top: 2.0em; margin-bottom: auto;"/>
 
 
 ### Outline

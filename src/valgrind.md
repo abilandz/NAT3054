@@ -4,7 +4,7 @@
 
 <!-- this is a comment -->
 
-<img src="./Figures/Valgrind_logo.png" alt="" width="300" style="display: block; margin-left: 8em; margin-right: auto; margin-top: 1.em; margin-bottom: auto;"/>
+<img src="./Figures/Valgrind_logo.png" alt="" width="300" style="display: block; margin-left: 6em; margin-right: auto; margin-top: 1.em; margin-bottom: auto;"/>
 
 
 ### Outline
