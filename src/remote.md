@@ -1,19 +1,18 @@
 # Working remotely
 
-**Last update**: 20261004-2
+**Last update**: 20261004-3
 
 
 
 <!-- this is a comment -->
 
-<img src="./Figures/remoteLogo.png" alt="Logo generated using AI assistance." width="300" style="display: block; margin-left: 5em; margin-right: auto; margin-top: 1.0em; margin-bottom: 0.5em;"/>
+<img src="./Figures/remoteLogo.png" alt="" width="300" style="display: block; margin-left: 5em; margin-right: auto; margin-top: 1.0em; margin-bottom: 0.5em;"/>
 
 *_Credits for the image: AI_
 
 
 
-### Table of Contents
-
+### Outline
 1. [Terminal multiplexers (screen, tmux)](#screen)
 2. [ping](#ping)
 3. [ssh, scp, sftp, sshfs](#ssh.scp.sftp.sshfs)  
