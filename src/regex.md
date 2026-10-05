@@ -1,6 +1,6 @@
 # Regular expressions
 
-**Last update**: 20261004-2
+**Last update**: 20261005-1
 
 <!-- this is a comment -->
 
@@ -40,46 +40,46 @@
 
 
 ### 1. What is a regular expression? <a name="what.is.regex"></a>
-A regular expression, or _regex_ for short, is a pattern template used to filter text in order to extract specific information. Or, looking from another angle, a regular expression is a pattern that describes a set of strings. Writing a regular expression is equivalent to creating a text filter. Patterns used to define regular expression contain symbols with special, non-literal meaning. In general, such special individual symbols or specific combinations of individual symbols, are named _metacharacters_. When interpreted directly by a shell to perform filename expansion (or _globbing_), metacharacters are called _wildcards_. Some metacharacters have different meanings when used in regular expression or in filename expansion. 
+A regular expression, or _regex_ for short, is a pattern template used to filter text in order to extract specific information. Or, looking from another angle, a regular expression is a pattern that describes a set of strings. Writing a regular expression is equivalent to creating a text filter. Patterns used to define regular expression contain symbols with special, non-literal meaning. In general, such special individual symbols or specific combinations of individual symbols, are named _metacharacters_ or _compound metacharacters_. When interpreted directly by a shell to perform filename expansion (or _globbing_), metacharacters are called _wildcards_. Some metacharacters have different meanings when used in regular expression or in filename expansion. 
 
-Historically, the first implementation and use of regular expression can be traced back to the late 1960s and Ken Thompson's re-implementation of line-oriented editor QED for Multics (an unsuccessful operating system that predated Unix). There are four major categories of regular expressions, and in what follows next, we attempt to systematize.
+Historically, the first implementation and use of regular expression can be traced back to the late 1960s and Ken Thompson's re-implementation of the line-oriented editor QED for Multics (an unsuccessful operating system that predated Unix). There are four major categories of regular expressions, and in what follows next, we attempt to systematize.
 
 
 #### Shell's wildcard expansion in filenames (globbing) <a name="globbing"></a>
-Each shell supports the process of matching expressions containing wildcards to filenames. In fact, one of the most important features of shell is to be able to operate on multiple files simultaneously. As the basic example, in the following command input
+Each shell supports the process of matching expressions containing wildcards to filenames. In fact, one of the most important features of a shell is the ability to operate on multiple files simultaneously. As a basic example, in the following command input
 ```bash
-ls *.txt
+$ ls *.txt
 ```
-shell will list all files whose names end with _.txt_ in the current working directory. In the above expression, ```*``` is a _wildcard_ and ```*.txt``` is a _glob_. Basically, _glob_ is a pattern containing one or more wildcards. Its name originates from the early-days Unix command named **glob** (shortcut for 'global'), which was used by the shell to expand wildcard characters in the list of file paths, and supply back that list of files to the command. Just like any other frequently used feature, this mechanism was eventually implemented directly into the shell.
+shell will list all files whose names end with _.txt_ in the current working directory. In the above expression, ```*``` is a _wildcard_ and ```*.txt``` is a _glob_. Basically, a _glob_ is a pattern that contains one or more wildcards. Its name originates from the early-days Unix command named **glob** (short for 'global'), which was used by the shell to expand wildcard characters in a list of file paths, and return that list of files to the command. Just like any other frequently used feature, this mechanism was eventually implemented directly into the shell.
 
-The standard and most frequent wildcards or combination of wildcards used by the shell in filename expansions are: ```?``` ```*``` ```[]``` ```[!]``` ```{}``` ```\``` 
+The standard and most frequent wildcards or combination of wildcards used by the shell in filename expansions are: ```?``` ```*``` ```[]``` ```[!]``` ```{}``` ```\``` .
 
 It is important to remember that when these special shell symbols are used in regular expressions, their interpretation can be different. In addition, when specifying regex as a pattern in commands like **grep**, **find**, etc., that regex always needs to be embedded within strong quotes, schematically as ```'some-regex-with-special-symbols'```, so that these special symbols are not interpreted and expanded first by the shell as wildcards, before supplying that regex to the command.
 
 
 #### Basic Regular Expressions (BRE) <a name="bre"></a>
 
-* standardized by POSIX
+* standardized by **POSIX** (an acronym for "Portable Operating System Interface", which defines a set of standards to ensure compatibility of software across different operating systems &mdash; the BRE standard can be found detailed in Section 9.3 at this [link](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html))
 * metacharacters: ```.``` ```*``` ```[]``` ```^``` ```$``` ```\``` and compound repetition operator ```\{n,m\}```  
 * example programs that support BRE syntax: **ed**, **sed**, and **grep**
 
 
 #### Extended Regular Expressions (ERE) <a name="ere"></a>
 
-* standardized by POSIX
-* all metacharacters supported by BRE, only with a slightly different notation for compound repetition operator ```{n,m}```
+* standardized by **POSIX** (Section 9.4 at this [link](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html))
+* all metacharacters supported by BRE, only with a slightly different notation for the compound repetition operator ```{n,m}```
 * additional metacharacters when compared to BRE: ```+``` ```?``` ```|``` ```()``` 
 * first implemented by Alfred Aho in 1979 in the extended version of __grep__ called __egrep__ 
-* example programs that support ERE syntax: **egrep** (or **grep -E**), **awk**, **sed -E**, operator **=~** (only in recent **Bash** versions where it can be used only within ```[[ ... ]]``` environment)
+* example programs that support ERE syntax: **egrep** (or **grep -E**), **awk**, **sed -E**, operator ```=~``` in recent **Bash** versions (where it can be used only within ```[[ ... ]]``` environment)
 
 #### Perl-Compatible Regular Expressions (PCRE) <a name="pcre"></a>
 
-* standalone library developed by Philip Hazel in 1997 and written in C ( [https://www.pcre.org/](https://www.pcre.org/) )
-* the most powerful implementation of regex, aimed initially to provide all regex features available in the **perl** programming language
+* standalone library developed by Philip Hazel in 1997 and written in the C programming language ( [https://www.pcre.org/](https://www.pcre.org/) )
+* the most powerful implementation of regex, aimed initially to provide all regex features available in the **perl** programming language ( [https://perldoc.perl.org/perlre](https://perldoc.perl.org/perlre) )
 * use cases are rather limited in custom daily tasks, therefore not covered here in detail
 * PCRE syntax for regular expressions is supported, for instance, in: **perl** (obviously), **grep -P**, etc.
 
-In the next section, we systematically enlist all metacharacters and explain their use cases when they appear as shell wildcards in globbing, or as regex in BRE and ERE. For testing purposes, we use mostly **Bash** (globbing), **grep** (BRE) or **egrep** (ERE).
+In the next section, we systematically list all metacharacters and explain their use cases when they appear as shell wildcards in globbing, or as regex in BRE and ERE. For testing purposes, we mostly use **Bash** (globbing), **grep** (BRE) or **egrep** (ERE).
 
 
 
@@ -88,13 +88,14 @@ In the next section, we systematically enlist all metacharacters and explain the
 
 ### 2. Metacharacters <a name="metacharacters"></a>
 
-Metacharacter is a symbol, or combination of symbols, with special and non-literal meaning in regular expressions and filename expansions. Despite its peculiar name, metacharacters are present all around us. In math, we are used to using metacharacters; for instance, in the arithmetic expression ```4 * 10```, we understand that metacharacter ```*``` represents multiplication. As another example, a combination of symbols ```\n``` is a composite metacharacter and is a standard metacharacter for a new line. To avoid confusion and problems with rendering, in some examples below, an empty character ``` ``` is denoted with a symbolic &#9251; character, which is the Unicode "Open box" symbol encoded as "U+2423" (or "9251" decimal).
+Metacharacter is a symbol, or combination of symbols, with special and non-literal meaning in regular expressions and filename expansions. Despite its peculiar name, metacharacters are present all around us. In math, we are used to using metacharacters; for instance, in the arithmetic expression ```4 * 10```, we understand that metacharacter ```*``` represents multiplication. As another example, a combination of symbols ```\n``` is a compound metacharacter and is a standard metacharacter for a new line. To avoid confusion and problems with rendering, in some examples below, an empty character ``` ```  is denoted with a symbolic &#9251; character, which is the Unicode "Open box" symbol encoded as "U+2423" (or "9251" decimal).
 
 
 
 
 #### Backslash ```\``` <a name="backslash"></a>
 The backslash metacharacter ```\``` has the same meaning in globbing, BRE, and ERE. It is typically used in both directions, i.e. it turns:
+
 1. another metacharacter into an ordinary character (this is the standard _escape mechanism_), as in:
 	```bash
 	$ Var=44
@@ -103,27 +104,50 @@ The backslash metacharacter ```\``` has the same meaning in globbing, BRE, and E
 	$ echo \$Var
 	$Var
 	```
-	​	 In this context, a frequent use case is ```\\```, which stands for the literal backslash character ```\```. 	
+	In this context, a frequent use case is ```\\```, which stands for the literal backslash character ```\```, as this example demonstrates: 	
+	```bash
+	# The typical mistake:
+    $ echo \
+	>
+	```
+	The above doesn't work, because with ```\``` at the very end of command input (there should be no trailing empty character!), we have escaped the hidden new line compound metacharacter, which acts as an end-of-command input in the shell. Therefore, in this case, shell expects command input to continue in the next line, and it is waiting for it with its secondary prompt ```>```, for instance:
+	
+	```bash
+	$ echo Hi \
+	> there! # + hit Enter
+	Hi there!
+	```
+	
+	The correct way to print the literal backslash character:
+	
+	```bash
+	$ echo \\
+	\
+	```
+	
+2. the ordinary characters into compound metacharacter (```\n``` is the standard compound metacharacter for a new line, ```\t``` for tab spacing, ```\b``` for backspace, etc.):
 
-2. the ordinary characters into composite metacharacter (```\n``` is the standard composite metacharacter for a new line, ```\t``` for tab spacing, ```\b``` for backspace, etc.):
+	```bash
+	$ echo -e "a\nbb"
+	a
+	bb
+	$ echo -e "a\tbb"
+	a       bb
+	$ echo -e "a\bb"
+	b
+	```
 
-   ```bash
-   $ echo -e "a\nbb"
-   a
-   bb
-   $ echo -e "a\tbb"
-   a       bb
-   $ echo -e "a\bb"
-   b
-   ```
-
-The frequent and distinct use case of ```\``` as a wildcard in globbing is to force literal interpretation of an empty character, instead of defaulting empty character to be input field separator. This is needed when files or directories have literal empty characters as part of their names, as this example illustrates:
+The frequent and distinct use case of ```\``` as a wildcard in globbing is to force literal interpretation of an empty character, instead of defaulting the empty character to be the input field separator. This is needed when files or directories have literal empty characters as part of their names, as this example illustrates:
 
 ```bash
-$ mkdir 'Crazy name' # within strong quotes, empty character is a literal empty character 
-$ ls Crazy name # here empty character is metacharacter, the default field separator
+# Within strong quotes, empty character is a literal empty character:
+$ mkdir 'Crazy name'  
+
+# Below empty character is metacharacter, i.e. the default field separator:
+$ ls Crazy name
 ls: cannot access 'Crazy': No such file or directory
 ls: cannot access 'name': No such file or directory
+
 $ ls Crazy\ name # OK
 $ ls 'Crazy name' # OK
 ```
@@ -681,7 +705,7 @@ cat sleeps
 
 #### Grouping operator ```( ... )``` <a name="grouping"></a>
 
-Composite metacharacter ```( ... )```, named _grouping operator_, has a special meaning only in ERE. Its primary use case is to group regular expressions. For instance, regex ```compan(y|ies)``` will match both "company" and "companies", but also few other possibilities:
+Compound metacharacter ```( ... )```, named _grouping operator_, has a special meaning only in ERE. Its primary use case is to group regular expressions. For instance, regex ```compan(y|ies)``` will match both "company" and "companies", but also few other possibilities:
 
 ```bash
 $ egrep "compan(y|ies)" <<< "company"
@@ -971,9 +995,12 @@ Further details on exceptions can be found in the POSIX standard for regular exp
 * Linux manual page:
    * [glob](https://man7.org/linux/man-pages/man7/glob.7.html) ( or execute locally: ```$ man 7 glob``` )
    * [regex](https://man7.org/linux/man-pages/man7/regex.7.html) ( or execute locally: ```$ man 7 regex``` )
-* POSIX standard
+* **POSIX** standard for BRE and ERE
    * [Chapter 9: "Regular Expressions"](https://pubs.opengroup.org/onlinepubs/9799919799/)
+* Language-specific manuals:
+  * **perl** &mdash; [https://perldoc.perl.org/perlre](https://perldoc.perl.org/perlre)
+  * **awk** &mdash; [https://www.gnu.org/software/gawk/manual/html_node/Regexp.html](https://www.gnu.org/software/gawk/manual/html_node/Regexp.html)
 * Russ Cox's studies and writings on the implementation of regular expressions (advanced material)
-	* [Glob execution performance](https://research.swtch.com/glob)
-	* [Implementing Regular Expressions](https://swtch.com/~rsc/regexp) 	
+  * [Glob execution performance](https://research.swtch.com/glob)
+  * [Implementing Regular Expressions](https://swtch.com/~rsc/regexp) 	
 * Online regex checker: [https://regex101.com/](https://regex101.com/)

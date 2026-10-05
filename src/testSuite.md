@@ -1,6 +1,6 @@
 # Test suite
 
-**Last update**: 20261004-6
+**Last update**: 20261005-1
 
 #### 1. Rendering of native markdown tables
 
@@ -154,6 +154,15 @@ while(${Counter} LESS_EQUAL ${Max})
 endwhile()
 ```
 
+##### Linux core utilities
+
+```bash
+$ ls someDir
+$ cat someFile
+$ find . -name "*.txt"
+$ awk 'BEGIN {FS=":"}{print $1}'
+$ sed -i 's/text/TEXT/g' someFile
+```
 
 #### 7. Special symbols
 
@@ -176,3 +185,13 @@ a &Rightarrow; b (using LaTeX-style 'Rightarrow')
 a &rArr; b (using HTML-style 'rArr') 
 
 a &#8658; b (using Unicode) 
+
+##### empty character (placeholder)
+
+an empty character ```  ```  is denoted with a symbolic &#9251; character (Unicode "Open box" symbol)
+
+
+
+#### 8. Hyperlinks
+
+Basic Regular Expressions (BRE) are standardized by **POSIX** and its standard can be found detailed in Section 9.3 at this [link](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html) .

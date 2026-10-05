@@ -27,7 +27,7 @@ hooks:
 markdown_extensions:
   - pymdownx.arithmatex: # math
       generic: true
-  - pymdownx.highlight # syntax highlighting
+  - pymdownx.highlight: # syntax highlighting
   - pymdownx.superfences: # syntax highlighting
       custom_fences: # support for mermaid diagrams
         - name: mermaid
