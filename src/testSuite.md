@@ -1,6 +1,6 @@
 # Test suite
 
-**Last update**: 20261005-1
+**Last update**: 20261006-1
 
 #### 1. Rendering of native markdown tables
 
@@ -188,7 +188,7 @@ a &#8658; b (using Unicode)
 
 ##### empty character (placeholder)
 
-an empty character ```  ```  is denoted with a symbolic &#9251; character (Unicode "Open box" symbol)
+an empty character "```  ```"  is denoted with a symbolic &#9251; character (Unicode "Open box" symbol)
 
 
 
