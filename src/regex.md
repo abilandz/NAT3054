@@ -1,6 +1,6 @@
 # Regular expressions
 
-**Last update**: 20261006-1
+**Last update**: 20261007-1
 
 <!-- this is a comment -->
 
@@ -91,6 +91,8 @@ Metacharacter is a symbol, or combination of symbols, with special and non-liter
 
 
 
+
+
 #### Backslash ```\``` <a name="backslash"></a>
 The backslash metacharacter ```\``` has the same meaning in globbing, BRE, and ERE. It is typically used in both directions, i.e. it turns:
 
@@ -151,6 +153,8 @@ $ ls 'Crazy name' # OK
 ```
 
 In the end, we remark that unlike backslash ```\```, slash ```/``` is not a special character, but nevertheless in some programs, like in **sed** and **awk**, it needs to be escaped due to conflict with internal syntax.
+
+
 
 
 
@@ -220,6 +224,8 @@ some text Chapter1
 ```
 
 Only the line "some text Chapter" is not matched with regex ```Chapter.``` because the string "Chapter" is at the very end of a line (the same holds true for ERE and can be demonstrated with **egrep** instead of **grep**). 
+
+
 
 
 
@@ -330,8 +336,6 @@ file_0.pdf  file_1.pdf  file_2.pdf  file_3.pdf  file.pdf
 $ ls *pdf
 file_0.pdf  file_1.pdf  file_2.pdf  file_3.pdf  file.pdf
 ```
-
-
 
 
 
@@ -491,28 +495,39 @@ In the above example, asterisk ```*``` had an effect only on a single preceding 
 
 #### Question mark ```?``` <a name="question.mark"></a>
 
-The metacharacter question mark ```?``` is not supported in BRE. When used in ERE or when used as a wildcard in globbing it has a different meaning: 
+The metacharacter question mark ```?``` is not supported in BRE. When used in ERE or when used as a wildcard in globbing, it has a different meaning: 
 
-1. In ERE, the question mark ```?``` matches zero or one occurrences of the preceeding character or of the preceeding regex. Therefore, ```?``` makes the preceeding character or regex optional. By itself, the question mark ```?``` matches nothing, it only has an effect on what appears before it;
-2. As a shell wildcard, the question mark ```?``` stands for "any single character". Therefore, metacharacter ```?``` in globbing acts the same way as metacharacter ```.``` in BRE and ERE.
+1. In ERE, the question mark ```?``` matches zero or one occurrences of the preceding character or of the preceding regex. Therefore, ```?``` makes the preceding character or regex optional. By itself, the question mark ```?``` matches nothing &mdash; it only has an effect on what appears before it;
+2. As a shell wildcard, the question mark ```?``` stands for "any single character". Therefore, the metacharacter ```?``` in globbing behaves the same way as the metacharacter ```.``` in BRE and ERE.
 
-We first illustrate the usage of question mark ```?``` in ERE:
+We first illustrate the use of the question mark ```?``` in ERE:
 
 ```bash
-$ egrep "ab?c" <<< "ac" # matches, because "ac" (zero occurences of "b") matches "ac"
+$ egrep "ab?c" <<< "ac"
 ac
-$ egrep "ab?c" <<< "abc" # matches, because "abc" (one occurence of "b") matches "abc"
+# matches, because "ac" (zero occurences of "b") matches "ac"
+
+$ egrep "ab?c" <<< "abc"
 abc
-$ egrep "ab?c" <<< "abbc" # doesn't match, because neither "ac" nor "abc" match "abbc"
-$ egrep "b?c" <<< "bbc" # matches, because both "c" and "bc" match "bbc"
+# matches, because "abc" (one occurence of "b") matches "abc"
+
+$ egrep "ab?c" <<< "abbc"
+# doesn't match, because neither "ac" nor "abc" match "abbc"
+
+$ egrep "b?c" <<< "bbc"
 bbc
-$ egrep "ab?c" <<< "abcc" # matches, because "abc" (one occurence of "b") matches "abcc"
+# matches, because both "c" and "bc" match "bbc"
+
+$ egrep "ab?c" <<< "abcc"
 abcc
-$ egrep "ab?c" <<< "acc" # matches, because "ac" (zero occurences of "b") matches "acc"
+# matches, because "abc" (one occurence of "b") matches "abcc"
+
+$ egrep "ab?c" <<< "acc"
 acc
+# matches, because "ac" (zero occurences of "b") matches "acc"
 ```
 
-From the above examples, one can easily deduce the simple technique how to interpret this metacharacter in ERE in practice: since ```?``` matches zero or one occurrences, it is feasible to expand regex containing ```?``` into one or two literal strings it has to match. For instance, regex ```ab?c``` expands into two literal strings, namely "ac" or "abc", that this regex has to match.
+From the above examples, one can easily deduce the simple technique for interpreting this metacharacter in ERE in practice: since ```?``` matches zero or one occurrences, it is feasible to expand the regex containing ```?``` into one or two literal strings it has to match. For instance, regex ```ab?c``` expands into two literal strings, namely "ac" or "abc", that this regex has to match.
 
 In BRE, the question mark ```?``` is not a metacharacter, as the following example demonstrates:
 
@@ -534,123 +549,196 @@ $ ls file_???.log # doesn't match any file, globbing failed
 ls: cannot access 'file_???.log': No such file or directory
 ```
 
-The metacharacter ```?``` can be readily combined with other metacharacters. For instance, regex ```[xy]?``` will match the case when "x" or "y" are optional, i.e. they must appear zero times or only once either of them:
+The metacharacter ```?``` can be readily combined with other metacharacters. For instance, regex ```[xy]?``` will match the case when "x" or "y" are optional, i.e. they must appear zero times or only once, either of them:
 
 ```bash
-$ egrep "a[xy]?b" <<< "abc" # matches, because "ab" (neither "x" or "y" appear) matches "abc" 
+$ egrep "a[xy]?b" <<< "abc" 
 abc
-$ egrep "a[xy]?b" <<< "axb" # matches, because "axb" (one occurence of "x") matches "axb"
+# matches, because "ab" (neither "x" or "y" appear) matches "abc"
+
+$ egrep "a[xy]?b" <<< "axb"
 axb
-$ egrep "a[xy]?b" <<< "ayb" # matches, because "ayb" (one occurence of "y") matches "ayb"
+# matches, because "axb" (one occurence of "x") matches "axb"
+
+$ egrep "a[xy]?b" <<< "ayb"
 ayb
-$ egrep "a[xy]?b" <<< "axxb" # doesn't match, because none of "ab", "axb", "ayb" match "axxb"
-$ egrep "a[xy]?b" <<< "axyb" # doesn't match, because none of "ab", "axb", "ayb" match "axyb"
-$ egrep "a[xy]?" <<< "axxb" # matches, because both "a" and "ax" match "axxb"
+# matches, because "ayb" (one occurence of "y") matches "ayb"
+
+$ egrep "a[xy]?b" <<< "axxb" 
+# doesn't match, because none of "ab", "axb", "ayb" match "axxb"
+
+$ egrep "a[xy]?b" <<< "axyb" 
+# doesn't match, because none of "ab", "axb", "ayb" match "axyb"
+
+$ egrep "a[xy]?" <<< "axxb" 
 axxb
-$ egrep "a[xy]?" <<< "ax" # matches, because both "a" and "ax" match "ax"
+# matches, because both "a" and "ax" match "axxb"
+
+$ egrep "a[xy]?" <<< "ax"
 ax
-$ egrep "a[xy]?" <<< "a" # matches, because "a" matches "a"
+# matches, because both "a" and "ax" match "ax"
+
+$ egrep "a[xy]?" <<< "a"
 a
-$ egrep "a[xy]?" <<< "x" # doesn't match, because none of "a", "ax", "ay" match "x"
+# matches, because "a" matches "a"
+
+$ egrep "a[xy]?" <<< "x" 
+# doesn't match, because none of "a", "ax", "ay" match "x"
 ```
 
 In the same spirit, regex `80[234]?86` would match 80286, 80386, 80486, but also 8086. 
 
 
 
+
+
 #### Plus ```+``` <a name="plus"></a>
 
-The metacharacter ```+``` has a special meaning only in ERE, while in BRE and globbing it is only a literal character. In ERE, its meaning can be summarized as follows: the preceding character or regex can appear one or more times but must be present at least once. Therefore, ```+``` makes the occurrence of preceeding character or regex mandatory, but it doesn't restrict how many times it appears. By itself, the plus ```+``` matches nothing, it only has an effect on what appears before it. 
+The metacharacter ```+``` has a special meaning only in ERE, while in BRE and globbing it is only a literal character. In ERE, its meaning can be summarized as follows: the preceding character or regex can appear one or more times, but must be present at least once. Therefore, ```+``` makes the occurrence of the preceding character or regex mandatory, but it doesn't restrict how many times it appears. By itself, the plus ```+``` matches nothing; it only has an effect on what appears before it. 
 
-Similarly like for the ```?``` metacharacter described previously, one can easily deduce the simple technique how to interpret this metacharacter in ERE in practice: since ```+``` matches at least one occurrence, one expands regex containing ```+``` into one or more occurrences of preceeding character or regex it has to match. For instance, regex ```ab+c``` expands into strings "abc", "abbc", "abbbc", ...,  and this set of strings is the set this regex has to match. This is illustrated with a few examples:
+Similarly to the ```?``` metacharacter described previously, one can easily deduce the simple technique for interpreting this metacharacter in ERE in practice: since ```+``` matches at least one occurrence, one expands the regex containing ```+``` into one or more occurrences of the preceding character or regex it has to match. For instance, the regex ```ab+c``` expands into the strings "abc", "abbc", "abbbc", ...,  and this set of strings is the set this regex has to match. This is illustrated with a few examples:
 
 ```bash
-$ egrep "ab+c" <<< "ac" # doesn't match, because "abc", "abbc", ..., doesn't match "ac"
-$ egrep "ab+c" <<< "abc" # matches, because "abc" matches "abc"
+$ egrep "ab+c" <<< "ac"
+# doesn't match, because "abc", "abbc", ..., doesn't match "ac"
+
+$ egrep "ab+c" <<< "abc"
 abc
-$ egrep "ab+c" <<< "abbc" # matches, because "abbc" matches "abbc"
+# matches, because "abc" matches "abc"
+
+$ egrep "ab+c" <<< "abbc"
 abbc
-$ egrep "ab+c" <<< "abb" # doesn't match, because "abc", "abbc", ..., doesn't match "abb"
+# matches, because "abbc" matches "abbc"
+
+$ egrep "ab+c" <<< "abb" 
+# doesn't match, because "abc", "abbc", ..., doesn't match "abb"
 ```
 This metachatacter is frequently used to search for extra spacing in the text between the words, and we illustrate the comparison with asterisk ```*``` used in ERE in the same context:
 
-- &#9251;&#9251;+ (exactly two spaces followed by "+") &mdash; matches all cases when between two words there are two or more space
+- &#9251;&#9251;+ (exactly two spaces followed by "+") &mdash; matches all cases when between two words there are two or more spaces;
 
-- &#9251;&#9251;* (exactly two spaces followed by "*") &mdash; matches all cases when between two words there is one or more spaces
+- &#9251;&#9251;\* (exactly two spaces followed by "\*") &mdash; matches all cases when between two words there is one or more spaces.
 
-The metacharacter ```+``` can be combined with other metacharacters, to make a more sophisticated regex. For instance, regex ```[xy]+``` will match the case when "x" and/or "y" appear at least once, in any order:
+The metacharacter ```+``` can be combined with other metacharacters to make a more sophisticated regex. For instance, regex ```[xy]+``` will match the case when "x" and/or "y" appear at least once, in any order:
 
 ```bash
-$ egrep "a[xy]+b" <<< "abc" # doesn't match, because none of "axb", "ayb", "axxb", "ayyb", "axyb", "ayxb", ..., matches "abc" 
-$ egrep "a[xy]+b" <<< "axb" # matches, because "axb" (one occurence of "x") matches "axb"
+$ egrep "a[xy]+b" <<< "abc" 
+# doesn't match, because none of "axb", "ayb", "axxb", "ayyb", "axyb",
+# "ayxb", ..., matches "abc" 
+
+$ egrep "a[xy]+b" <<< "axb"
 axb
-$ egrep "a[xy]+b" <<< "ayb" # matches, because "ayb" (one occurence of "y") matches "ayb"
+# matches, because "axb" (one occurence of "x") matches "axb"
+
+$ egrep "a[xy]+b" <<< "ayb" 
 ayb
-$ egrep "a[xy]+b" <<< "axxb" # matches, because "axxb" (more than one occurence of "x") matches "axxb"
+# matches, because "ayb" (one occurence of "y") matches "ayb"
+
+$ egrep "a[xy]+b" <<< "axxb"
 axxb
-$ egrep "a[xy]+b" <<< "axyb" # matches, because "axyb" matches "axyb"
+# matches, because "axxb" (more than one occurence of "x") matches "axxb"
+
+$ egrep "a[xy]+b" <<< "axyb"
 axyb
-$ egrep "a[xy]+b" <<< "ayxb" # matches, because "ayxb" matches "ayxb"
+# matches, because "axyb" matches "axyb"
+
+$ egrep "a[xy]+b" <<< "ayxb"
 aybb
-$ egrep "a[xy]+b" <<< "axxyb" # matches, because "axxyb" matches "axxyb"
+# matches, because "ayxb" matches "ayxb"
+
+$ egrep "a[xy]+b" <<< "axxyb"
 axxyb
-$ egrep "a[xy]+b" <<< "axyxyb" # matches, because "axyxyb" matches "axyxyb"
+# matches, because "axxyb" matches "axxyb"
+
+$ egrep "a[xy]+b" <<< "axyxyb"
 axyxyb
-$ egrep "a[xy]+" <<< "axxb" # matches, because both "ax" and "axx" match "axxb"
+# matches, because "axyxyb" matches "axyxyb"
+
+$ egrep "a[xy]+" <<< "axxb" 
 axxb
-$ egrep "a[xy]+" <<< "ax" # matches, because "ax" matches "ax"
+# matches, because both "ax" and "axx" match "axxb"
+
+$ egrep "a[xy]+" <<< "ax"
 ax
-$ egrep "a[xy]+" <<< "a" # doesn't match, because none of "ax", "ay", "axx", "ayy", ..., match "a"
-$ egrep "a[xy]+" <<< "x" # doesn't match, because none of "ax", "ay", "axx", "ayy", ..., match "x"
+# matches, because "ax" matches "ax"
+
+$ egrep "a[xy]+" <<< "a" 
+# doesn't match, because none of "ax", "ay", "axx", "ayy", ..., match "a"
+
+$ egrep "a[xy]+" <<< "x" 
+# doesn't match, because none of "ax", "ay", "axx", "ayy", ..., match "x"
 ```
 
 
 
 
 
-#### Repetition operator ```\{ ... \}``` and  ```{ ... }``` <a name="repetition"></a>
+#### Repetition ```\{ ... \}``` and  ```{ ... }``` <a name="repetition"></a>
 
 When used as metacharacters, curly braces (or brackets) ```{ ... }``` can take multiple meanings, depending on the context in which they are used. The following summary indicates their most important use cases: 
 
-- _repetition operator_ &mdash; The notation supported in ERE is ```{ ... }```, while notation ```\{ ... \}```  is used in BRE to achieve the same functionality. For simplicity of notation, in this section only examples using ERE will be demonstrated, but all examples remain valid also for BRE, only each curly brace has to be escaped with backslash ```\```.
-- _brace expansion_ &mdash; Mechanism by which shell generates arbitrary strings. Not all shells support this feature, and the ones which do, can use different internal syntax (see examples below).
+- _repetition operator_ &mdash; The notation supported in ERE is ```{ ... }```, while notation ```\{ ... \}```  is used in BRE to achieve the same functionality. For simplicity of notation, in this section only examples using ERE will be demonstrated, but all examples remain valid for BRE, when each curly brace has to be escaped with backslash ```\```.
+- _brace expansion_ &mdash; Mechanism by which the shell generates arbitrary strings. Not all shells support this feature, and the ones that do, can use different internal syntax (see examples below).
 - _shell wildcard_ &mdash; Similar to _brace expansion_, with the only difference that strings generated are filenames, which must exist.
 
 
 
-Regex ```{n,m}``` in ERE, or ```\{n,m\}``` in BRE, matches a range of occurrences of single character or regex that immediately precedes it, from ```n``` times to ```m``` times (lower and upper boundaries included). In essence, it specifies a limit on how many times the preceding character or regex has to appear. Four distinct formats for the interval are supported:
+Regex ```{n,m}``` in ERE, or ```\{n,m\}``` in BRE, matches a range of occurrences of a single character or regex that immediately precedes it, from ```n``` times to ```m``` times (lower and upper boundaries included). In essence, it specifies a limit on how many times the preceding character or regex has to appear. Four distinct formats for the interval are supported:
 
-1. ```{m}``` &mdash; exactly "m" times
-2. ```{m,}``` &mdash; at least "m" times
-3. ```{,n}``` &mdash; at maximum "n" times
-4. ```{m,n}``` &mdash; at least "m" times and at maximum "n" times
+1. ```{m}``` &mdash; exactly "m" times;
+2. ```{m,}``` &mdash; at least "m" times;
+3. ```{,n}``` &mdash; at maximum "n" times;
+4. ```{m,n}``` &mdash; at least "m" times and at maximum "n" times.
 
-Its usage is illustrated with a few examples in ERE using ```egrep```. All examples below can be cast into BRE and test with ```grep``` simply replacing notation ```{ ... }``` with ```\{ ... \}```.
+Its usage is illustrated with a few examples in ERE using ```egrep```. All examples below can be cast into BRE and tested with ```grep``` simply replacing notation ```{ ... }``` with ```\{ ... \}```.
 
 ```bash
-# Example usage of { ... } in ERE:
-$ egrep "ab{2}c" <<< "abc" # doesnt' match, only one occurence of preceding character "b"
-$ egrep "ab{2}c" <<< "abbc" # matches, exactly two occurences of preceding character "b"
+$ egrep "ab{2}c" <<< "abc" 
+# doesnt' match, only one occurence of preceding character "b"
+
+$ egrep "ab{2}c" <<< "abbc"
 abbc
-$ egrep "ab{2}c" <<< "abbbc" # doesn't match, not exactly two occurences of preceding character "b"
-$ egrep "ab{2,}c" <<< "abbbc" # matches, at least two occurences of preceding character "b"
+# matches, exactly two occurences of preceding character "b"
+
+$ egrep "ab{2}c" <<< "abbbc" 
+# doesn't match, not exactly two occurences of preceding character "b"
+
+$ egrep "ab{2,}c" <<< "abbbc"
 abbbc
-$ egrep "ab{,2}c" <<< "abbbc" # doesn't match, more than two occurence of preceding character "b"
-$ egrep "ab{2,4}c" <<< "abbbbbc" # doesn't match, neither two, three or four occurences of preceding character "b"
+# matches, at least two occurences of preceding character "b"
+
+$ egrep "ab{,2}c" <<< "abbbc" 
+# doesn't match, more than two occurence of preceding character "b"
+
+$ egrep "ab{2,4}c" <<< "abbbbbc" 
+# doesn't match, neither two, three or four occurences of character "b"
 ```
 
 In the same spirit, curly braces in ERE can act on the preceding regex. For instance, the regex `[0-9]{3}` is the same as `[0-9][0-9][0-9]`:
 
 ```bash 
-$ egrep "[0-9]{3}" <<< "24" # doesn't match, only two occurences of any digits from the set 0,1,...,9 
-$ egrep "[0-9]{3}" <<< "245" # matches, exactly three occurences of any digits from the set 0,1,...,9
+$ egrep "[0-9]{3}" <<< "24" 
+# doesn't match, only two occurences of any digits from the set 0,1,...,9 
+
+$ egrep "[0-9]{3}" <<< "245" 
 245
-$ egrep "^[0-9]{3}" <<< "2458" # matches, because "245" matches the begining of "2458"
+# matches, exactly three occurences of any digits from the set 0,1,...,9
+
+$ egrep "^[0-9]{3}" <<< "2458"
 2458
-$ egrep "[0-9]{3}$" <<< "2458" # matches, because "458" matches the end of "2458"
+# matches, because "245" matches the begining of "2458"
+
+$ egrep "[0-9]{3}$" <<< "2458"
 2458
-$ egrep "^[0-9]{3}$" <<< "2458" # doesn't match, same 3-character string has to match "2458" from beginning and end, which is impossible
-$ egrep "^[0-9]{3}$" <<< "2222" # doesn't match, this is a tricky case. "222" has to match simultaneously three "2" read from beginning, and read from the end, which is impossible.
+# matches, because "458" matches the end of "2458"
+
+$ egrep "^[0-9]{3}$" <<< "2458" 
+# doesn't match, same 3-character string has to match "2458" 
+# from beginning and end, which is impossible
+
+$ egrep "^[0-9]{3}$" <<< "2222" 
+# doesn't match, this is a tricky case. "222" has to match simultaneously 
+# three "2" read from beginning, and read from the end, which is impossible
 ```
 
 It is very instructive to establish the relation between ```{ ... }``` when used as a repetition operator in ERE, and some previously covered metacharacters. In particular, the following relations hold in ERE:
@@ -669,7 +757,7 @@ $ egrep "a{0,1}" <<< "abc"
 abc
 ```
 
-__Example__: On a local computer, find a file holding the English dictionary (on Ubuntu, such dictionary is in the file "/etc/dictionaries-common/words"). Write a regex which extracts only the words whose length is exactly 5 characters.
+__Example__: On a local computer, find a file holding the English dictionary (on Ubuntu, such a dictionary is in the file "/etc/dictionaries-common/words", or look for more options in the directory "/usr/share/dict"). Write a regex that extracts only the words whose length is exactly 5 characters.
 
 ```bash
 # Example path to English dictionary on a local computer:
@@ -692,15 +780,15 @@ zorch
 $ grep '^.....$' $Dictionary
 ```
 
-Curly braces can be used in another context, to generate with shell arbitrary strings via the _brace expansion_ mechanism. If the generated strings match the existing filenames, curly braces act as a _shell wildcard_ in this context. This particular use case of curly braces was covered in details in [Section 5 of PH8124](https://abilandz.github.io/PH8124/Lecture_5/Lecture_5.html#code_blocks_and_brace_expansion) course, and won't be repeated here.
+Curly braces can be used in another context, to generate with shell arbitrary strings via the _brace expansion_ mechanism. If the generated strings match the existing filenames, curly braces act as a _shell wildcard_ in this context. This particular use case of curly braces was covered in detail in [Section 5 of PH8124](https://abilandz.github.io/PH8124/Lecture_5/Lecture_5.html#code_blocks_and_brace_expansion) course, and won't be repeated here.
 
 
 
 
 
-#### Alternation operator ```|``` <a name="alternation"></a>
+#### Alternation ```|``` <a name="alternation"></a>
 
-Alternation operator ```|``` is supported and standardized only in ERE where it stands for logical ```OR``` in regex. It does not have any special meaning as a shell wildcard, because this character is already reserved to denote the important pipe mechanism in a shell. Some commands, e.g. **grep** and **sed**, supports its usage also in BRE, but it has to be escaped ```\|```. Since the usage of alternation operator ```|``` in BRE is not standardized, it is not covered here in detail.
+The alternation operator ```|``` is supported and standardized only in ERE, where it denotes logical ```OR``` in regex. It does not have any special meaning as a shell wildcard, because this character is already reserved to denote the important pipe mechanism in a shell. Some commands, e.g. **grep** and **sed**, support its usage also in BRE, but it has to be escaped ```\|```. Since the use of the alternation operator ```|``` in BRE is not standardized, it is not covered in detail here.
 
 Schematically, the alternation operator ```|``` is used in ERE as follows:
 
@@ -727,44 +815,54 @@ $ grep "cat\|dog" <<< "dog sleeps"
 dog sleeps
 ```
 
-Similarly, the regex ```UNIX|LINUX|BSD``` will match in ERE all lines which contain either string "UNIX" or "LINUX" or "BSD".
+Similarly, the regex ```UNIX|LINUX|BSD``` will match in ERE all lines that contain either the string "UNIX" or "LINUX" or "BSD".
 
-The alternation operator ```|``` is not to be confused with the pipe symbol ```|```, but from the context there is no room for ambiguity. For instance, in the example below, the 1st metacharacter ```|``` is a shell pipe, the 2nd metacharacter ```|``` is alternation operator in ERE:
+The alternation operator ```|``` is not to be confused with the pipe symbol ```|```, but from the context, there is no room for ambiguity. For instance, in the example below, the 1st metacharacter ```|``` is a shell pipe, while the 2nd metacharacter ```|``` is an alternation operator in ERE:
 
 ```bash
 $ echo "cat sleeps" | egrep "cat|dog"
 cat sleeps
 ```
 
+Finally, one can draw an interesting parallel between character classes ```[...]``` and alternation operator ```|``` in the following way: the former enables any single character within ```[...]``` to match the desired expression, while the latter is more general and enables any string or regex chained with ```|``` to match the desired expression. For instance, the regex ```[abc]``` can be rewritten as ```a|b|c```, but one cannot rewrite in general the regex ```pattern-1|pattern-2|pattern-3``` using character classes ```[...]```.
 
 
 
 
-#### Grouping operator ```( ... )``` <a name="grouping"></a>
 
-Compound metacharacter ```( ... )```, named _grouping operator_, has a special meaning only in ERE. Its primary use case is to group regular expressions. For instance, regex ```compan(y|ies)``` will match both "company" and "companies", but also few other possibilities:
+#### Grouping ```( ... )``` <a name="grouping"></a>
+
+The compound metacharacter ```( ... )```, called a _grouping operator_, has a special meaning only in ERE. Its primary use case is to group regular expressions. For instance, regex ```compan(y|ies)``` will match both "company" and "companies", but also a few other possibilities:
 
 ```bash
 $ egrep "compan(y|ies)" <<< "company"
 company
+
 $ egrep "compan(y|ies)" <<< "companies"
 companies
-$ egrep "compan(y|ies)" <<< "companyies" # matches, because "company" matches also "companyies"
+
+$ egrep "compan(y|ies)" <<< "companyies"
 companyies
+# matches, because "company" matches also "companyies"
 ```
 
 In the same spirit, the grouping operator ```( ... )``` can be used with other metacharacters:
 
 ```bash
-$ egrep "Big( Computer)?" <<< "Big" # matches, because "Big" matches "Big"
+$ egrep "Big( Computer)?" <<< "Big"
 Big
-$ egrep "Big( Computer)?" <<< "Big Computer" # matches, because both "Big" and "Big Computer" match "Big Computer"
+# matches, because "Big" matches "Big"
+
+$ egrep "Big( Computer)?" <<< "Big Computer"
 Big Computer
-$ egrep "Big( Computer)?" <<< "Big Comp" # matches, because "Big" matches "Big Comp"
+# matches, because both "Big" and "Big Computer" match "Big Computer"
+
+$ egrep "Big( Computer)?" <<< "Big Comp"
 Big Comp
+# matches, because "Big" matches "Big Comp"
 ```
 
-The common use case of this combinaton of methacharacters is:
+The common use case of this compound metacharacter in combination with ```?``` metacharacter is:
 
 ```bash
 $ egrep "Sat(urday)?" <<< "Sat"
@@ -773,28 +871,60 @@ $ egrep "Sat(urday)?" <<< "Saturday"
 Saturday
 ```
 
-As another example, we illustrate the usage of  ```( ... )``` in combination with ```|``` and ```+``` metacharachers, by considering the compound regex ```(abc|def)+```, which matches a string that contains one or more occurrences of substrings 'abc' and 'def': 
+As another example, we illustrate the usage of  ```( ... )``` in combination with ```|``` and ```+``` metacharacters, by considering the compound regex ```(abc|def)+```, which matches a string that contains one or more occurrences of substrings "abc" and "def": 
 
 ```bash
-$ egrep "(abc|def)+" <<< "abc" # matches, because "abc" matches "abc"
+$ egrep "(abc|def)+" <<< "abc"
 abc
-$ egrep "(abc|def)+" <<< "def" # matches, because "def" matches "def"
+# matches, because "abc" matches "abc"
+
+$ egrep "(abc|def)+" <<< "def"
 def
-$ egrep "(abc|def)+" <<< "abcdef" # matches, because both "abc" and "def" match "abcdef"
+# matches, because "def" matches "def"
+
+$ egrep "(abc|def)+" <<< "abcdef" 
 abcdef
+# matches, because both "abc" and "def" match "abcdef"
 ```
 
-By following the analogy with math operations ```a(b+c)d = ab+cd```, ```a(b+c+d)e = abe+ace+ade```, etc., one can expand and interpret the compound regex  ```a(b|c)d``` as ```abd|acd```,  ```a(b|c|d)e``` as ```abe|ace|ade```, etc. For instance:
+By following the analogy with math operations, 
+
+$$
+\begin{array}{r@{\,}c@{\,}l}
+a(b+c)d &=& abd+acd \\
+a(b+c+d)e &=& abe+ace+ade \\
+&...&
+\end{array}
+$$
+
+one can expand and interpret the compound and somewhat cryptic regex expressions ```a(b|c)d``` , ```a(b|c|d)e``` , etc., into new and easier regex expressions as: 
+
+
+$$
+\begin{array}{r@{\,}c@{\,}l}
+a(b|c)d &=& abd|acd \\
+a(b|c|d)e &=& abe|ace|ade \\
+&...&
+\end{array}
+$$
+
+
+For instance:
 
 ```bash
-$ egrep 'a(b|c)d' <<< "abd" # matches, becase "abd" matches "abd"
+$ egrep 'a(b|c)d' <<< "abd"
 abd
-$ egrep 'a(b|c)d' <<< "acd" # matches, becase "acd" matches "acd"
+# matches, because "abd" matches "abd"
+
+$ egrep 'a(b|c)d' <<< "acd"
 acd
-$ egrep 'a(b|c)d' <<< "abc" # doesn't match, becase neither "abd" nor "acd" match "abc"
+# matches, because "acd" matches "acd"
+
+$ egrep 'a(b|c)d' <<< "abc" 
+# doesn't match, because neither "abd" nor "acd" match "abc"
 ```
 
-The regex which matches beginning of the line or space is given elegantly by `(^| )` .
+The regex that matches the beginning of a line or a space is elegantly given by `(^| )` .
 
 Finally, we make a connection between different metacharacters &mdash; regex ```^(bat|Cat)``` is the same as ```^[bC]at```. 
 

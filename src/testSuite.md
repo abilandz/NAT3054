@@ -1,6 +1,6 @@
 # Test suite
 
-**Last update**: 20261006-1
+**Last update**: 20261007-1
 
 #### 1. Rendering of native markdown tables
 
@@ -195,3 +195,17 @@ an empty character "```  ```"  is denoted with a symbolic &#9251; character (Uni
 #### 8. Hyperlinks
 
 Basic Regular Expressions (BRE) are standardized by **POSIX** and its standard can be found detailed in Section 9.3 at this [link](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html) .
+
+
+
+#### 9. LaTeX
+
+##### Tabular environment			
+
+$$
+\begin{array}{r@{\,}c@{\,}l}
+a(b+c)d &=& abd+acd \\
+a(b+c+d)e &=& abe+ace+ade \\
+&...&
+\end{array}
+$$
