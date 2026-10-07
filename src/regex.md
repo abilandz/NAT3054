@@ -1,6 +1,6 @@
 # Regular expressions
 
-**Last update**: 20261007-1
+**Last update**: 20261007-3
 
 <!-- this is a comment -->
 
@@ -22,9 +22,9 @@
 	* [Character classes](#character.classes) ```[ ... ]``` 
 	* [Question mark](#question.mark) ```?```
 	* [Plus](#plus) ```+```
-	* [Repetition operator](#repetition) ```\{ ... \}``` and  ```{ ... }```
-	* [Alternation operator](#alternation) ```|```
-	* [Grouping operator](#grouping) ```( ... )```
+	* [Repetition](#repetition) ```\{ ... \}``` and  ```{ ... }```
+	* [Alternation](#alternation) ```|```
+	* [Grouping](#grouping) ```( ... )```
 	* [POSIX character classes](#POSIX.character.classes) ```[:keyword:]```
 	* [Non-standard](#nonstandard) ```\<``` and ```\>``` 
 	* [Corner cases and exceptions](#corner.cases.and.exceptions)
@@ -897,7 +897,7 @@ a(b+c+d)e &=& abe+ace+ade \\
 \end{array}
 $$
 
-one can expand and interpret the compound and somewhat cryptic regex expressions ```a(b|c)d``` , ```a(b|c|d)e``` , etc., into new and easier regex expressions as: 
+one can expand and interpret the compound and somewhat cryptic regex expressions ```a(b|c)d``` , ```a(b|c|d)e``` , etc., into new and easier-to-decipher regex expressions: 
 
 
 $$
@@ -934,46 +934,55 @@ Finally, we make a connection between different metacharacters &mdash; regex ```
 
 #### POSIX character classes ```[:keyword:]``` <a name="#POSIX.character.classes"></a>
 
-POSIX **character classes** are keywords bracketed by ```[:``` and ```:]```, which must be further enclosed in an actual regex within square brackets, ```[``` and ```]```. Therefore, the correct syntax for corresponding regex is ```[[:keyword:]]```, while ```[:keyword:]``` by itself is invalid syntax for regex. POSIX character classes are supported both in BRE and ERE.
+POSIX **character classes** are keywords bracketed by ```[:``` and ```:]```, which must be further enclosed in an actual regex within square brackets, ```[``` and ```]```. Therefore, the correct syntax for the corresponding regex is ```[[:keyword:]]```, while ```[:keyword:]``` by itself is invalid syntax for regex. POSIX character classes are supported both in BRE and ERE.
 
 The POSIX standard defines the following 12 character classes:
 
-- ```[:alnum:]``` &mdash; alphanumeric characters a, b, ..., z (both lower and upper cases), and numeric characters 0, 1, ...,  9. It is equivalent to the regex ```[a-zA-Z0-9]```
-- ```[:alpha:]``` &mdash; alphabetic characters a, b, ..., z (both lower and upper cases). It is equivalent to the regex ```[a-zA-Z]```
+- ```[:alnum:]``` &mdash; alphabetic characters a, b, ..., z (both lower and upper cases), and numeric characters 0, 1, ...,  9. It is equivalent in ASCII to the regex ```[a-zA-Z0-9]```
+- ```[:alpha:]``` &mdash; alphabetic characters a, b, ..., z (both lower and upper cases). It is equivalent in ASCII to the regex ```[a-zA-Z]```
 - ```[:blank:]``` &mdash; space or tab spacing
 - ```[:cntrl:]``` &mdash; control characters
 - ```[:digit:]``` &mdash; numeric characters 0, 1, ..., 9. Same as regex ```[0-9]```
 - ```[:graph:]``` &mdash; printable and visible (non-space) characters (i.e. anything except spaces and control characters). Equaivalent to ```[^ [:cntrl:]]```
 
-* ```[:lower:]``` &mdash; lowercase alphabetic characters a, b, ..., z.  Same as regex ```[a-z]```
+* ```[:lower:]``` &mdash; lowercase alphabetic characters a, b, ..., z.  Same in ASCII as regex ```[a-z]```
 * ```[:print:]``` &mdash; all printable characters and spaces (i.e. anything except control characters). Equaivalent to ```[[:graph:] ]```
 
 * ```[:punct:]``` &mdash; punctuation characters and all symbols except letters and digits. For instance: ```;,:.!?"\#$%&'()*+-/\<=>@[]^_`{|}~```
 * ```[:space:]``` &mdash; whitespace characters, tab spacing ```\t```, new line ```\n```, carrige return ```\r```, formfeed ```\f```, and vertical tab ```\v```
-* ```[:upper:]``` &mdash; uppercase alphabetic characters A, B, ..., Z. Same as regex ```[A-Z]```
+* ```[:upper:]``` &mdash; uppercase alphabetic characters A, B, ..., Z. Same in ASCII as regex ```[A-Z]```
 
 * ```[:xdigit:]``` &mdash; hexadecimal digits. Same as regex ```[0-9A-Fa-f]```
 
-The usage of POSIX character classes and their combination with other metacharecters is straightforward, as the following examples illustrate:
+The usage of POSIX character classes and their combination with other metacharacters is straightforward, as the following examples illustrate:
 
 ```bash
-$ egrep 'a[[:digit:]]b' <<< "a1b" # matches
+$ egrep 'a[[:digit:]]b' <<< "a1b"
 a1b
-$ egrep 'a[[:digit:]]b' <<< "a9b" # matches
+
+$ egrep 'a[[:digit:]]b' <<< "a9b"
 a9b
-$ egrep 'a[[:digit:]]b' <<< "a19b" # doesn't match, because [:digit:] by itself matches only a single digit
-$ egrep 'a[[:digit:]][[:digit:]]b' <<< "a19b" # matches
+
+$ egrep 'a[[:digit:]]b' <<< "a19b" 
+# doesn't match, because [:digit:] by itself matches only a single digit
+
+$ egrep 'a[[:digit:]][[:digit:]]b' <<< "a19b"
 a19b
-$ egrep 'a[[:digit:]]+b' <<< "a19b" # matches
+
+$ egrep 'a[[:digit:]]+b' <<< "a19b"
 a19b
-$ egrep 'a[[:digit:]]+b' <<< "a123456b" # matches
+
+$ egrep 'a[[:digit:]]+b' <<< "a123456b"
 a123456b
-$ egrep 'a[[:digit:]]{2}b' <<< "a123b" # doesn't match, {2} requires exactly 2 digits between a and b
-$ egrep 'a[[:digit:]]{3}b' <<< "a123b" # matches
+
+$ egrep 'a[[:digit:]]{2}b' <<< "a123b"
+# doesn't match, {2} requires exactly 2 digits between "a" and "b"
+
+$ egrep 'a[[:digit:]]{3}b' <<< "a123b"
 a123b
 ```
 
-Finally, we remark that this is a typical syntax errror:
+Finally, we remark that this is a typical syntax error:
 
 ```bash
 $ egrep 'a[:digit:]b' <<< "a1b" # WRONG!!
