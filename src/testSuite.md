@@ -1,6 +1,6 @@
 # Test suite
 
-**Last update**: 20261007-1
+**Last update**: 20261007-2
 
 #### 1. Rendering of native markdown tables
 
@@ -200,7 +200,7 @@ Basic Regular Expressions (BRE) are standardized by **POSIX** and its standard c
 
 #### 9. LaTeX
 
-##### Tabular environment			
+##### Tabular environment using "array"			
 
 $$
 \begin{array}{r@{\,}c@{\,}l}
@@ -208,4 +208,13 @@ a(b+c)d &=& abd+acd \\
 a(b+c+d)e &=& abe+ace+ade \\
 &...&
 \end{array}
+$$
+
+##### Tabular environment using "align"	
+$$
+\begin{align*}
+a(b+c)d &= abd+acd \\
+a(b+c+d)e &= abe+ace+ade \\
+&...&
+\end{align*}
 $$

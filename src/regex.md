@@ -1,6 +1,6 @@
 # Regular expressions
 
-**Last update**: 20261007-3
+**Last update**: 20261007-4
 
 <!-- this is a comment -->
 
@@ -890,24 +890,22 @@ abcdef
 By following the analogy with math operations, 
 
 $$
-\begin{array}{r@{\,}c@{\,}l}
-a(b+c)d &=& abd+acd \\
-a(b+c+d)e &=& abe+ace+ade \\
-&...&
-\end{array}
+\begin{align*}
+a(b+c)d &= abd+acd \\
+a(b+c+d)e &= abe+ace+ade \\
+&... 
+\end{align*}
 $$
 
 one can expand and interpret the compound and somewhat cryptic regex expressions ```a(b|c)d``` , ```a(b|c|d)e``` , etc., into new and easier-to-decipher regex expressions: 
 
-
 $$
-\begin{array}{r@{\,}c@{\,}l}
-a(b|c)d &=& abd|acd \\
-a(b|c|d)e &=& abe|ace|ade \\
+\begin{align*}
+a(b|c)d &= abd|acd \\
+a(b|c|d)e &= abe|ace|ade \\
 &...&
-\end{array}
+\end{align*}
 $$
-
 
 For instance:
 
