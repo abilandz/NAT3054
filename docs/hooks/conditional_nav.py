@@ -18,7 +18,7 @@ def on_config(config):
             ]},
             {"Homeworks": [  
                 {"Scoresheet": "Homeworks/Scoresheet.md"},
-                {"Homework 1: TBI" : "Homeworks/Homework_1.md"},
+                {"Homework 1" : "Homeworks/Homework_1.md"},
             ]},
             {"Past semesters": "history.md"},
             {"Test suite": "testSuite.md"},
@@ -37,7 +37,7 @@ def on_config(config):
             ]},
             {"Homeworks": [  
                 {"Scoresheet": "Homeworks/Scoresheet.md"},
-                {"Homework 1: TBI" : "Homeworks/Homework_1.md"},
+                {"Homework 1" : "Homeworks/Homework_1.md"},
             ]},
             {"Past semesters": "history.md"},
             {"Test suite": "testSuite.md"},
@@ -56,7 +56,7 @@ def on_config(config):
             ]},
             {"Homeworks": [  
                 {"Scoresheet": "Homeworks/Scoresheet.md"},
-                {"Homework 1: TBI" : "Homeworks/Homework_1.md"},
+                {"Homework 1" : "Homeworks/Homework_1.md"},
             ]},
 
             {"Past semesters": [  

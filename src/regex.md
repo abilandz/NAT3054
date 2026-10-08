@@ -1,6 +1,6 @@
 # Regular expressions
 
-**Last update**: 20261007-4
+**Last update**: 20261008-1
 
 <!-- this is a comment -->
 
@@ -29,7 +29,7 @@
 	* [Non-standard](#nonstandard) ```\<``` and ```\>``` 
 	* [Corner cases and exceptions](#corner.cases.and.exceptions)
 	
-3. [Real-life examples, challenges and failures](#real.life.examples.challenges.and.failures)
+3. [Real-life examples and failures](#real.life.examples.failures)
 
 4. [Further reading](#further.reading)
 
@@ -267,8 +267,7 @@ $ grep '*exam' <<< exam
 
 $ grep 'Y*exam' <<< exam 
 exam
-# matches, because there are zero or more occurrences 
-# of "Y" in "exam"
+# matches, because there are zero or more occurrences of "Y" in "exam"
 
 $ grep '^*exam' <<< exam 
 # doesn't match, the combination "^*" is the corner case, see the main text 
@@ -482,12 +481,12 @@ $ grep "[[]" <<< "["
 
 Character classes ```[ ... ]``` can be naturally combined with other metacharacters, for instance:
 
-- `[ab]c*` — matches “ab”, “abc”, “abcc”, but also "a", "b", "ac", "acc", "bc", "bcc", etc.
-- `[ab]cc*` — matches "ac", "bc", “abc”, “abcc”, “abccc”, but not  "a", "b", “ab”, etc.
+- `[ab]c*` — matches “ab”, “abc”, "bac", “abcc”, "bacc", but also "a", "b", "ac", "acc", "bc", "bcc", etc.
+- `[ab]cc*` — matches "ac", "bc", “abc”, “bac”, “abcc”, "bacc", “abccc”, but not  "a", "b", “ab”, etc.
 
 In the above example, asterisk ```*``` had an effect only on a single preceding character "c". But we can make asterisk ```*``` acting directly on character classes ```[ ... ]``` , and the final result will be different. In combination with character classes, ```*``` matches any number of characters in that class, but also in any order:
 
-- `[no]*` — matches "n", "nn", "nnn", "o", "oo", "ooo", "no", "nno", "noo", "on", "oon", "onn", etc. However, it will also match "abc" because that would correspond to "zero occurrences either of "n" or "o". Therefore, this is not really a very useful regex, but it's used here just to illustrate how this mechanism works.
+- `[no]*` — matches "n", "nn", "nnn", "o", "oo", "ooo", "no", "nno", "noo", "on", "oon", "onn", "non", etc. However, it will also match "abc" because that would correspond to "zero occurrences either of "n" or "o". Therefore, this is not really a very useful regex, but it's used here just to illustrate how this mechanism works.
 
 
 
@@ -991,25 +990,14 @@ grep: character class syntax is [[:space:]], not [:space:]
 
 
 
-#### Non-standard ```\<``` and ```\>``` <a name="#nonstandard"></a>
-GNU versions of **sed**, **awk** and **grep** support also ```\<``` and ``` \>``` for matching the string and the beginning and end of the word. Due to limited portability, the usage of these metacharacters is not recommended.
 
 
-
-
-
-
-
-
-
-### 3. Real-life examples, challenges, and failures <a name="real.life.examples.challenges.and.failures"></a>
+### 3. Real-life examples and failures <a name="real.life.examples.failures"></a>
 In this section we illustrate with a few real-life scenarios how regular expressions should and should not be used in practice. 
 
 
 
 #### Examples
-
-
 
 **Common idioms**
 
@@ -1046,48 +1034,6 @@ fi
 ```
 
 
-
-
-#### Challenges
-
-In this subsection, we provide several non-trivial challenges, for further practice.
-
-
-**Challenge #1:** Write a regex which matches timestamps written in one of the following 3 formats:
-
-```bash
-DD-MM-YYYY
-DD/MM/YYYY
-DD.MM.YYYY
-```
-
-Possible valid formats include both ```01-01-2001``` and ```1-1-2001```, but not ```01-1-2001``` or ```1-01-2001``` (zero-padding has to be internally consistent). The  years span the interval ```1000..9999```. For simplicity, assume that all months have the same number of days (30), and ignore subtleties related to the existence of step years, etc. Is solution the same in BRE (test your solution using **grep**) and in ERE (test your solution using **egrep**)? 
-
-
-
-**Challenge #2:** Write a regex that matches the format of ORCID ("Open Researcher and Contributor ID"), which is an alphanumeric code used to uniquely identify authors of scientific publications. In particular, ORCID use 16-characters identifiers, consisting of four group of digits 0-9, where each group is separated by a hyphen "-". The allowed range is from 0000-0001-5000-0007 to 0000-0003-5000-0001. Only the final character may be a letter "X" (the final character serves as a checksum, but let's put that aside in this exercise). For instance, example ORCID identifiers are:
-
-```bash
-0000-0002-1825-0097
-0000-0002-9079-593X
-```
-
-
-
-**Challenge #3:**  Write down a regex which checks if integer is written in scientific notation. Possible formatting includes:
-
-```bash
-8.54585e+09
--8.54585e+09
-8.54585E+09
--8.54585E+09
-```
-
-Note that ```8.54585e+09``` is a valid integer, but ```8.54585e+02``` is not!
-
-
-
-**Challenge #4:** On a local computer, find a file holding the English dictionary (on Ubuntu, such dictionary is in the file "/etc/dictionaries-common/words"). Write down a regex which extracts only the words whose length is exactly 7 characters, do not contain apostrophe ```'``` (i.e. filter out trivial examples like "alien's", "camel's", etc.), and do not contain one or more capital letters (i.e. filter out personal names and abbreviations, etc.). 
 
 
 
@@ -1137,22 +1083,28 @@ Within quotes, ```[]``` is not treated as a glob.
 
 ### 4. Corner cases and exceptions <a name="corner.cases.and.exceptions"></a>
 
+#### Undefined behavior
+
 There exists a few corner cases when metacharacters ```*```, ```+``` and ```?``` lose their special meaning in ERE &mdash; as the first character of an entire ERE or after an initial ```|```, ```^```, ```$``` or ```(```  in ERE, these  metacharacters ```*```, ```+``` and ```?``` produce undefined results.
 
 For instance:
 
 ```bash
-$ egrep "?exam" <<< exam # undefined behaviour, here it matches, but this is not guaranteed to work
+$ egrep "?exam" <<< exam
 exam
-$ egrep "^?exam" <<< exam # undefined behaviour, here it matches, but this is not guaranteed to work 
+# undefined behaviour, here it matches, but this is not guaranteed to work
+
+$ egrep "^?exam" <<< exam
 exam
+# undefined behaviour, here it matches, but this is not guaranteed to work 
 ```
 
 Further details on exceptions can be found in the POSIX standard for regular expressions. 
 
 
 
-
+#### Non-standard ```\<``` and ```\>``` <a name="#nonstandard"></a>
+GNU versions of **sed**, **awk** and **grep** support also ```\<``` and ``` \>``` for matching the string and the beginning and end of the word. Due to limited portability, the usage of these metacharacters is not recommended.
 
 
 
