@@ -1,13 +1,14 @@
 # Regular expressions
 
-**Last update**: 20261008-1
+**Last update**: 20261009-1
 
 <!-- this is a comment -->
 
 <img src="./Figures/regexLogo.png" alt="" width="300" style="display: block; margin-left: 4em; margin-right: auto; margin-top: 1.5em; margin-bottom: -0.5em;"/>
 
 
-### Outline
+
+## Outline
 1. [What is a regular expression?](#what.is.regex)
 	* [Shell's wildcard expansion in filenames (globbing)](#globbing)
 	* [Basic Regular Expression (BRE)](#bre)
@@ -26,24 +27,24 @@
 	* [Alternation](#alternation) ```|```
 	* [Grouping](#grouping) ```( ... )```
 	* [POSIX character classes](#POSIX.character.classes) ```[:keyword:]```
-	* [Non-standard](#nonstandard) ```\<``` and ```\>``` 
-	* [Corner cases and exceptions](#corner.cases.and.exceptions)
-	
+
 3. [Real-life examples and failures](#real.life.examples.failures)
 
-4. [Further reading](#further.reading)
+4. [Corner cases and exceptions](#corner.cases.and.exceptions)
+	
+5. [Further reading](#further.reading)
 
 
 
 
 
-### 1. What is a regular expression? <a name="what.is.regex"></a>
+## 1. What is a regular expression? <a name="what.is.regex"></a>
 A regular expression, or _regex_ for short, is a pattern template used to filter text in order to extract specific information. Or, looking from another angle, a regular expression is a pattern that describes a set of strings. Writing a regular expression is equivalent to creating a text filter. Patterns used to define regular expression contain symbols with special, non-literal meaning. In general, such special individual symbols or specific combinations of individual symbols are named _metacharacters_ or _compound metacharacters_, respectively. Compound metacharacters can also be refereed to as a _metasequence_. When interpreted directly by a shell to perform filename expansion (or _globbing_), metacharacters are called _wildcards_. Some metacharacters have different meanings when used in regular expression or in filename expansion. 
 
 Historically, the first implementation and use of regular expression can be traced back to the late 1960s and Ken Thompson's re-implementation of the line-oriented editor QED for Multics (an unsuccessful operating system that predated Unix). There are four major categories of regular expressions, and in what follows next, we attempt to systematize.
 
 
-#### Shell's wildcard expansion in filenames (globbing) <a name="globbing"></a>
+### Shell's wildcard expansion in filenames (globbing) <a name="globbing"></a>
 Each shell supports the process of matching expressions containing wildcards to filenames. In fact, one of the most important features of a shell is the ability to operate on multiple files simultaneously. As a basic example, in the following command input
 ```bash
 $ ls *.txt
@@ -55,14 +56,14 @@ The standard and most frequent wildcards or combination of wildcards used by the
 It is important to remember that when these special shell symbols are used in regular expressions, their interpretation can be different. In addition, when specifying regex as a pattern in commands like **grep**, **find**, etc., that regex always needs to be embedded within strong quotes, schematically as ```'some-regex-with-special-symbols'```, so that these special symbols are not interpreted and expanded first by the shell as wildcards, before supplying that regex to the command.
 
 
-#### Basic Regular Expressions (BRE) <a name="bre"></a>
+### Basic Regular Expressions (BRE) <a name="bre"></a>
 
 * standardized by **POSIX** (an acronym for "Portable Operating System Interface", which defines a set of standards to ensure compatibility of software across different operating systems &mdash; the BRE standard can be found detailed in Section 9.3 at this [link](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html))
 * metacharacters: ```.``` ```*``` ```[]``` ```^``` ```$``` ```\``` and compound repetition operator ```\{n,m\}```  
 * example programs that support BRE syntax: **ed**, **sed**, and **grep**
 
 
-#### Extended Regular Expressions (ERE) <a name="ere"></a>
+### Extended Regular Expressions (ERE) <a name="ere"></a>
 
 * standardized by **POSIX** (Section 9.4 at this [link](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html))
 * all metacharacters supported by BRE, only with a slightly different notation for the compound repetition operator ```{n,m}```
@@ -70,7 +71,7 @@ It is important to remember that when these special shell symbols are used in re
 * first implemented by Alfred Aho in 1979 in the extended version of __grep__ called __egrep__ 
 * example programs that support ERE syntax: **egrep** (or **grep -E**), **awk**, **sed -E**, operator ```=~``` in recent **Bash** versions (where it can be used only within ```[[ ... ]]``` environment)
 
-#### Perl-Compatible Regular Expressions (PCRE) <a name="pcre"></a>
+### Perl-Compatible Regular Expressions (PCRE) <a name="pcre"></a>
 
 * standalone library developed by Philip Hazel in 1997 and written in the C programming language ( [https://www.pcre.org/](https://www.pcre.org/) )
 * the most powerful implementation of regex, aimed initially to provide all regex features available in the **perl** programming language ( [https://perldoc.perl.org/perlre](https://perldoc.perl.org/perlre) )
@@ -84,7 +85,11 @@ In the next section, we systematically list all metacharacters and explain their
 
 
 
-### 2. Metacharacters <a name="metacharacters"></a>
+
+
+
+
+## 2. Metacharacters <a name="metacharacters"></a>
 
 Metacharacter is a symbol, or combination of symbols, with special and non-literal meaning in regular expressions and filename expansions. Despite its peculiar name, metacharacters are present all around us. In math, we are used to using metacharacters; for instance, in the arithmetic expression ```4 * 10```, we understand that metacharacter ```*``` represents multiplication. As another example, a combination of symbols ```\n``` is a compound metacharacter and is a standard metacharacter for a new line. To avoid confusion and problems with rendering, in some examples below, an empty character ``` ```  is denoted with a symbolic &#9251; character, which is the Unicode "Open box" symbol encoded as "U+2423" (or "9251" decimal).
 
@@ -93,7 +98,7 @@ Metacharacter is a symbol, or combination of symbols, with special and non-liter
 
 
 
-#### Backslash ```\``` <a name="backslash"></a>
+### Backslash ```\``` <a name="backslash"></a>
 The backslash metacharacter ```\``` has the same meaning in globbing, BRE, and ERE. It is typically used in both directions, i.e. it turns:
 
 1. another metacharacter into an ordinary character (this is the standard _escape mechanism_), as in:
@@ -158,7 +163,7 @@ In the end, we remark that unlike backslash ```\```, slash ```/``` is not a spec
 
 
 
-#### Dot ```.``` <a name="dot"></a>
+### Dot ```.``` <a name="dot"></a>
 The metacharacter dot ```.``` has a special meaning only in BRE and ERE. The reason why it doesn't have any special meaning as a wildcard in globbing originates from the fact that ```.``` as a literal character is already used to denote _hidden files_ (the files whose names begin with ```.```, like in ".bashrc", and which are not listed by default with the __ls__ command), and to separate a filename from file extension that identifies the file format (e.g. ".txt" in "someFile.txt" to identify the plain ASCII text file). 
 
 In BRE and ERE, the dot ```.``` matches any single character, except newline. The character must be present (zero occurrences do not count), and space also counts as a character. It can be thought of as a sort of "variable" in regex, analogous to a variable representing any value in an arithmetic expression. One can also say that dot ```.``` specifies a position that any character can fill in that character position. In globbing, the wildcard ```?``` has a similar meaning (see below).
@@ -229,7 +234,7 @@ Only the line "some text Chapter" is not matched with regex ```Chapter.``` becau
 
 
 
-#### Asterisk ```*``` <a name="asterisk"></a>
+### Asterisk ```*``` <a name="asterisk"></a>
 The metacharacter asterisk ```*``` deserves special attention because it has a different meaning when used in BRE and ERE on one side, or when used as a wildcard in globbing. Since it is used very frequently in both cases, it is important to fully grasp how its meaning varies depending on context. Here is the summary: 
 
 1. In BRE and ERE, asterisk ```*``` will match any number (including zero) of repetitions of the preceding character. In a more elaborate case, it will match zero or more occurrences of the preceding regular expression. By itself, the asterisk ```*``` matches nothing, it only has an effect on what appears before it. There exists a corner case when ```*``` behaves differently in BRE and ERE &mdash; as the first character of an entire BRE or after an initial `^` in BRE, asterisk ```*``` loses its special meaning, while in ERE in this case it will produce undefined results (more details on such exceptions can be found later in section [Corner cases and exceptions](#corner.cases.and.exceptions));
@@ -340,7 +345,7 @@ file_0.pdf  file_1.pdf  file_2.pdf  file_3.pdf  file.pdf
 
 
 
-#### Anchors ```^``` and ```$``` <a name="anchors"></a>
+### Anchors ```^``` and ```$``` <a name="anchors"></a>
 
 The metacharacters caret (or circumflex) ```^``` and dollar sign ```$``` have special meanings only in BRE and ERE. In this context, they are the so-called _anchors_, i.e. they represent a specific position in the line or string. In particular:
 
@@ -385,7 +390,7 @@ A few additional standard use cases of anchors:
 
 
 
-#### Character classes ```[ ... ]``` <a name="character.classes"></a>
+### Character classes ```[ ... ]``` <a name="character.classes"></a>
 
 Character classes ```[ ... ]``` (sometimes referred to as _bracket expressions_) work the same way in globbing, BRE and ERE, and they provide a more specific variant of dot ```.``` metacharacter. Basically, ```.``` metacharacter would match any single character, while ```[ ... ]``` matches only any single character listed between ```[``` and ``` ]```, as the following example illustrates:
 
@@ -492,7 +497,7 @@ In the above example, asterisk ```*``` had an effect only on a single preceding 
 
 
 
-#### Question mark ```?``` <a name="question.mark"></a>
+### Question mark ```?``` <a name="question.mark"></a>
 
 The metacharacter question mark ```?``` is not supported in BRE. When used in ERE or when used as a wildcard in globbing, it has a different meaning: 
 
@@ -591,7 +596,7 @@ In the same spirit, regex `80[234]?86` would match 80286, 80386, 80486, but also
 
 
 
-#### Plus ```+``` <a name="plus"></a>
+### Plus ```+``` <a name="plus"></a>
 
 The metacharacter ```+``` has a special meaning only in ERE, while in BRE and globbing it is only a literal character. In ERE, its meaning can be summarized as follows: the preceding character or regex can appear one or more times, but must be present at least once. Therefore, ```+``` makes the occurrence of the preceding character or regex mandatory, but it doesn't restrict how many times it appears. By itself, the plus ```+``` matches nothing; it only has an effect on what appears before it. 
 
@@ -672,7 +677,7 @@ $ egrep "a[xy]+" <<< "x"
 
 
 
-#### Repetition ```\{ ... \}``` and  ```{ ... }``` <a name="repetition"></a>
+### Repetition ```\{ ... \}``` and  ```{ ... }``` <a name="repetition"></a>
 
 When used as metacharacters, curly braces (or brackets) ```{ ... }``` can take multiple meanings, depending on the context in which they are used. The following summary indicates their most important use cases: 
 
@@ -785,7 +790,7 @@ Curly braces can be used in another context, to generate with shell arbitrary st
 
 
 
-#### Alternation ```|``` <a name="alternation"></a>
+### Alternation ```|``` <a name="alternation"></a>
 
 The alternation operator ```|``` is supported and standardized only in ERE, where it denotes logical ```OR``` in regex. It does not have any special meaning as a shell wildcard, because this character is already reserved to denote the important pipe mechanism in a shell. Some commands, e.g. **grep** and **sed**, support its usage also in BRE, but it has to be escaped ```\|```. Since the use of the alternation operator ```|``` in BRE is not standardized, it is not covered in detail here.
 
@@ -829,7 +834,7 @@ Finally, one can draw an interesting parallel between character classes ```[...]
 
 
 
-#### Grouping ```( ... )``` <a name="grouping"></a>
+### Grouping ```( ... )``` <a name="grouping"></a>
 
 The compound metacharacter ```( ... )```, called a _grouping operator_, has a special meaning only in ERE. Its primary use case is to group regular expressions. For instance, regex ```compan(y|ies)``` will match both "company" and "companies", but also a few other possibilities:
 
@@ -921,15 +926,13 @@ $ egrep 'a(b|c)d' <<< "abc"
 # doesn't match, because neither "abd" nor "acd" match "abc"
 ```
 
-The regex that matches the beginning of a line or a space is elegantly given by `(^| )` .
-
 Finally, we make a connection between different metacharacters &mdash; regex ```^(bat|Cat)``` is the same as ```^[bC]at```. 
 
 
 
 
 
-#### POSIX character classes ```[:keyword:]``` <a name="#POSIX.character.classes"></a>
+### POSIX character classes ```[:keyword:]``` <a name="#POSIX.character.classes"></a>
 
 POSIX **character classes** are keywords bracketed by ```[:``` and ```:]```, which must be further enclosed in an actual regex within square brackets, ```[``` and ```]```. Therefore, the correct syntax for the corresponding regex is ```[[:keyword:]]```, while ```[:keyword:]``` by itself is invalid syntax for regex. POSIX character classes are supported both in BRE and ERE.
 
@@ -992,78 +995,112 @@ grep: character class syntax is [[:space:]], not [:space:]
 
 
 
-### 3. Real-life examples and failures <a name="real.life.examples.failures"></a>
-In this section we illustrate with a few real-life scenarios how regular expressions should and should not be used in practice. 
+
+
+## 3. Real-life examples and failures <a name="real.life.examples.failures"></a>
+In this section, a few real-life scenarios demonstrate how regular expressions should and should not be used in practice. 
 
 
 
-#### Examples
 
-**Common idioms**
+### Frequently used regular expressions
 
+* ```[:alnum:]```  &mdash; match any alphanumeric character, this regex shall be preferred over ```[a-zA-Z0-9]```, because only the former is standardized and portable 
 * ```(.*)``` &mdash; match any sequence of characters enclosed in parentheses
-* ```[:alnum:]``` or ```[a-zA-Z0-9]``` &mdash; match any alpha-numeric character 
+* `(^| )` &mdash; match the beginning of a line or a blank space
 * ```X?``` &mdash; match zero or one capital letter "X"
 * ```X*``` &mdash; match zero or more capital letters "X"
 * ```X+``` &mdash; match one or more capital letters "X"
 * ```X{n}``` &mdash; match exactly n constitutive capital letters "X"
-* ```X{n,}``` &mdash; match at least n consectutive capital letters "X"
+* ```X{n,}``` &mdash; match at least n consecutive capital letters "X"
 * ```X{n,m}``` &mdash; match at least n and not more than m constitutive capital letters "X"
 
 
 
-__Example #1:__ Write a code snippet which matches strings against globs.
 
-The solutions is:
+
+### Various examples
+
+__Example 1:__ Write a **Bash** shell code snippet which matches strings against globs.
+
+The solution is:
 
 ```bash
 case $file in
-    *.txt) process-as-text "$file ;;
-    *.png) ... ;;
+    *.txt) echo "process as text file $file" ;;
+    *.png) echo "process as image file $file" ;;
 esac
 ```
 
 or equivalently:
 
 ```bash
-if [[ $file = *.txt ]]; then
-    process-as-text "$file"
-elif [[ $file = *.png ]]; then
-    ...
+if [[ $file == *.txt ]]; then
+    echo "process as text file $file"
+elif [[ $file == *.png ]]; then
+    echo "process as image file $file"
 fi
 ```
 
+The above code snippets can be checked in **Bash** by using ```file=someName.txt``` or ```file=someName.png```, etc.
+
+
+
+**Example 2:** A crossword puzzle helper. When solving crossword puzzles, the following situation is regularly encountered: 
+
+- the length of the word is known;
+- we know a few characters of that word which are at fixed positions.
+
+For instance, we might be looking for a 7-character word, that has the character "a" in the 2nd position, the character "n" in the 4th position, and the character "e" in the last position. Using regular expressions, the possible words are:
+
+```bash
+$ egrep "^.a.n..e$" /usr/share/dict/american-english
+carnage
+magnate
+wannabe
+```
+
+ 
 
 
 
 
-#### Frequent failures
 
-Frequent point of failure when writing a shell script is to forget that **Bash** will always by default attempt to perform wildcard expansion, i.e. it will attempt to match any glob against files in the current directory, and replace it by a list of filenames. For instance, consider the line:
+### Common failures
+
+__Example failure 1:__ Accidental globbing in shell scripts.
+
+A frequent point of failure when writing a shell script is to forget that **Bash** will always, by default, attempt to perform wildcard expansion, i.e. it will attempt to match any glob against files in the current directory, and replace it with a list of filenames. For instance, consider the line:
 
 ```bash
 echo Is this my file? # WRONG!!
 ```
 
-The last argument is a glob, and **Bash** will match it against all files in the current directory which starts with "file" and have exactly one more character. If it happens that in the current directory there are files with names _file0_ and _file1_, what **echo** receives eventully as arguments is:
+The last argument is a glob, and **Bash** will match it against all files in the current directory that starts with "file" and have exactly one more character. If it happens that in the current directory there are files with names _file0_ and _file1_, what **echo** receives eventually as arguments is:
 
 ```bash
 echo Is this my file0 file1
 ```
 
-To prevent such unwanted surprises, simply use quote:
+To prevent such unwanted surprises, simply use quotes:
 
 ```bash
 echo "Is this my file?"
 ```
 
-Within quotes, ```?``` is not a metacharacter, i.e. it's literally a good old question mark. While this example was not dangerous, this one can lead to disaster:
+Within quotes, ```?``` is not a metacharacter, i.e. it's literally a good old question mark. 
+
+
+
+__Example failure 2:__ Accidental globbing in shell scripts, ctd.
+
+While the previous example was not dangerous, this one can lead to disaster:
 
 ```bash
 unset myArray[1] # WRONG!!
 ```
 
-Here, argument is treated as a glob, because it has metacharacters ```[]``` , and it will be matched against a file named _myArray1_ in the current working directory, if it exists. Therefore, the correct version here is also 
+Here, the argument is treated as a glob, because it has metacharacters ```[]``` , and it will be matched against a file named _myArray1_ in the current working directory, if it exists. Therefore, the correct version here is: 
 
 ```bash
 unset "myArray[1]"
@@ -1079,11 +1116,11 @@ Within quotes, ```[]``` is not treated as a glob.
 
 
 
+## 4. Corner cases and exceptions <a name="corner.cases.and.exceptions"></a>
 
 
-### 4. Corner cases and exceptions <a name="corner.cases.and.exceptions"></a>
 
-#### Undefined behavior
+### Undefined behavior
 
 There exists a few corner cases when metacharacters ```*```, ```+``` and ```?``` lose their special meaning in ERE &mdash; as the first character of an entire ERE or after an initial ```|```, ```^```, ```$``` or ```(```  in ERE, these  metacharacters ```*```, ```+``` and ```?``` produce undefined results.
 
@@ -1103,14 +1140,22 @@ Further details on exceptions can be found in the POSIX standard for regular exp
 
 
 
-#### Non-standard ```\<``` and ```\>``` <a name="#nonstandard"></a>
+
+
+### Non-standard ```\<``` and ```\>``` <a name="#nonstandard"></a>
 GNU versions of **sed**, **awk** and **grep** support also ```\<``` and ``` \>``` for matching the string and the beginning and end of the word. Due to limited portability, the usage of these metacharacters is not recommended.
 
 
 
-### 5. Further reading <a name="further.reading"></a>
 
-##### Textbooks
+
+
+
+
+
+## 5. Further reading <a name="further.reading"></a>
+
+### Textbooks
 1. _"Linux Command Line and Shell Scripting Bible"_, Richard Blum, Christine Bresnahan 
 	* Chapter 20: Regular Expressions
 2. _"sed & awk"_, Dale Dougherty, Arnold Robbins 
@@ -1120,8 +1165,7 @@ GNU versions of **sed**, **awk** and **grep** support also ```\<``` and ``` \>``
 4. _"The Linux Command Line"_, William Shotts
 	* Chapter 19: Regular expressions 
 
-
-##### Online resources
+### Online resources
 1. Linux manual page:
 	* [glob](https://man7.org/linux/man-pages/man7/glob.7.html) ( or execute locally: ```$ man 7 glob``` )
 	* [regex](https://man7.org/linux/man-pages/man7/regex.7.html) ( or execute locally: ```$ man 7 regex``` )

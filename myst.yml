@@ -26,6 +26,8 @@ project:
           title: "Scoresheet"
         - file: content/Homeworks/Homework_1.md
           title: "Homework 1"
+        - file: content/Homeworks/Homework_2.md
+          title: "Homework 2"
     - file: content/history.md
     - file: content/testSuite.md
 
