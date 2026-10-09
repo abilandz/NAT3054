@@ -1,6 +1,6 @@
 # Test suite
 
-**Last update**: 20261007-2
+**Last update**: 20261009-1
 
 #### 1. Rendering of native markdown tables
 
@@ -218,3 +218,45 @@ a(b+c+d)e &= abe+ace+ade \\
 &...&
 \end{align*}
 $$
+
+
+
+#### 10. Admonitions
+
+##### MkDocs syntax
+
+!!! note "What is regex? (fixed)"	
+	A regular expression, or regex for short, is a pattern template used to filter text in order to extract specific information. Or, looking from another angle, a regular expression is a pattern that describes a set of strings. 
+
+
+??? note "What is regex? (collapsible)"	
+	A regular expression, or regex for short, is a pattern template used to filter text in order to extract specific information. Or, looking from another angle, a regular expression is a pattern that describes a set of strings. 
+
+
+???+ note "What is regex? (collapsible, initially expanded)"	
+	A regular expression, or regex for short, is a pattern template used to filter text in order to extract specific information. Or, looking from another angle, a regular expression is a pattern that describes a set of strings. 
+
+
+More examples using MkDocs syntax can be found at this [link](https://squidfunk.github.io/mkdocs-material/reference/admonitions/).
+
+
+##### MyST syntax
+
+:::{note} "What is regex? (fixed)"	
+A regular expression, or regex for short, is a pattern template used to filter text in order to extract specific information. Or, looking  from another angle, a regular expression is a pattern that describes  a set of strings.
+:::
+
+:::{note} What is regex? (collapsible)	
+:class: dropdown
+A regular expression, or regex for short, is a pattern template used to filter text in order to 
+extract specific information. Or, looking from another angle, a regular expression is a pattern 
+that describes a set of strings.
+:::
+
+:::{note} What is regex? (collapsible, initially expanded)
+:class: dropdown
+:open:
+A regular expression, or regex for short, is a pattern template used to filter text in order to 
+extract specific information. Or, looking from another angle, a regular expression is a pattern that describes a set of strings.
+:::
+

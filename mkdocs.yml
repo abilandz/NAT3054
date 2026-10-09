@@ -25,6 +25,8 @@ hooks:
 
 # support for math and code syntax highlihting:
 markdown_extensions:
+  - admonition
+  - pymdownx.details
   - pymdownx.arithmatex: # math
       generic: true
   - pymdownx.highlight: # syntax highlighting
