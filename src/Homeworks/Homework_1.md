@@ -1,8 +1,10 @@
 # Homework 1: Mastering regular expressions (1/2)
 
-**Last update:** 20261009-1
+**Last update:** 20261010-1
 
-To facilitate solving some of the challenges below, on a local computer, first find the directory holding files that act as local dictionaries. On Ubuntu, such a directory is "/usr/share/dict", and inside one finds the dictionary files:
+
+
+**Hint #1:** To facilitate solving some of the challenges below, on a local computer, first find the directory holding files that act as local dictionaries. On Ubuntu, such a directory is "/usr/share/dict", and inside one finds the dictionary files:
 
 ```bash
 $ ls "/usr/share/dict"
@@ -16,6 +18,14 @@ For instance, the file "/usr/share/dict/american-english" has more that 100K wor
 ```bash
 $ wc -l /usr/share/dict/american-english
 104334 /usr/share/dict/american-english
+```
+
+
+
+**Hint #2:** If writing a single regex is too difficult or cumbersome to accommodate the logical AND operation, decompose the problem in several steps and use shell's pipes to combine them, e.g. 
+
+```bash
+$ egrep "regex-1" dictionary-file | egrep "regex-2" | egrep "regex-3" ...
 ```
 
 
