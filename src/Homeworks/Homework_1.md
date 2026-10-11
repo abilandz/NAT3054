@@ -1,6 +1,6 @@
 # Homework 1: Mastering regular expressions (1/2)
 
-**Last update:** 20261010-1
+**Last update:** 20261011-1
 
 
 
@@ -22,11 +22,19 @@ $ wc -l /usr/share/dict/american-english
 
 
 
-**Hint #2:** If writing a single regex is too difficult or cumbersome to accommodate the logical AND operation, decompose the problem in several steps and use shell's pipes to combine them, e.g. 
+**Hint #2:** If writing a single regex is too difficult or cumbersome to accommodate the logical ```AND``` operation, decompose the problem into several steps and use the shell's pipes to combine them, e.g. 
 
 ```bash
-$ egrep "regex-1" dictionary-file | egrep "regex-2" | egrep "regex-3" ...
+$ egrep "regex-1" someFile | egrep "regex-2" | egrep "regex-3" ...
 ```
+
+or use built-in support for logical ```&&``` in some core Linux utilities, e.g. in **awk** using the following syntax:
+
+```bash
+$ awk '/regex-1/ && /regex-2/ && /regex-3/ ...' someFile
+```
+
+**Remark:** For the latter to work, make sure you use the GNU version of **awk** (i.e. **gawk**), as some other **awk** implementations (e.g. **mawk**) treat some metacharacters in their own non-standard way.
 
 
 
@@ -44,8 +52,8 @@ $ egrep "regex-1" dictionary-file | egrep "regex-2" | egrep "regex-3" ...
 
 **Challenge #4:** Write down a regex that checks if the string content can be interpreted as:
 
-* valid integer (e,g. 123, -4567, +567, but NOT 0123, -000234, +00002454)
-* valid integer in the interval 0 to 100 (frequently used when we expect result as percentage)
+* valid integer (e.g. ```123```, ```-4568```, ```+569```, but NOT ```0123```, ```-0004568```, ```+0000569```, because integers padded with 0's are evaluated in octal basis);
+* valid integer in the interval 0 to 100 (frequently used when we expect the result as a percentage).
 
 
 
@@ -57,4 +65,4 @@ DD/MM/YYYY
 DD.MM.YYYY
 ```
 
-Valid formats include both ```01-01-2001``` and ```1-1-2001```, but not ```01-1-2001``` or ```1-01-2001``` (zero-padding must be internally consistent). The years span the interval ```1000..9999```. For simplicity, assume that all months have the same number of days (30), and ignore subtleties related to the existence of leap years, etc. Is the solution the same in BRE and in ERE (test your solution using **grep** end **egrep**, respectively)?
+Valid formats include both ```01-01-2001``` and ```1-1-2001```, but not ```01-1-2001``` or ```1-01-2001``` (zero-padding must be internally consistent). The years span the interval ```1000..9999```. For simplicity, assume that all months have the same number of days (30), and ignore subtleties related to the existence of leap years, etc. Is the solution the same in BRE and in ERE (test your solution using **grep** and **egrep**, respectively)?

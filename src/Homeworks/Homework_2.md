@@ -1,6 +1,6 @@
 # Homework 2: Mastering regular expressions (2/2)
 
-**Last update:** 20261010-1
+**Last update:** 20261011-1
 
 
 
@@ -22,11 +22,19 @@ $ wc -l /usr/share/dict/american-english
 
 
 
-**Hint #2:** If writing a single regex is too difficult or cumbersome to accommodate the logical AND operation, decompose the problem in several steps and use shell's pipes to combine them, e.g. 
+**Hint #2:** If writing a single regex is too difficult or cumbersome to accommodate the logical ```AND``` operation, decompose the problem into several steps and use the shell's pipes to combine them, e.g. 
 
 ```bash
-$ egrep "regex-1" dictionary-file | egrep "regex-2" | egrep "regex-3" ...
+$ egrep "regex-1" someFile | egrep "regex-2" | egrep "regex-3" ...
 ```
+
+or use built-in support for logical ```&&``` in some core Linux utilities, e.g. in **awk** using the following syntax:
+
+```bash
+$ awk '/regex-1/ && /regex-2/ && /regex-3/ ...' someFile
+```
+
+**Remark:** For the latter to work, make sure you use the GNU version of **awk** (i.e. **gawk**), as some other **awk** implementations (e.g. **mawk**) treat some metacharacters in their own non-standard way.
 
 
 
@@ -55,7 +63,22 @@ You can create for free your ORCID ID at this [link](https://orcid.org/).
 
 
 
-**Challenge #4:** Write down a regex which checks if a string can be interpreted as a float.
+**Challenge #4:** Write down a regex which checks if a string can be interpreted as a float. Possible valid formats include:
+
+```bash
+8.54585
++8.54585
+-8.54585
+0.54585
+.54585
++.54585
+-.54585
+8.54585e-2
+8.54585e+2
+8.54585e2
+```
+
+Both the number and the exponent part can be padded with any number of 0's, e.g. ```08.54585```, ```008.54585```, ```8.54585e+02```, ```8.54585e+002```, ```008.54585e-002```, etc.
 
 
 
