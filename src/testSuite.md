@@ -1,6 +1,6 @@
 # Test suite
 
-**Last update**: 20261009-1
+**Last update**: 20261011-3
 
 #### 1. Rendering of native markdown tables
 
@@ -260,3 +260,13 @@ A regular expression, or regex for short, is a pattern template used to filter t
 extract specific information. Or, looking from another angle, a regular expression is a pattern that describes a set of strings.
 :::
 
+
+
+#### 11. Text
+
+<s> strike through <\s> (HTML syntax)
+~~strike through~~  (Markdown syntax)
+
+<span style="color: red;">This text is red</span>  (HTML syntax, there is no Markdown native syntax)
+
+Bold + italic example in LaTeX math mode: Spectroscopy of  $\pmb{{}^{24}O}$ and $\pmb{{}^{22}O}$ via ...
