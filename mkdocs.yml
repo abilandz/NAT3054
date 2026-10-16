@@ -7,6 +7,23 @@ theme:
   favicon: Figures/favicon.png
   logo: Figures/favicon.png
 
+  palette:
+    # Light mode
+    - scheme: default
+      primary: indigo # color used for header, sidebar, text links, ... 
+      accent: indigo # color used for hovered links, buttons, scrollbars, focus states, ...
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
 # common navigation settings for all themes:
 #nav:
 #  - Home: index.md

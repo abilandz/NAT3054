@@ -1,12 +1,10 @@
 # Regular expressions
 
-**Last update**: 20261009-1
+**Last update**: 20261016-1
 
 <!-- this is a comment -->
 
 <img src="./Figures/regexLogo.png" alt="" width="300" style="display: block; margin-left: 4em; margin-right: auto; margin-top: 1.5em; margin-bottom: -0.5em;"/>
-
-
 
 ## Outline
 1. [What is a regular expression?](#what.is.regex)
