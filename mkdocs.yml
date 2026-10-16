@@ -13,15 +13,15 @@ theme:
       primary: indigo # color used for header, sidebar, text links, ... 
       accent: indigo # color used for hovered links, buttons, scrollbars, focus states, ...
       toggle:
-        icon: material/brightness-7
+        icon: material/moon-last-quarter
         name: Switch to dark mode
 
     # Dark mode
     - scheme: slate
-      primary: indigo
-      accent: indigo
+      primary: black
+      accent: red
       toggle:
-        icon: material/brightness-4
+        icon: material/moon-first-quarter
         name: Switch to light mode
 
 # common navigation settings for all themes:

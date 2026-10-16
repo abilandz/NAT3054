@@ -6,7 +6,7 @@
 
 <!-- this is a comment -->
 
-<img src="./Figures/remoteLogo.png" alt="" width="300" style="display: block; margin-left: 5em; margin-right: auto; margin-top: 1.0em; margin-bottom: 0.5em;"/>
+<img src="./Figures/remoteLogo-gray.png" alt="" width="300" style="display: block; margin-left: 5em; margin-right: auto; margin-top: 1.0em; margin-bottom: 0.5em;"/>
 
 *_Credits for the image: AI_
 

@@ -1,10 +1,11 @@
 # gdb: The GNU Debugger
 
-**Last update**: 20261004-1
+**Last update**: 20261016-1
 
 <!-- this is a comment -->
 
-<img src="./Figures/gdb_logo.png" alt="" width="300" style="display: block; margin-left: 7em; margin-right: auto; margin-top: 1.5em; margin-bottom: auto;"/>
+<img src="./Figures/gdb_logo-gray.png" alt="" width="300" style="display: block; margin-left: 7em; margin-right: auto; margin-top: 1.5em; margin-bottom: auto;"/>
+
 
 
 ### Outline
