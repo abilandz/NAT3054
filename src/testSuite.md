@@ -1,6 +1,6 @@
 # Test suite
 
-**Last update**: 20261011-3
+**Last update**: 20261017-1
 
 #### 1. Rendering of native markdown tables
 
@@ -93,12 +93,12 @@ We all know that!
 ```bash
 #!/bin/bash
 
-echo "Welcome to PH8124 lecture"
+echo "Welcome to NAT3054 lecture"
 # This is a comment...
 echo "Today is:" 
 date
 
-return 
+return 0
 ```
 
 ##### C
@@ -264,9 +264,38 @@ extract specific information. Or, looking from another angle, a regular expressi
 
 #### 11. Text
 
-<s> strike through <\s> (HTML syntax)
+<s> strike through </s> (HTML syntax)
 ~~strike through~~  (Markdown syntax)
 
 <span style="color: red;">This text is red</span>  (HTML syntax, there is no Markdown native syntax)
 
 Bold + italic example in LaTeX math mode: Spectroscopy of  $\pmb{ {}^{24}O}$ and $\pmb{ {}^{22}O}$ via ...
+
+
+
+#### 12. In-lined source code from an external file
+
+Remark: For MkDocs "Material", I have used in the config:
+```yaml
+- pymdownx.snippets: # to inline in markdown code block a code from an external file
+    base_path: # now also the relative paths will work, relative to docs/
+      - docs
+```
+
+##### Bash 
+```bash title="File: ./Test/hello.sh"
+--8<-- "./Test/hello.sh"
+```
+
+##### C
+
+```c title="File: ./Test/hello.c"
+--8<-- "./Test/hello.c"
+```
+
+##### C++
+
+```cpp title="File: ./Test/hello.cpp"
+--8<-- "./Test/hello.cpp"
+```
+
