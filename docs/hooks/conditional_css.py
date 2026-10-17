@@ -7,6 +7,7 @@ def on_config(config):
     # Example: only load this CSS when using the "Material" theme"
     if theme_name == "material":
        config.extra_css.append("stylesheets/material/bootstrap-like-tables.css")
+       config.extra_css.append("stylesheets/material/additional-buttons.css")
        #config.extra_css.append("stylesheets/material/native-markdown-tables.css")
 
     # Example: only load this CSS when using the "Bootstrap" theme (default):

@@ -1,0 +1,26 @@
+/* Move the color-palette toggle to the right of the search button, and further fine-tune its position */
+.md-header__inner {
+  display: flex;
+}
+
+.md-header__option[data-md-component="palette"] {
+  order: 1;          /* after the search elements */
+}
+
+/* Optional: keep a little breathing room */
+.md-header__option[data-md-component="palette"] {
+  margin-inline-start: 0.0rem; /* not needed for the time being */
+}
+
+/* ----------------------------------------- */
+
+/* Adjust the position of 'conversion to PDF' button next to the "Search" field */
+.md-header a[href*="pdf"],          /* if the link contains "pdf" */
+.md-header .pdf-button,             /* if you gave it a class */
+.md-header__button.pdf-convert {    /* example class */
+  margin-inline-start: 0.6rem;      /* push it a bit to the right */
+  /* or */
+  /* margin-left: 0.6rem; */
+}
+
+/* ----------------------------------------- */
