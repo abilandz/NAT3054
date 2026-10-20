@@ -1,6 +1,6 @@
 # Test suite
 
-**Last update**: 20261017-1
+**Last update**: 20261020-1
 
 #### 1. Rendering of native markdown tables
 
@@ -275,11 +275,18 @@ Bold + italic example in LaTeX math mode: Spectroscopy of  $\pmb{ {}^{24}O}$ and
 
 #### 12. In-lined source code from an external file
 
-Remark: For MkDocs "Material", I have used in the config:
+Remark 1: For MkDocs "Material", I have used in the config:
 ```yaml
 - pymdownx.snippets: # to inline in markdown code block a code from an external file
     base_path: # now also the relative paths will work, relative to docs/
       - docs
+```
+
+Remark 2: For Zensical "moderm", I have used in the config:
+```toml
+# Needed to in-line the source code from an external file 
+[project.markdown_extensions.pymdownx.snippets]
+base_path = ["docs"] # now also the relative paths will work, relative to docs/
 ```
 
 ##### Bash 

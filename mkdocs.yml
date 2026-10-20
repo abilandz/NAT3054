@@ -28,7 +28,7 @@ theme:
 #nav:
 #  - Home: index.md
 
-# workaround to get figures via ./Figures, and not via ../Figures, even though the former is a correct relative path"
+# workaround to get figures via ./Figures, and not via ../Figures, even though the former is a correct relative path
 use_directory_urls: false
 
 # common extra CSS for all themes:
@@ -59,7 +59,7 @@ markdown_extensions:
   - md_in_html # to resize figures
 
 extra_javascript:
-  - javascripts/mathjax.js
+  - javascripts/mathjax-mkdocs.js
   - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js # online math
 #  - javascripts/tex-mml-chtml.js # offline math
 

@@ -1,7 +1,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20261004-1
+**Last update**: 20261020-1
 
 <!-- this is a comment -->
 
@@ -26,12 +26,12 @@
 	* [Transfer](#transfer)
 	* [Collaborating online using GitHub](#collaborating.online.using.github)
 	* [Collaborating locally](#collaborating.locally)
-	* [Developing in parallel on different operating systems](#developing.in.parallel.on.different.operating.systems)
+	<!-- * [Developing in parallel on different operating systems](#developing.in.parallel.on.different.operating.systems) -->
 	* [Combining changes: merge, rebase and cherry-pick](#combining.changes.merge.rebase.and.cherry.pick)
 		* [a) merge](#merge)
 		* [b) rebase](#rebase)
 		* [c) cherry-pick](#cherry-pick) 
-	* [Resolving merging conflicts](#resolving.merging.conflicts)
+	<!-- * [Resolving merging conflicts](#resolving.merging.conflicts) -->
 6. [Executive and exemplary summary of main Git commands ](#executive.and.exemplary.summary.of.main.git.commands)
 	* [The most commonly used Git commands](#the.most.commonly.used.git.commands)
 	* [Git examples](#git.examples)

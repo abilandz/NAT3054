@@ -1,0 +1,106 @@
+[project]
+site_name = "NAT3054: Advanced Programming Tools in High-Energy Physics"
+# site_url = "https://example.com"          # Strongly recommended
+site_description = "A minimal Zensical site with the modern theme"
+
+# Support for math (has to be under "[project]"): 
+extra_javascript = [
+  "javascripts/mathjax-zensical.js",
+  "https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js",
+]
+
+# Workaround to get figures via ./Figures, and not via ../Figures, even though the former is a correct relative path
+use_directory_urls = false
+docs_dir = "docs"
+
+# Optional but useful
+# repo_url = "https://github.com/username/repo"
+# repo_name = "username/repo"
+
+nav = [
+  { "Introduction" = "index.md"}, # this file "index.md" must be in docs/
+  { "Lectures" = [  
+      { "1. Regular expressions" = "regex.md" },
+      { "2. Git" = "git.md" },
+      { "3. make & cmake" = "make.md" },
+      { "4. Working remotely" = "remote.md" },
+      { "5. Valgrind" = "valgrind.md" },
+      { "6. gdb: The GNU Debugger" = "gdb.md" },
+  ]},
+  { "Homeworks" = [  
+      { "Scoresheet" = "Homeworks/Scoresheet.md" }, # TBI 20261020 relative path via symlinks does not work
+      { "Homework 1" = "Homeworks/Homework_1.md" },
+      { "Homework 2" = "Homeworks/Homework_2.md" },
+  ]},
+  { "Past semesters" = "history.md"},
+  { "Test suite" = "testSuite.md"},
+]
+
+[project.theme]
+favicon = "Figures/favicon.png" # TBI 20261020 relative path via symlinks does not work
+logo = "Figures/favicon.png" # TBI 20261020 relative path via symlinks does not work
+variant = "modern" # alternative is "classical", which looks like MkDocs "material"
+language = "en"
+features = [
+  "navigation.instant",
+  "navigation.tracking",
+  "navigation.sections",
+  "navigation.expand",     # Expand all sections by default
+  "navigation.indexes",    # Allow section index pages
+  "navigation.tabs",       # Top-level items become tabs (optional)
+  "navigation.top",
+  "search.highlight",
+  "content.code.copy",     # Copy button on code blocks
+  "content.code.select",   # Better code selection
+  "content.code.annotate", # Code annotations
+]
+
+
+[project.markdown_extensions]
+# Admonitions
+admonition = {}
+pymdownx.details = {}  # Needed for collapsible admonitions (??? syntax)
+
+# Syntax highlighting
+[project.markdown_extensions.pymdownx.highlight]
+anchor_linenums = true
+line_spans = "__span"
+pygments_lang_class = true
+
+[project.markdown_extensions.pymdownx.inlinehilite]
+
+# Needed to in-line the source code from an external file 
+[project.markdown_extensions.pymdownx.snippets]
+base_path = ["docs"] # now also the relative paths will work, relative to docs/
+
+# Mermaid diagrams
+[project.markdown_extensions.pymdownx.superfences]
+custom_fences = [
+  { name = "mermaid", class = "mermaid", format = "pymdownx.superfences.fence_code_format" }
+]
+
+# Math
+[project.markdown_extensions.pymdownx.arithmatex]
+generic = true
+
+# Light / Dark mode support
+[[project.theme.palette]]
+media = "(prefers-color-scheme)"
+toggle.icon = "lucide/sun-moon"
+toggle.name = "Switch to light mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+scheme = "default"
+primary = "indigo"
+accent = "indigo"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to dark mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+scheme = "slate"
+primary = "indigo"
+accent = "indigo"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to system preference"

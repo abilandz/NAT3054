@@ -1,6 +1,6 @@
 # Regular expressions
 
-**Last update**: 20261016-1
+**Last update**: 20261020-1
 
 <!-- this is a comment -->
 
@@ -930,7 +930,7 @@ Finally, we make a connection between different metacharacters &mdash; regex ```
 
 
 
-### POSIX character classes ```[:keyword:]``` <a name="#POSIX.character.classes"></a>
+### POSIX character classes ```[:keyword:]``` <a name="POSIX.character.classes"></a>
 
 POSIX **character classes** are keywords bracketed by ```[:``` and ```:]```, which must be further enclosed in an actual regex within square brackets, ```[``` and ```]```. Therefore, the correct syntax for the corresponding regex is ```[[:keyword:]]```, while ```[:keyword:]``` by itself is invalid syntax for regex. POSIX character classes are supported both in BRE and ERE.
 
