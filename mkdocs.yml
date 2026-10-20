@@ -24,6 +24,9 @@ theme:
         icon: material/moon-first-quarter
         name: Switch to light mode
 
+  features:
+    - content.code.copy
+    - content.code.select   # Adds the line range selection button
 # common navigation settings for all themes:
 #nav:
 #  - Home: index.md
@@ -50,11 +53,15 @@ markdown_extensions:
   - pymdownx.arithmatex: # math
       generic: true
   - pymdownx.highlight: # syntax highlighting
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
   - pymdownx.superfences: # syntax highlighting
       custom_fences: # support for mermaid diagrams
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.inlinehilite
   - attr_list # to resize figures
   - md_in_html # to resize figures
 
@@ -66,8 +73,8 @@ extra_javascript:
 # needed to download a site in PDF:
 plugins:
   - search
-#  - to-pdf:
-#      output_path: docs/pdf/NAT3054.pdf
-#      cover: false
+  - to-pdf:
+      output_path: docs/pdf/NAT3054.pdf
+      cover: false
 #      cover_title: "NAT3054: Advanced Programming Tools in High-Energy Physics (WS 2026/27)"
       # ... other options

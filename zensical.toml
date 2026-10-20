@@ -12,6 +12,7 @@ extra_javascript = [
 # Workaround to get figures via ./Figures, and not via ../Figures, even though the former is a correct relative path
 use_directory_urls = false
 docs_dir = "docs"
+site_dir = "site"
 
 # Optional but useful
 # repo_url = "https://github.com/username/repo"

@@ -1,6 +1,6 @@
 # Regular expressions
 
-**Last update**: 20261020-1
+**Last update**: 20261020-2
 
 <!-- this is a comment -->
 
@@ -227,7 +227,6 @@ some text Chapter1
 ```
 
 Only the line "some text Chapter" is not matched with regex ```Chapter.``` because the string "Chapter" is at the very end of a line (the same holds true for ERE and can be demonstrated with **egrep** instead of **grep**). 
-
 
 
 
@@ -543,10 +542,13 @@ In globbing, the question mark ```?``` stands for "any single character":
 
 ```bash
 $ touch file_0.log file_A.log file_10.log file_AB.log
+
 $ ls file_?.log
 file_0.log file_A.log
+
 $ ls file_??.log
 file_10.log file_AB.log
+
 $ ls file_???.log # doesn't match any file, globbing failed
 ls: cannot access 'file_???.log': No such file or directory
 ```
@@ -645,7 +647,7 @@ axyb
 # matches, because "axyb" matches "axyb"
 
 $ egrep "a[xy]+b" <<< "ayxb"
-aybb
+ayxb
 # matches, because "ayxb" matches "ayxb"
 
 $ egrep "a[xy]+b" <<< "axxyb"
