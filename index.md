@@ -1,4 +1,4 @@
-**Last update**: 20261013-1
+**Last update**: 20261020-2
 
 ### Introduction
 
@@ -19,5 +19,6 @@ The formal course description can be found at the TUM website at the following p
 * [Lecture 6: gdb: The GNU Debugger](src/gdb.md)
 * [Homeworks](src/Homeworks/Scoresheet.md)
     * [Scoresheet](src/Homeworks/Scoresheet.md)
+    * [Homework 1](src/Homeworks/Homeowrk_1.md)
 * [Past semesters](src/history.md)
 <!-- * [Test suite](src/testSuite.md) -->
