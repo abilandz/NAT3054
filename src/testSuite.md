@@ -1,6 +1,6 @@
 # Test suite
 
-**Last update**: 20261021-1
+**Last update**: 20261021-2
 
 #### 1. Rendering of native markdown tables
 
@@ -284,7 +284,7 @@ Remark 1: For MkDocs "Material", I have used in the config:
       - docs
 ```
 
-Remark 2: For Zensical "moderm", I have used in the config:
+Remark 2: For Zensical "modern", I have used in the config:
 ```toml
 # Needed to in-line the source code from an external file 
 [project.markdown_extensions.pymdownx.snippets]
