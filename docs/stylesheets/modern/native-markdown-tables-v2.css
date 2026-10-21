@@ -1,0 +1,98 @@
+/* Make tables fit the page width – no horizontal scrollbar */
+
+.md-typeset table:not([class]) {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;          /* force full width of the content area */
+  max-width: 100%;
+  table-layout: auto;             /* important: allows columns to shrink */
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: none;
+  display: table;
+}
+
+.md-typeset table:not([class]) th,
+.md-typeset table:not([class]) td {
+  border-right: 1px solid #e8e8e8;
+  border-bottom: 1px solid #e8e8e8;
+  padding: 0.40rem 0.55rem;         /* slightly tighter padding */
+  text-align: left;
+  background: transparent;
+  font-size: 0.85em;              /* makes the whole table a bit smaller */
+
+  /* Allow long content to wrap instead of forcing overflow */
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  hyphens: auto;
+}
+
+/* First column can stay a bit more flexible if you want */
+.md-typeset table:not([class]) th:first-child,
+.md-typeset table:not([class]) td:first-child {
+  white-space: nowrap;
+}
+
+/* Optional: center numeric-looking columns */
+.md-typeset table:not([class]) th:not(:first-child),
+.md-typeset table:not([class]) td:not(:first-child) {
+  text-align: center;
+}
+
+.md-typeset table:not([class]) th:last-child,
+.md-typeset table:not([class]) td:last-child {
+  border-right: none;
+}
+
+.md-typeset table:not([class]) tr:last-child td {
+  border-bottom: none;
+}
+
+/* Header */
+.md-typeset table:not([class]) th {
+  background-color: #f7f7f8;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Zebra striping */
+.md-typeset table:not([class]) tbody tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.md-typeset table:not([class]) tbody tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+/* Remove theme hover effects */
+.md-typeset table:not([class]) tr:hover {
+  background-color: inherit !important;
+  box-shadow: none !important;
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) {
+  border-color: #444;
+  background: #1e1e1e;
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) th,
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) td {
+  border-color: #3a3a3a;
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) th {
+  background-color: #2a2a2a;
+  color: #eee;
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) tbody tr:nth-child(even) {
+  background-color: #252525;
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) tbody tr:nth-child(odd) {
+  background-color: #1e1e1e;
+}

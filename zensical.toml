@@ -12,11 +12,22 @@ extra_javascript = [
 # Workaround to get figures via ./Figures, and not via ../Figures, even though the former is a correct relative path
 use_directory_urls = false
 docs_dir = "docs"
-site_dir = "site"
+# site_dir = "site"
+
+# Critical: Tell Zensical to watch the real directory outside of docs/, to which I link via soft-links
+#           Without this, for security reasons, only soft-links to files will work, but not for soft-lined directories. 
+# Remark: For this to work, you must use zensical version newer than 0.0.67 !!
+watch = [
+ "src", # relative to the project root, not to docs/ 
+]
 
 # Optional but useful
 # repo_url = "https://github.com/username/repo"
 # repo_name = "username/repo"
+
+extra_css = [
+  "stylesheets/modern/native-markdown-tables-v2.css",
+]
 
 nav = [
   { "Introduction" = "index.md"}, # this file "index.md" must be in docs/
@@ -29,7 +40,7 @@ nav = [
       { "6. gdb: The GNU Debugger" = "gdb.md" },
   ]},
   { "Homeworks" = [  
-      { "Scoresheet" = "Homeworks/Scoresheet.md" }, # TBI 20261020 relative path via symlinks does not work
+      { "Scoresheet" = "Homeworks/Scoresheet.md" },
       { "Homework 1" = "Homeworks/Homework_1.md" },
       { "Homework 2" = "Homeworks/Homework_2.md" },
   ]},
@@ -45,7 +56,7 @@ language = "en"
 features = [
   "navigation.instant",
   "navigation.tracking",
-  "navigation.sections",
+#  "navigation.sections",   # Top-level sections as groups in the sidebar
   "navigation.expand",     # Expand all sections by default
   "navigation.indexes",    # Allow section index pages
   "navigation.tabs",       # Top-level items become tabs (optional)

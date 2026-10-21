@@ -1,0 +1,85 @@
+/* Make tables look closer to plain Markdown */
+
+/* quick check if file is executed
+body {
+  background: red !important;
+}
+*/
+
+/* Clean spreadsheet-style tables (like the screenshot) */
+
+.md-typeset table:not([class]) {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: none;
+  display: table;
+}
+
+.md-typeset table:not([class]) th,
+.md-typeset table:not([class]) td {
+  border-right: 1px solid #e8e8e8;
+  border-bottom: 1px solid #e8e8e8;
+  padding: 0.55rem 0.9rem;
+  text-align: left;
+  background: transparent;
+}
+
+.md-typeset table:not([class]) th:last-child,
+.md-typeset table:not([class]) td:last-child {
+  border-right: none;
+}
+
+.md-typeset table:not([class]) tr:last-child td {
+  border-bottom: none;
+}
+
+/* Header */
+.md-typeset table:not([class]) th {
+  background-color: #f7f7f8;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Zebra striping */
+.md-typeset table:not([class]) tbody tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.md-typeset table:not([class]) tbody tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+/* Remove theme hover effects */
+.md-typeset table:not([class]) tr:hover {
+  background-color: inherit !important;
+  box-shadow: none !important;
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) {
+  border-color: #444;
+  background: #1e1e1e;
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) th,
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) td {
+  border-color: #3a3a3a;
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) th {
+  background-color: #2a2a2a;
+  color: #eee;
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) tbody tr:nth-child(even) {
+  background-color: #252525;
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) tbody tr:nth-child(odd) {
+  background-color: #1e1e1e;
+}

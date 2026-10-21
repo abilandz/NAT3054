@@ -1,12 +1,12 @@
 # Test suite
 
-**Last update**: 20261020-1
+**Last update**: 20261021-1
 
 #### 1. Rendering of native markdown tables
 
 ##### Example 1
 
-| Student ID | #1   | #2   | #3   | #4   | #5   | #6   | #7   | #8   | #9   | #10  | Sum  |
+| Student    | #1   | #2   | #3   | #4   | #5   | #6   | #7   | #8   | #9   | #10  | Sum  |
 | ---------- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | 01234567   | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  |
 | 01234567   | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  |
@@ -46,11 +46,13 @@ We all know that!
 #### 4. Resizing and repositioning of the figures using the native html source code
 
 ##### Resizing
+<!-- common that works -->
 <img src="./Figures/gdb_logo.png" alt="" width="300" style="display: block; margin-left: auto; margin-right: auto; margin-top: auto; margin-bottom: auto;"/>
 <img src="./Figures/gdb_logo.png" alt="" width="200" style="display: block; margin-left: auto; margin-right: auto; margin-top: auto; margin-bottom: auto;"/>
 <img src="./Figures/gdb_logo.png" alt="" width="100" style="display: block; margin-left: auto; margin-right: auto; margin-top: auto; margin-bottom: auto;"/>
 
 ##### Repositioning
+<!-- common that works -->
 <img src="./Figures/gdb_logo.png" alt="" width="200" style="display: block; margin-left: 5em; margin-right: auto; margin-top: auto; margin-bottom: auto;"/>
 <img src="./Figures/gdb_logo.png" alt="" width="200" style="display: block; margin-left: 10em; margin-right: auto; margin-top: auto; margin-bottom: auto;"/>
 <img src="./Figures/gdb_logo.png" alt="" width="200" style="display: block; margin-left: 20em; margin-right: auto; margin-top: auto; margin-bottom: auto;"/>
