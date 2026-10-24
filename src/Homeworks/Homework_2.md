@@ -1,6 +1,6 @@
 # Homework 2: Mastering regular expressions (2/2)
 
-**Last update:** 20261011-1
+**Last update:** 20261024-1
 
 
 
@@ -79,21 +79,6 @@ You can create for free your ORCID ID at this [link](https://orcid.org/).
 ```
 
 Both the number and the exponent part can be padded with any number of 0's, e.g. ```08.54585```, ```008.54585```, ```8.54585e+02```, ```8.54585e+002```, ```008.54585e-002```, etc.
-
-
-
-**Challenge #5:** Write down a regex which checks if integer is written in scientific notation. Possible formatting includes:
-
-```bash
-8.54585e+09
-+8.54585e+09
--8.54585e+09
-8.54585E+09
-+8.54585E+09
--8.54585E+09
-```
-
-Note that ```8.54585e+09``` is a valid integer, but ```8.54585e+02``` is not! This challenge is more tricky than it appears at first sight. 
 
 
 
