@@ -764,8 +764,6 @@ When used as metacharacters, curly braces (or brackets) ```{ ... }``` can take m
 - _brace expansion_ &mdash; Mechanism by which the shell generates arbitrary strings. Not all shells support this feature, and the ones that do, can use different internal syntax (see examples below).
 - _shell wildcard_ &mdash; Similar to _brace expansion_, with the only difference that strings generated are filenames, which must exist.
 
-
-
 Regex ```{n,m}``` in ERE, or ```\{n,m\}``` in BRE, matches a range of occurrences of a single character or regex that immediately precedes it, from ```n``` times to ```m``` times (lower and upper boundaries included). In essence, it specifies a limit on how many times the preceding character or regex has to appear. Four distinct formats for the interval are supported:
 
 1. ```{m}``` &mdash; exactly "m" times;
@@ -864,7 +862,7 @@ zorch
 $ grep '^.....$' $Dictionary
 ```
 
-Curly braces can be used in another context, to generate with shell arbitrary strings via the _brace expansion_ mechanism. If the generated strings match the existing filenames, curly braces act as a _shell wildcard_ in this context. This particular use case of curly braces was covered in detail in [Section 5 of PH8124](https://abilandz.github.io/PH8124/Lecture_5/Lecture_5.html#code_blocks_and_brace_expansion) course, and won't be repeated here.
+Curly braces can be used in another context, to generate with shell arbitrary strings via the _brace expansion_ mechanism. If the generated strings match the existing filenames, curly braces act as a _shell wildcard_ in this context. This particular use case of curly braces was covered in detail in Section 5 of the introductory [PH8124](https://abilandz.github.io/PH8124/Lecture_5/Lecture_5.html#code_blocks_and_brace_expansion) course, and won't be repeated here.
 
 
 
@@ -946,7 +944,26 @@ Big Comp
 # matches, because "Big" matches "Big Comp"
 ```
 
-The common use case of this compound metacharacter in combination with ```?``` metacharacter is:
+Another use case is to combine ```( ... )``` with asterisk ```*```, to extend the range of applicability of the latter:
+
+```bash
+$ egrep 'ab*c' <<< abc
+# matches, because "abc" (one occurrence of "b") matches "abc" 
+
+$ egrep 'ab*c' <<< ababc
+# matches, because "abc" partially matches "ababc" 
+
+$ egrep '(ab)*c' <<< abc
+# matches, because "c" partially and "abc" fully match "abc" 
+
+$ egrep '(ab)*c' <<< ababc
+# matches, because "c" and "abc" partially, and "ababc" fully match "ababc" 
+
+$ egrep '(ab)*c' <<< abbac
+# matches, only because "c" partially matches "abbac" (ordering matters!) 
+```
+
+Another common use case of this compound metacharacter can be found in combination with ```?``` metacharacter:
 
 ```bash
 $ egrep "Sat(urday)?" <<< "Sat"
@@ -955,7 +972,7 @@ $ egrep "Sat(urday)?" <<< "Saturday"
 Saturday
 ```
 
-As another example, we illustrate the usage of  ```( ... )``` in combination with ```|``` and ```+``` metacharacters, by considering the compound regex ```(abc|def)+```, which matches a string that contains one or more occurrences of substrings "abc" and "def": 
+We now illustrate the usage of  ```( ... )``` in combination with ```|``` and ```+``` metacharacters, by considering the compound regex ```(abc|def)+```, which matches a string that contains one or more occurrences of substrings "abc" and "def": 
 
 ```bash
 $ egrep "(abc|def)+" <<< "abc"
@@ -1006,7 +1023,7 @@ $ egrep 'a(b|c)d' <<< "abc"
 # doesn't match, because neither "abd" nor "acd" match "abc"
 ```
 
-Finally, we make a connection between different metacharacters &mdash; regex ```^(bat|Cat)``` is the same as ```^[bC]at```. 
+In the end, we make a connection between different metacharacters &mdash; regex ```^(bat|Cat)``` is the same as ```^[bC]at```. 
 
 
 
