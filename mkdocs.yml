@@ -75,8 +75,8 @@ extra_javascript:
 # needed to download a site in PDF:
 plugins:
   - search
-#  - to-pdf:
-#      output_path: docs/pdf/NAT3054.pdf
-#      cover: false
+  - to-pdf:
+      output_path: docs/pdf/NAT3054.pdf
+      cover: false
 #      cover_title: "NAT3054: Advanced Programming Tools in High-Energy Physics (WS 2026/27)"
       # ... other options
