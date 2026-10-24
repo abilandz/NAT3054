@@ -27,6 +27,7 @@ theme:
   features:
     - content.code.copy
     - content.code.select   # Adds the line range selection button
+
 # common navigation settings for all themes:
 #nav:
 #  - Home: index.md
@@ -67,6 +68,7 @@ markdown_extensions:
 
 extra_javascript:
   - javascripts/mathjax-mkdocs.js
+  - javascripts/nav-expand.js # differentially expand by default only some toggles in the LHS menu
   - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js # online math
 #  - javascripts/tex-mml-chtml.js # offline math
 

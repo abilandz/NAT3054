@@ -1,10 +1,10 @@
 # Regular expressions
 
-**Last update**: 20261020-2
+**Last update**: 20261022-2
 
 <!-- this is a comment -->
 
-<img src="./Figures/regexLogo.png" alt="" width="300" style="display: block; margin-left: 4em; margin-right: auto; margin-top: 1.5em; margin-bottom: -0.5em;"/>
+<img src="./Figures/regexLogo-2.png" alt="" width="300" style="display: block; margin-left: 4em; margin-right: auto; margin-top: 1.5em; margin-bottom: -0.5em;"/>
 
 ## Outline
 1. [What is a regular expression?](#what.is.regex)
@@ -37,7 +37,7 @@
 
 
 ## 1. What is a regular expression? <a name="what.is.regex"></a>
-A regular expression, or _regex_ for short, is a pattern template used to filter text in order to extract specific information. Or, looking from another angle, a regular expression is a pattern that describes a set of strings. Writing a regular expression is equivalent to creating a text filter. Patterns used to define regular expression contain symbols with special, non-literal meaning. In general, such special individual symbols or specific combinations of individual symbols are named _metacharacters_ or _compound metacharacters_, respectively. Compound metacharacters can also be refereed to as a _metasequence_. When interpreted directly by a shell to perform filename expansion (or _globbing_), metacharacters are called _wildcards_. Some metacharacters have different meanings when used in regular expression or in filename expansion. 
+A regular expression, or _regex_ for short, is a pattern template used to filter text in order to extract specific information. Or, looking from another angle, a regular expression is a pattern that describes a set of strings. Writing a regular expression is equivalent to creating a text filter. Patterns used to define regular expression contain symbols with special, non-literal meaning. In general, such special individual symbols or specific combinations of individual symbols are named _metacharacters_ or _compound metacharacters_, respectively. Compound metacharacters can also be referred to as a _metasequence_. When interpreted directly by a shell to perform filename expansion (or _globbing_), metacharacters are called _wildcards_. Some metacharacters have different meanings when used in regular expression or in filename expansion. 
 
 Historically, the first implementation and use of regular expression can be traced back to the late 1960s and Ken Thompson's re-implementation of the line-oriented editor QED for Multics (an unsuccessful operating system that predated Unix). There are four major categories of regular expressions, and in what follows next, we attempt to systematize.
 
@@ -447,10 +447,10 @@ $ ls file_[B-D]
 file_B.txt file_C.txt file_D.txt 
 ```
 
-__Example__: Write the regex which matches any of the 4 arithmetic operators: "+", "-", "*", and "\\". 
+__Example__: Write the regex which matches any of the 4 arithmetic operators: "+", "-", "*", and "/". 
 
-- ```[-+*\]``` and ```[+*\-]``` are both correct. Within ```[ ... ]```, the symbol ```-``` at the very beginning or at the very end is not a metacharacter;
-- ```[+-*\]``` is wrong, because here the symbol ```-``` is in the middle, and is interpreted as a metacharacter which indicates range between symbols "+" and "*", which is ill-defined.
+- ```[-+*/]``` and ```[+*/-]``` are both correct. Within ```[ ... ]```, the symbol ```-``` at the very beginning or at the very end is not a metacharacter;
+- ```[+-*/]``` is wrong, because here the symbol ```-``` is in the middle, and is interpreted as a metacharacter which indicates range between symbols "+" and "*", which is ill-defined.
 
 Multiple ranges are also fine, e.g.
 
@@ -743,6 +743,7 @@ $ egrep "^[0-9]{3}$" <<< "2458"
 $ egrep "^[0-9]{3}$" <<< "2222" 
 # doesn't match, this is a tricky case. "222" has to match simultaneously 
 # three "2" read from beginning, and read from the end, which is impossible
+# unless the string has exactly 3 characters
 ```
 
 It is very instructive to establish the relation between ```{ ... }``` when used as a repetition operator in ERE, and some previously covered metacharacters. In particular, the following relations hold in ERE:
