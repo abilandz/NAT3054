@@ -1,6 +1,6 @@
 # Regular expressions
 
-**Last update**: 20261022-2
+**Last update**: 20261024-1
 
 <!-- this is a comment -->
 
@@ -381,9 +381,19 @@ A few additional standard use cases of anchors:
 
 *  &#9251;&#9251;*$ (two or more empty characters before `*$`) &mdash; matches lines with one or more empty characters at the end
 * ^&#9251;&#9251;* (two or more spaces between ```^``` and ```*```) &mdash; matches a line with one or more leading spaces
-* ```^.*$``` &mdash; matches the entire line
+*  ```^.*$``` &mdash; matches the entire line 
 
-   
+
+
+This section is concluded with the remark that in globbing the pattern does not need to be anchored with ```^``` and ```$```, because that is already implicit. For instance:
+
+```bash
+$ ls someFiles*txt 
+```
+
+will list all files whose names begin with the pattern "someFiles" and end with the pattern "txt", i.e. anchors ```^``` and ```$``` are assumed by default in globbing.
+
+
 
 
 
@@ -447,48 +457,117 @@ $ ls file_[B-D]
 file_B.txt file_C.txt file_D.txt 
 ```
 
-__Example__: Write the regex which matches any of the 4 arithmetic operators: "+", "-", "*", and "/". 
+__Example__: Write the regex which matches any of the 4 arithmetic operators: ```+```, ```-```, ```*```, and ```/```.  Possible solutions:
 
 - ```[-+*/]``` and ```[+*/-]``` are both correct. Within ```[ ... ]```, the symbol ```-``` at the very beginning or at the very end is not a metacharacter;
-- ```[+-*/]``` is wrong, because here the symbol ```-``` is in the middle, and is interpreted as a metacharacter which indicates range between symbols "+" and "*", which is ill-defined.
+- ```[+-*/]``` is wrong, because here the symbol ```-``` is in the middle, and is interpreted as a metacharacter which indicates range between symbols ```+``` and ```*```, which is ill-defined, and leads to an error:
+	```bash
+	$ grep '[+-*/]' <<< '-'
+	grep: Invalid range end	
+	```
 
 Multiple ranges are also fine, e.g.
 
 ```bash
-$ touch file_A.txt file_B.txt file_C.txt file_D.txt file_1.txt file_2.txt file_3.txt file_4.txt
-$ ls file_[A-C2-4].txt
-file_2.txt file_3.txt file_4.txt file_A.txt file_B.txt file_C.txt
+# Create a few empty files:
+$ touch A.txt B.txt C.txt D.txt 1.txt 2.txt 3.txt 4.txt
+
+# List only files with specified name patterns:
+$ ls [A-C2-4].txt
+2.txt 3.txt 4.txt A.txt B.txt C.txt
 ```
 
-Even though this looks quite handy, one has to be careful when using ```[ ... ]``` to generate a sequence of characters, because the regex ```[A-Z]``` in one language can produce a different sequence than in another, because their alphabets in general contain different numbers of characters. This problem is resolved with the canonical _"POSIX character classes"_, which are discussed later. 
+Even though this looks quite handy, one has to be careful when using ```[ ... ]``` to generate a sequence of characters, because the regex ```[A-Z]``` in one language can produce a different sequence than in another, because their alphabets in general contain different set of characters. This problem is resolved with the canonical _"POSIX character classes"_, which are discussed later in [this](#POSIX.character.classes) section. 
 
-On the other hand, the symbol ```^``` (_circumflex_ or _caret_) is a metacharacter within ```[ ... ]``` only if it appears at the very first position &mdash; at any other position, including the last position, it doesn't have any special meaning. Therefore, the regex ```[^...]``` has the following special meaning: ```^``` in the first place excludes all following characters within ```[ ... ]``` from being matched. For instance:
+On the other hand, the symbol ```^``` (_circumflex_ or _caret_) is a metacharacter within ```[ ... ]``` only if it appears at the very first position &mdash; at any other position, including the last position, it doesn't have any special meaning. Therefore, both the regex and glob pattern ```[^...]``` has the following special meaning: ```^``` in the first place excludes all following characters within ```[ ... ]``` from being matched. For instance:
 
 ```bash
-$ touch file_A.txt file_B.txt file_C.txt file_D.txt file_E.txt file_F.txt file_G.txt file_H.txt
-$ ls file_[^ACF].txt
-file_B.txt file_D.txt file_E.txt file_G.txt file_H.txt 
+# Create a few empty files:
+$ touch A.txt B.txt C.txt D.txt E.txt F.txt G.txt H.txt
+
+# Do NOT list files with specified name patterns:
+$ ls [^ACF].txt
+B.txt D.txt E.txt G.txt H.txt 
 ```
 
-Only in globbing, the synonym for the regex ```[^...]``` is ```[!...]```. But because the notation ```[!...]``` does not have any special meaning in BRE or in ERE, and to avoid confusion, we recommend the usage only of the regex ```[^...]``` in any context.
+Only in globbing, the synonym for the pattern ```[^...]``` is ```[!...]```. But because the notation ```[!...]``` does not have any special meaning in BRE or in ERE, and to avoid confusion, we recommend the usage only of the notation ```[^...]``` in any context.
 
-Finally, we need to clarify how the characters ```[``` and ```]``` themselves are treated within character classes ```[ ... ]``` . The character ```]``` as the first character within ```[ ... ]``` is just a character (i.e. not a metacharacter, like when it’s in any other place). The same applies to character ```[``` , as the following example illustrates:
+Finally, we need to clarify how the characters ```[``` and ```]``` themselves are treated within character classes ```[ ... ]```:
+
+* The character ```]``` as the first character within ```[ ... ]``` is just a character (i.e. it is not a metacharacter, like when it is in any other place when it shall terminate the bracket expression);
+
+* The character ```[``` is always just a character within ```[ ... ]```. 
+
+This is illustrated with the following BRE examples (the same is true also in ERE):
 
 ```bash 
-$ grep "[]]" <<< "]"
+$ grep '[]]' <<< ']'
 ]
-$ grep "[[]" <<< "["
+$ grep '[[]' <<< '['
 [
 ```
+As before, we have embedded regex on the LHS and strings on the RHS within strong quotes ```'...'```, to prevent the shell from interpreting metacharacters. However, one has to be careful, because of the following cases:
+
+```bash
+$ grep '[]a]' <<< ']a'
+]a
+# matches, only the opening [ and closing ] are metacharacters
+
+$ grep '[]a]' <<< 'a]'
+a]
+# matches, only the opening [ and closing ] are metacharacters
+
+$ grep '[[a]' <<< '[a'
+[a
+# matches, only the opening [ and closing ] are metacharacters
+
+$ grep '[[a]' <<< 'a['
+a[
+# matches, only the opening [ and closing ] are metacharacters
+
+$ grep '[a[]' <<< 'a['
+a[
+# matches, only the opening [ and closing ] are metacharacters
+
+$ grep '[a[]' <<< '[a'
+[a
+# matches, only the opening [ and closing ] are metacharacters
+
+$ grep '[a[b]' <<< '[ab'
+[ab
+# matches, only the opening [ and closing ] are metacharacters
+
+$ grep '[a[b]' <<< 'a[b'
+a[b
+# matches, only the opening [ and closing ] are metacharacters
+
+$ grep '[a[b]' <<< 'ab['
+ab[
+# matches, only the opening [ and closing ] are metacharacters
+
+$ grep '[]ab]' <<< ']ab'
+]ab
+# matches, only the opening [ and closing ] are metacharacters
+
+$ grep '[a]b]' <<< ']ab'
+# does NOT match, the first [ and the first ] are metacharacters
+
+$ grep '[a]b]' <<< 'ab]'
+ab]
+# matches, the first [ and the first ] are metacharacters
+```
+
 
 Character classes ```[ ... ]``` can be naturally combined with other metacharacters, for instance:
 
-- `[ab]c*` — matches “ab”, “abc”, "bac", “abcc”, "bacc", but also "a", "b", "ac", "acc", "bc", "bcc", etc.
-- `[ab]cc*` — matches "ac", "bc", “abc”, “bac”, “abcc”, "bacc", “abccc”, but not  "a", "b", “ab”, etc.
+- ```[ab]c*``` — matches “ab”, “abc”, "bac", “abcc”, "bacc", but also "a", "b", "ac", "acc", "bc", "bcc", etc.
+- ```[ab]cc*``` — matches "ac", "bc", “abc”, “bac”, “abcc”, "bacc", “abccc”, but not  "a", "b", “ab”, etc.
 
 In the above example, asterisk ```*``` had an effect only on a single preceding character "c". But we can make asterisk ```*``` acting directly on character classes ```[ ... ]``` , and the final result will be different. In combination with character classes, ```*``` matches any number of characters in that class, but also in any order:
 
-- `[no]*` — matches "n", "nn", "nnn", "o", "oo", "ooo", "no", "nno", "noo", "on", "oon", "onn", "non", etc. However, it will also match "abc" because that would correspond to "zero occurrences either of "n" or "o". Therefore, this is not really a very useful regex, but it's used here just to illustrate how this mechanism works.
+- ```[no]*``` — matches "n", "nn", "nnn", "o", "oo", "ooo", "no", "nno", "noo", "on", "oon", "onn", "non", etc. 
+
+However, the above regex ```[no]*``` will also match "abc" because that would correspond to "zero occurrences either of "n" or "o". Therefore, this is not really a very useful regex, but it's used here just to illustrate how this mechanism works.
 
 
 
