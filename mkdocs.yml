@@ -75,16 +75,6 @@ extra_javascript:
 # needed to download a site in PDF:
 plugins:
   - search
-  - mermaid-to-svg:
-      image_id_enabled: true
-      image_id_prefix: mermaid-diagram
-      # Critical for clean PDF text rendering
-      mermaid_config:
-        htmlLabels: false
-        flowchart:
-          htmlLabels: false
-        class:
-          htmlLabels: false
   - to-pdf:
       output_path: docs/pdf/NAT3054.pdf
       cover: false

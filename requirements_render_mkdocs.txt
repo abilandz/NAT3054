@@ -2,4 +2,3 @@ mkdocs
 mkdocs-material
 mkdocs-to-pdf
 pymdown-extensions
-mkdocs-mermaid-to-svg
