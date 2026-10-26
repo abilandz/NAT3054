@@ -75,8 +75,17 @@ extra_javascript:
 # needed to download a site in PDF:
 plugins:
   - search
+  - mermaid-to-svg:
+      image_id_enabled: true
+      image_id_prefix: mermaid-diagram
+      # Critical for clean PDF text rendering
+      mermaid_config:
+        htmlLabels: false
+        flowchart:
+          htmlLabels: false
+        class:
+          htmlLabels: false
   - to-pdf:
       output_path: docs/pdf/NAT3054.pdf
       cover: false
 #      cover_title: "NAT3054: Advanced Programming Tools in High-Energy Physics (WS 2026/27)"
-      # ... other options
