@@ -794,7 +794,7 @@ and there shall be at least one $X_i$ on the right-hand side. Note that the numb
 
 When used as metacharacters, curly braces (or brackets) ```{ ... }``` can take multiple meanings, depending on the context in which they are used. The following summary indicates their most important use cases: 
 
-- _repetition operator_ &mdash; The notation supported in ERE is ```{ ... }```, while notation ```\{ ... \}```  is used in BRE to achieve the same functionality. For simplicity of notation, in this section only examples using ERE will be demonstrated, but all examples remain valid for BRE, when each curly brace has to be escaped with backslash ```\```.
+- _repetition operator_ &mdash; The notation supported in ERE is ```{ ... }```, while the notation ```\{ ... \}```  is used in BRE to achieve the same functionality. For simplicity of notation, in this section only examples using ERE will be demonstrated, but all examples remain valid for BRE, when each curly brace has to be escaped with the backslash ```\```.
 - _brace expansion_ &mdash; Mechanism by which the shell generates arbitrary strings. Not all shells support this feature, and the ones that do, can use different internal syntax (see examples below).
 - _shell wildcard_ &mdash; Similar to _brace expansion_, with the only difference that strings generated are filenames, which must exist.
 
@@ -940,7 +940,7 @@ $ echo "cat sleeps" | egrep "cat|dog"
 cat sleeps
 ```
 
-Finally, one can draw an interesting parallel between character classes ```[...]``` and alternation operator ```|``` in the following way: the former enables any single character within ```[...]``` to match the desired expression, while the latter is more general and enables any string or regex chained with ```|``` to match the desired expression. For instance, the regex ```[abc]``` can be rewritten as ```a|b|c```, but one cannot rewrite in general the regex ```pattern-1|pattern-2|pattern-3``` using character classes ```[...]```.
+Finally, one can draw an interesting parallel between character classes ```[...]``` and the alternation operator ```|``` in the following way: the former enables any single character within ```[...]``` to match the desired expression, while the latter is more general and enables any string or regex chained with ```|``` to match the desired expression. For instance, the regex ```[abc]``` can be rewritten as ```a|b|c```, but one cannot rewrite in general the regex ```pattern-1|pattern-2|pattern-3``` using character classes ```[...]```.
 
 
 
@@ -1074,10 +1074,10 @@ The POSIX standard defines the following 12 character classes:
 - ```[:blank:]``` &mdash; space or tab spacing
 - ```[:cntrl:]``` &mdash; control characters
 - ```[:digit:]``` &mdash; numeric characters 0, 1, ..., 9. Same as regex ```[0-9]```
-- ```[:graph:]``` &mdash; printable and visible (non-space) characters (i.e. anything except spaces and control characters). Equaivalent to ```[^ [:cntrl:]]```
+- ```[:graph:]``` &mdash; printable and visible (non-space) characters (i.e. anything except spaces and control characters). Equivalent to ```[^ [:cntrl:]]```
 
 * ```[:lower:]``` &mdash; lowercase alphabetic characters a, b, ..., z.  Same in ASCII as regex ```[a-z]```
-* ```[:print:]``` &mdash; all printable characters and spaces (i.e. anything except control characters). Equaivalent to ```[[:graph:] ]```
+* ```[:print:]``` &mdash; all printable characters and spaces (i.e. anything except control characters). Equivalent to ```[[:graph:] ]```
 
 * ```[:punct:]``` &mdash; punctuation characters and all symbols except letters and digits. For instance: ```;,:.!?"\#$%&'()*+-/\<=>@[]^_`{|}~```
 * ```[:space:]``` &mdash; whitespace characters, tab spacing ```\t```, new line ```\n```, carrige return ```\r```, formfeed ```\f```, and vertical tab ```\v```
