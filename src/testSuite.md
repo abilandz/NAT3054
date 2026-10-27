@@ -192,6 +192,16 @@ a &#8658; b (using Unicode)
 
 an empty character "```  ```"  is denoted with a symbolic &#9251; character (Unicode "Open box" symbol)
 
+##### empty set
+
+&emptyset; (using LaTeX-style 'emptyset')  
+
+&varnothing; (using HTML-style 'varnothing')
+
+&#x2205; (using Unicode)  
+
+
+
 
 
 #### 8. Hyperlinks

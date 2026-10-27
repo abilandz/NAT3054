@@ -1,6 +1,6 @@
 # Regular expressions
 
-**Last update**: 20261024-1
+**Last update**: 20261027-1
 
 <!-- this is a comment -->
 
@@ -404,8 +404,10 @@ Character classes ```[ ... ]``` (sometimes referred to as _bracket expressions_)
 ```bash
 $ echo abc | grep "a[bx]c"
 abc
+
 $ echo axc | grep "a[bx]c"
 axc
+
 $ echo ayc | grep "a[bx]c" # doesn't match, "y" is not listed within "[" and "]"
 ```
 
@@ -429,6 +431,7 @@ Another common use case is to ignore in the search if the word is at the beginni
 ```bash
 $ echo someWord | grep "[sS]omeWord"
 someWord
+
 $ echo SomeWord | grep "[sS]omeWord"
 SomeWord
 ```
@@ -437,6 +440,7 @@ Usage of character classes ```[ ... ]``` in globbing is the same:
 ```bash
 $ ls
 someFile_1.txt someFile_2.txt someFile_3.txt someFile_4.txt
+
 $ ls someFile_[23].txt
 someFile_2.txt someFile_3.txt 
 ```
@@ -445,14 +449,18 @@ Inside ```[ ... ]``` the standard metacharacters lose their special meaning:
 ```bash
 $ echo '$Var' | grep '[$?]Var'
 $Var
+
 $ echo '.file' | grep '[.]file'
 .file
 ```
 
+Note that in the first example above, it was essential to use the strong quotes ```' ... '``` instead of the weak quotes ```" ... "```, because within the weak quotes a dollar character ```$``` is interpreted as a metacharacter by the shell &mdash; in particular, the shell will expand ```$?``` into the _exit status of last executed command_, which can be either 0 (in case the previous command executed without error), or some other integer in the range 1..256 (in case the previous command failed).
+
 However, the notation ```[ ... ]``` supports two of its own metacharacters: ```-``` and ```^```.  The symbol ```-``` is a metacharacter within ```[ ... ]``` only if it does not appear at the first or last position &mdash; at any other position it has a special meaning and indicates the _range_ between the two surrounding symbols.
 
 ```bash
-$ touch file_A.txt file_B.txt file_C.txt file_D.txt file_E.txt 
+$ touch file_A.txt file_B.txt file_C.txt file_D.txt file_E.txt
+
 $ ls file_[B-D]
 file_B.txt file_C.txt file_D.txt 
 ```
@@ -671,6 +679,19 @@ $ egrep "a[xy]?" <<< "x"
 
 In the same spirit, regex `80[234]?86` would match 80286, 80386, 80486, but also 8086. 
 
+In the end of this section, we can establish the following mnemonic (in a somewhat loose way) to decipher the compound regex involving characters classes ```[ ... ]``` and metacharacters ```?```:
+
+$$
+[a_{1}a_{2}\ldots a_{n}]? = X\,,
+$$
+
+where $X$ can be any element from a set $\{a_{1}, a_{2}, \ldots, a_{n}\}$ or empty, i.e. 
+
+$$
+X \in \{a_{1}, a_{2}, \ldots, a_{n}\} \cup \{ \emptyset \}\,.
+$$
+
+At the next section, the related metacharacter ```+``` is introduced.
 
 
 
@@ -752,6 +773,19 @@ $ egrep "a[xy]+" <<< "x"
 # doesn't match, because none of "ax", "ay", "axx", "ayy", ..., match "x"
 ```
 
+At the end of this section, we can establish the following mnemonic (in a somewhat loose way) to decipher the compound regex involving character classes ```[ ... ]``` and metacharacters ```+```:
+
+$$
+[a_{1}a_{2}\ldots a_{n}]{\scriptstyle +} = X_{1}X_{2}X_{3}\ldots \,,
+$$
+
+where each $X_{i}$ on the right-hand side can be any single element from a set $\{a_{1}, a_{2}, \ldots, a_{n}\}$, i.e. 
+
+$$
+X_{i} \in \{a_{1}, a_{2}, \ldots, a_{n}\}\,,
+$$
+
+and there shall be at least one $X_i$ on the right-hand side. Note that the number of occurences of $X_i$ on the right-hand side in the above relation is finite, but unbounded.
 
 
 
