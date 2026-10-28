@@ -1,6 +1,6 @@
 # Homework 2: Mastering regular expressions (2/2)
 
-**Last update:** 20261024-1
+**Last update:** 20261028-1
 
 
 
@@ -52,7 +52,7 @@ $ awk '/regex-1/ && /regex-2/ && /regex-3/ ...' someFile
 
 
 
-**Challenge #3:** Write a regex that matches the format of ORCID ("Open Researcher and Contributor ID"), which is an alphanumeric code used to uniquely identify authors of scientific publications. In particular, ORCID use 16-characters identifiers, consisting of four group of digits 0-9, where each group is separated by a hyphen "-". The allowed range is from 0000-0001-5000-0007 to 0000-0003-5000-0001. Only the final character may be a letter "X" (the final character serves as a checksum, but let's put that aside in this exercise). For instance, example ORCID identifiers are:
+**Challenge #3:** Write a regex that matches the format of ORCID ("Open Researcher and Contributor ID"), which is an alphanumeric code used to uniquely identify authors of scientific publications. In particular, ORCID use 16-characters identifiers, consisting of four group of digits 0-9, where each group is separated by a hyphen "-". The allowed range is from 0000-0001-5000-0007 to 0000-0003-5000-0001 (the boundaries should NOT be interpreted field-by-field). Only the final character may be a letter "X" (the final character serves as a checksum, but let's put that aside in this exercise). For instance, example ORCID identifiers are:
 
 ```bash
 0000-0002-1825-0097
