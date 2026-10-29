@@ -1,7 +1,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20261020-1
+**Last update**: 20261029-1
 
 <!-- this is a comment -->
 
@@ -31,7 +31,7 @@
 		* [a) merge](#merge)
 		* [b) rebase](#rebase)
 		* [c) cherry-pick](#cherry-pick) 
-	<!-- * [Resolving merging conflicts](#resolving.merging.conflicts) -->
+		<!-- * [Resolving merging conflicts](#resolving.merging.conflicts) -->
 6. [Executive and exemplary summary of main Git commands ](#executive.and.exemplary.summary.of.main.git.commands)
 	* [The most commonly used Git commands](#the.most.commonly.used.git.commands)
 	* [Git examples](#git.examples)
@@ -70,8 +70,9 @@ $ touch file4
 
 After all 3 steps were performed, we would like to be able any time later to recover the status of all files in the top-level directory "someDir", as they were in each of these steps.
 
-Schematically, the above example is illustrated with the following diagram (made using open-source [Mermaid](https://mermaid.js.org/)): 
+Schematically, the above example is illustrated with the following diagram (made using open-source [Mermaid](https://mermaid.ai/docs/getting-started/what-is-mermaid)): 
 
+<div align="center">
 ```mermaid	
 	flowchart LR
     subgraph Git repository
@@ -81,25 +82,27 @@ Schematically, the above example is illustrated with the following diagram (made
     end
 
 	subgraph Working tree
-    wt1["file1
-    file2"] --> r1
-    wt2["file1*
-    file2
-    file3"] --> r2
-    wt3["file1
-    file2
-    file3
-    subDir/file4"] --> r3
-    end
+	wt1["file1
+	file2"] --> r1
+	wt2["file1*
+	file2
+	file3"] --> r2
+	wt3["file1
+	file2
+	file3
+	subDir/file4"] --> r3
+	end
 ```
+</div>
 
 To each working step in this example, we have allocated a "named snapshot" to denote the specific status of all files in the repository at the time that working step was made. The version control system enables us to recover the status of the repository at a previous time simply by using a "named snapshot", or _commit identifier_ in a more technical language, that was made at that time. A particular version of the source code is also called _revision_, and in Git different revisions can be retrieved through corresponding commit identifiers.
 
 Another important conceptual goal is to organize the exchange of information between different repositories. This is particularly important when two or more people collaborate on the same project. In that case, the central repository is defined, typically online on a server, and each collaborator has a copy (or _clone_) of that central repository. That situation is illustrated with the following diagram:
 
+<div align="center">
 ```mermaid	
 flowchart TD
-    central["Central online repository"]
+    central@{ shape: cloud, label: "Central online repository" } 
     local_1["Local repository 1"]
     local_2["Local repository 2"]
     local_3["..."]
@@ -109,6 +112,10 @@ flowchart TD
     central <==> local_3    
     central <==> local_4    
 ```
+<!-- If cloud diagram doesn't work, fall back to:
+central["Central online repository"] 
+-->
+</div>
 
 For instance, when there is a change in the "Local repository 1", the owner of that local repository propagates (or _pushes_) that change in the "Central online repository", from where it can be taken (or _pulled_) into the remaining local repositories of other collaborators working on the same project. In this respect, "Central online repository" serves as a gate through which developers can exchange updates on the joint project. Central repositories are typically only "bare" repositories, i.e. they do not have a working tree and are used only to share changes between developers. In Git, by design each local repository is an exact copy of the central repository. To maintain central repository sane, it is important to set among developers a workflow with an authorization procedure, which typically amounts to code review and approving _pull requests_, before changes can be incorporated into the central repository.
 
@@ -122,26 +129,42 @@ For instance, when there is a change in the "Local repository 1", the owner of t
 
 ### 2. Git design and main goals <a name="git.design.and.main.goals"></a>
 
-To leading order, and covering only its essential features, Git design can be summarized with the following diagram:
+To leading order, and covering only its essential features, Git design can be summarized with the following two diagrams:
+
+* Adding for the first time a directory under Git version control system:
+	<div align="center">
+	```mermaid
+    %% Commit
+    flowchart LR
+        Directory["`Directory`"]
+        WorkingTree["`Working tree + .git`"]
+
+        Directory ==" Init " ==> WorkingTree 	
+    ```
+	</div>
+
+* Regular workflow in Git:
+	<div align="center">
+    ```mermaid
+    %% Commit
+    flowchart LR
+        WorkingTree["`Working tree + .git`"]
+        StagingArea["`Staging area`"]
+        GitRepository["`Git repository (.git)`"]
+
+        WorkingTree ==" Add "==> StagingArea == " Commit" ==> GitRepository
+    ```
+	</div>
 
 
-```mermaid
-%% Commit
-flowchart LR
-    WorkingTree["`Working tree`"]
-    StagingArea["`Staging area`"]
-    GitRepository["`Git repository`"]
-
-	WorkingTree ==" Add "==> StagingArea == " Commit" ==> GitRepository
-```
 
 **Working tree** denotes the current collection of all physical files in a directory, after that directory was placed under the Git version control system using command **git init**. From Git perspective, each file in the working tree can have one of these states:
 
 * _untracked_ &mdash; the file is in the working tree, but was never either added to the staging area or committed to the Git repository;
-* _tracked_ &mdash; the file that was once added to the staging area or committed;
+* _tracked_ &mdash; the file that was once added to the staging area or committed, i.e. these are the files that Git knows about;
 * _staged_ &mdash; the file is added to the staging area, but not yet committed to the Git repository;
 * _modified_ &mdash; the file is tracked already, has been modified afterward, but that modification is not staged yet;
-* _ignored_ &mdash; these are files which were added to the special file _.gitignore_ (discussed in detail later). Although these files physically exist in the working tree, Git will not report them as _untracked_. 
+* _ignored_ &mdash; these are files which were added to the special file _.gitignore_ (discussed in detail later). Although these files physically exist in the working tree, Git will not report them as _untracked_, i.e. Git literally ignores these files.
 
 
 
@@ -155,6 +178,7 @@ flowchart LR
 
 **Commit** identifier corresponds conceptually to the "named snapshot" of the content of all files in the working tree at the time when that commit was made using the Git command **git commit**. After this command was executed, the staging area was emptied, and we have the following situation in the repository:
 
+<div align="center">
 ```mermaid
 %% Commit
 flowchart LR
@@ -163,9 +187,11 @@ flowchart LR
 
 	WorkingTree <== "112a046" ==> GitRepository
 ```
+</div>
 
-If a user continues to work on files in the working tree, adds at some point later changes to the staging area and commits them, we have
+If a user continues to work on files in the working tree, adds at some point later changes to the staging area and commits them, we have:
 
+<div align="center">
 ```mermaid
 %% Commit
 flowchart LR
@@ -174,6 +200,7 @@ flowchart LR
 
 	WorkingTree <== "528917c" ==> GitRepository
 ```
+</div>
 
 Commit identifiers (```112a046``` and ```528917c``` in the diagrams above) are not randomly generated by Git. Instead, they are generated via very sophisticated algorithms using a _hash function_, which maps data of arbitrary size to fixed-size values. Git uses hash function known as **SHA-1 (Secure Hash Algorithm 1)**, which generates as a commit identifier a hexadecimal number 40 digits long from several independent sources related to that particular commit (for instance, content of all files, directories, the name of committer, the content of commit message, etc.). In practice, however, one can refer uniquely to commits by using the shortened form, as was done above. For completeness' sake, in this example, the relation between the short and full form of commit identifiers is:
 
@@ -190,12 +217,14 @@ Commit identifier works both directions: one uses commit identifier to record th
 
 **Branches** are symbolic names for an independent *line of development* in the Git repository. One can think of a branch as being the named pointer to the commit. When a new commit is made within that branch, a branch name automatically advances to that new commit. Diagrammatically, if one is developing in the branch named "main", it looks as follows after 3 commits were made at times t0 < t1 < t2:
 
+<div align="center">
 ```mermaid
  gitGraph
        commit
        commit
        commit
 ```
+</div>
 
 The branch named pointer "main" automatically advances, pointing to newer and newer commits. In the above diagram, "main" corresponds to the latest commit created at time t2.
 
@@ -310,9 +339,7 @@ The work done on the file "someFile.txt" in the "devel" branch did not affect th
 
 At the most elementary level, one has the default branch typically named "main" or "master" for the main line of development and a separate branch named "devel" for testing new features, schematically:
 
-
-
-
+<div align="center">
 ```mermaid
     gitGraph
        commit id: "change 1"
@@ -330,9 +357,11 @@ At the most elementary level, one has the default branch typically named "main" 
        checkout main
        commit id: "change 5"
 ```
+</div>
 
 After the tests in "devel" branch were successful, all new development from that "devel" branch can be merged into the "main" branch:
 
+<div align="center">
 ```mermaid
 	gitGraph
        commit id: "change 1"
@@ -350,8 +379,8 @@ After the tests in "devel" branch were successful, all new development from that
        checkout main
        merge devel
        commit id: "change 5"
- 
 ```
+</div>
 
 How such merging is performed in practice using Git commands is discussed in detail and supported with concrete examples in later section "[Combining changes: merge, rebase and cherry-pick](#combining.changes.merge.rebase.and.cherry.pick)."
 
@@ -376,11 +405,12 @@ Tags can be lightweight (just a pointer to the commit without any additional inf
 git tag 2.0.4
 
 # annotated tag:
-git tag 2.0.4 -m "some additional text describing the content of this particular tag"
+git tag 2.0.4 -m "some additional text describing the content of this tag"
 ```
 
 Diagrammatically, relation between tag, branch and commits on that branch, can be illustrated as follows:
 
+<div align="center">
 ```mermaid
 gitGraph
    commit
@@ -393,6 +423,7 @@ gitGraph
    commit id: "" tag: "2.1.0"
    commit
 ```
+</div>
 
 With each new commit, the branch named pointer "main" automatically advances, pointing to newer and newer commits on that branch. On the other hand, tags ```2.0.4```, ```2.0.5```, ```2.1.0```, etc., remain fixed to commits for which they were made. Using tags it is much easier to trace back the version of the project at particular point in the past, than using commit identifiers. To checkout version of the project corresponding to particular tag, one uses simply:
 
@@ -505,16 +536,18 @@ In the same way, configuration variables can be defined and set at "local" and "
 Before making the first commit, only the following two variables must be configured: "user.name" and "user.email". Naturally, they are configured at the "global" level as long as a user keeps his credentials the same across different Git repositories on the same computer. Therefore, the lines below represent the mandatory and minimum action to configure Git, before the first commit can be made in any repository:
 
 ```bash
-# mandatory and minimum Git configuration:
-$ git config --global user.name "First Last" # use the real name, not the acronym
-$ git config --global user.email "someEmail@tum.de" # use the valid email address
+$ git config --global user.name "First Last" 
+# use the real name, not the acronym
+
+$ git config --global user.email "someEmail@tum.de" 
+# use the valid email address
 ```
 
 Related to this, one can prevent Git for annoyingly prompting for credentials too frequently by setting:
 
 ```bash
 $ git config --global credential.helper "cache --timeout=86400" 
-# You will be prompted for credentials only once in 86400s, i.e. once per day
+# you will be prompted for credentials only once in 86400s, i.e. once per day
 ```
 
 In the next section, the most important Git configuration files are addressed.
@@ -1283,6 +1316,7 @@ There are several ways changes on different branches can be combined by using _m
 
 **Fast-forward merge** is illustrated with the following diagram:
 
+<div align="center">
 ```mermaid
 	gitGraph
        commit id: "change 1"
@@ -1295,6 +1329,7 @@ There are several ways changes on different branches can be combined by using _m
        merge devel
        commit id: "change 3"
 ```
+</div>
 
 This case corresponds to the situation where one works on the _main_ branch, then checks out the new _devel_ branch and continues experimental development on the _devel_ branch. Once development is satisfactory, all commits from the _devel_ branch can be merged into the _main_ branch. If all commits on a _devel_ branch are direct successors of HEAD on the _main_ branch, Git performs a _fast-forward merge_ by simply moving (i.e. fast-forwarding) HEAD to the tip of the _devel_ branch which is being merged. Programmatically:
 
@@ -1319,6 +1354,7 @@ Fast-forward
 
 Immediately after fast-forward merging is performed, both the _main_ branch and the _devel_ branch have all commits the same (check by using **git log** on either branch), and the HEAD of both branches points to the same commit ID. This is illustrated with the following diagram (corresponding to the above example):
 
+<div align="center">
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": false}} }%%
 flowchart RL
@@ -1330,9 +1366,11 @@ flowchart RL
     main & devel --> commitExp3 --> commitN --> commit2 --> commit1 
     commit3 --> main 
 ```
+</div>
 
 **Three-way-merge (a.k.a. 'ort' strategy)** is a more general merging strategy, and it is a default strategy when pulling or merging one branch. The name for this algorithm is an acronym for _"Ostensibly Recursive’s Twin"_ and it was developed as a replacement for the previous default algorithm, simply named _"recursive"_. It is illustrated with the following diagram:
 
+<div align="center">
 ```mermaid
 	gitGraph
        commit id: "change 1"
@@ -1348,6 +1386,7 @@ flowchart RL
        merge devel id: "merge commit" type: REVERSE
        commit id: "change 5"
 ```
+</div>
 
 Unlike in the fast-forward merge case, here after the _devel_ branch was made, for some time the development was done concurrently in both the _main_ and the _devel_ branch. In this case, all commits on the _devel_ branch are not direct successors of HEAD on the _main_ branch, and Git will merge all commits from _devel_ into _main_ by using the following approach: 
 
@@ -1454,6 +1493,7 @@ Another way to incorporate changes from one branch into another is to use _rebas
 
 We use the following diagram to illustrate the repository that contains two branches, named _main_ and _devel_, in which development is carried out in parallel:
 
+<div align="center">
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": false}} }%%
 flowchart RL
@@ -1464,6 +1504,7 @@ flowchart RL
     main --> commit3 --> commit2 --> commit1
     devel --> commitExp1 --> commit2
 ```
+</div>
 
 After the 2nd commit named "change 2" was made in the _main_ branch, a new _devel_ branch was checked out, and from that point onward, the development was carried out in parallel in both branches. If one executes now:
 
@@ -1482,6 +1523,7 @@ all changes introduced with the _devel_ branch will be applied on the HEAD of th
 
 The situation in both branches after the rebase is performed is shown in the following diagram:
 
+<div align="center">
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": false}} }%%
 flowchart RL
@@ -1492,6 +1534,7 @@ flowchart RL
     main --> commit3 --> commit2 --> commit1
     devel --> commitExp1Star --> commit3
 ```
+</div>
 
 Additional insights can be obtained from **git log** executed on the _devel_ branch:
 
@@ -1556,6 +1599,7 @@ $ git merge devel
 
 After this step, the situation in both branches is the same, i.e.:
 
+<div align="center">
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": false}} }%%
 flowchart RL
@@ -1566,7 +1610,7 @@ flowchart RL
     main --> commitExp1Star --> commit3 --> commit2 --> commit1
     devel --> commitExp1Star 
 ```
-
+</div>
 
 
 
@@ -1576,6 +1620,7 @@ flowchart RL
 Occasionally, one wants to select changes introduced only by specific commits on one branch, and propagate only those changes to another branch. This way, only these specific changes are cherry-picked and propagated. This procedure is illustrated with the following diagram: 
 
 
+<div align="center">
 ```mermaid
 	gitGraph
        commit id: "change 1"
@@ -1593,6 +1638,7 @@ Occasionally, one wants to select changes introduced only by specific commits on
        cherry-pick id:"exp. change 2"
        commit id: "change 5"
 ```
+</div>
 
 In the above example, the development is carried out concurrently on two branches, named _main_ and _devel_. After the commit named "change 4" was made on the _main_ branch, and before continuing with further development on this branch, the changes introduced by the commit "exp. change 2" on the _devel_ branch are also desired and needed on the _main_ branch. There is no need to propagate changes introduced by any other commit on the _devel_ branch, i.e. we want literally to cherry-pick changes only from one very specific commit.
 
@@ -2728,4 +2774,4 @@ In this section, some of the frequently encountered real-case scenarios are summ
 * _"Distributed Version Control with Git: Mastering the Git command line"_, Lars Vogel
 * Official website https://git-scm.com/doc and documentation therein
 * Online developer platforms using Git for code development and sharing: [GitHub](https://github.com/) and [GitLab](https://about.gitlab.com/)
-* All diagrams were made using [Mermaid](https://mermaid.js.org/), an open-source JavaScript-based diagramming and charting tool that generates diagrams from text-based descriptions
+* All diagrams were made using [Mermaid](https://mermaid.ai/docs/getting-started/what-is-mermaid), an open-source JavaScript-based diagramming and charting tool that generates diagrams from text-based descriptions
