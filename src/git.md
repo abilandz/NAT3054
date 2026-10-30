@@ -1,7 +1,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20261030-4
+**Last update**: 20261030-5
 
 <!-- this is a comment -->
 
@@ -80,24 +80,24 @@ Schematically, the above example is illustrated with the following diagram (made
 <div align="center">
 
 ```mermaid	
-flowchart LR
-subgraph Git repository
-r1["snapshot1"]
-r2["snapshot2"]
-r3["snapshot3"]
-end
+    flowchart LR
+    subgraph Git repository
+    r1["snapshot1"]
+    r2["snapshot2"]
+    r3["snapshot3"]
+    end
 
-subgraph Working tree
-wt1["file1
-file2"] --> r1
-wt2["file1*
-file2
-file3"] --> r2
-wt3["file1
-file2
-file3
-subDir/file4"] --> r3
-end
+    subgraph Working tree
+    wt1["file1
+    file2"] --> r1
+    wt2["file1*
+    file2
+    file3"] --> r2
+    wt3["file1
+    file2
+    file3
+    subDir/file4"] --> r3
+    end
 ```
 
 </div>
