@@ -1,7 +1,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20261030-13
+**Last update**: 20261030-14
 
 <!-- this is a comment -->
 
@@ -79,7 +79,7 @@ Schematically, the above example is illustrated with the following diagram (made
 
 
 
-<div style="display: flex; justify-content: center; width: 100%;">
+<div style="display: grid; place-items: center;">
 
 ```mermaid
 graph TD
@@ -87,6 +87,7 @@ graph TD
 ```
 
 </div>
+
 
 
 
