@@ -1,7 +1,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20261030-3
+**Last update**: 20261030-4
 
 <!-- this is a comment -->
 
@@ -78,26 +78,28 @@ After all 3 steps were performed, we would like to be able any time later to rec
 Schematically, the above example is illustrated with the following diagram (made using open-source [Mermaid](https://mermaid.ai/docs/getting-started/what-is-mermaid)): 
 
 <div align="center">
-```mermaid	
-	flowchart LR
-    subgraph Git repository
-    r1["snapshot1"]
-    r2["snapshot2"]
-    r3["snapshot3"]
-    end
 
-	subgraph Working tree
-	wt1["file1
-	file2"] --> r1
-	wt2["file1*
-	file2
-	file3"] --> r2
-	wt3["file1
-	file2
-	file3
-	subDir/file4"] --> r3
-	end
+```mermaid	
+flowchart LR
+subgraph Git repository
+r1["snapshot1"]
+r2["snapshot2"]
+r3["snapshot3"]
+end
+
+subgraph Working tree
+wt1["file1
+file2"] --> r1
+wt2["file1*
+file2
+file3"] --> r2
+wt3["file1
+file2
+file3
+subDir/file4"] --> r3
+end
 ```
+
 </div>
 
 To each working step in this example, we have allocated a "named snapshot" to denote the specific status of all files in the repository at the time that working step was made. The version control system enables us to recover the status of the repository at a previous time simply by using a "named snapshot", or _commit identifier_ in a more technical language, that was made at that time. A particular version of the source code is also called _revision_, and in Git different revisions can be retrieved through corresponding commit identifiers.
