@@ -1,7 +1,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20261030-8
+**Last update**: 20261030-9
 
 <!-- this is a comment -->
 
@@ -98,7 +98,7 @@ Schematically, the above example is illustrated with the following diagram (made
     file3
     subDir/file4"] --> r3
     end
-```
+	```
 
 </div>
 
@@ -122,7 +122,7 @@ Schematically, the above example is illustrated with the following diagram (made
     file3
     subDir/file4"] --> r3
     end
-```
+	```
 
 
 <div align="center">
@@ -140,7 +140,7 @@ flowchart LR
         wt2["file1*\nfile2\nfile3"] --> r2
         wt3["file1\nfile2\nfile3\nsubDir/file4"] --> r3
     end
-```
+	```
 
 </div>
 
@@ -158,7 +158,7 @@ flowchart LR
         wt2["file1*\nfile2\nfile3"] --> r2
         wt3["file1\nfile2\nfile3\nsubDir/file4"] --> r3
     end
-```
+	```
 
 To each working step in this example, we have allocated a "named snapshot" to denote the specific status of all files in the repository at the time that working step was made. The version control system enables us to recover the status of the repository at a previous time simply by using a "named snapshot", or _commit identifier_ in a more technical language, that was made at that time. A particular version of the source code is also called _revision_, and in Git different revisions can be retrieved through corresponding commit identifiers.
 
