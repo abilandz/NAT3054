@@ -1,7 +1,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20261030-12
+**Last update**: 20261030-13
 
 <!-- this is a comment -->
 
@@ -78,11 +78,16 @@ After all 3 steps were performed, we would like to be able any time later to rec
 Schematically, the above example is illustrated with the following diagram (made using open-source [Mermaid](https://mermaid.ai/docs/getting-started/what-is-mermaid)): 
 
 
+
+<div style="display: flex; justify-content: center; width: 100%;">
+
 ```mermaid
-%%{init: {'themeCSS': '.output-div, .mermaid, svg { display: block; margin: 0 auto !important; }'}}%%
 graph TD
     A[Start] --> B[Process]
 ```
+
+</div>
+
 
 
 <div align="center">
