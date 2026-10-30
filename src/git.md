@@ -1,7 +1,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20261029-1
+**Last update**: 20261030-1
 
 <!-- this is a comment -->
 
@@ -218,12 +218,17 @@ Commit identifier works both directions: one uses commit identifier to record th
 **Branches** are symbolic names for an independent *line of development* in the Git repository. One can think of a branch as being the named pointer to the commit. When a new commit is made within that branch, a branch name automatically advances to that new commit. Diagrammatically, if one is developing in the branch named "main", it looks as follows after 3 commits were made at times t0 < t1 < t2:
 
 <div align="center">
+
 ```mermaid
- gitGraph
-       commit
-       commit
-       commit
+%%{init: {
+  'theme': 'redux-color'
+}}%%
+gitGraph
+   commit
+   commit
+   commit
 ```
+
 </div>
 
 The branch named pointer "main" automatically advances, pointing to newer and newer commits. In the above diagram, "main" corresponds to the latest commit created at time t2.
@@ -340,46 +345,56 @@ The work done on the file "someFile.txt" in the "devel" branch did not affect th
 At the most elementary level, one has the default branch typically named "main" or "master" for the main line of development and a separate branch named "devel" for testing new features, schematically:
 
 <div align="center">
+
 ```mermaid
-    gitGraph
-       commit id: "change 1"
-       commit id: "change 2"
-       branch devel
-       commit id: "exp. change 1"
-       commit id: "exp. change 2"
-       commit id: "exp. change 3"
-       checkout main
-       commit id: "change 3"
-       commit id: "change 4"
-       checkout devel
-       commit id: "exp. change 4"
-       commit id: "exp. change 5"
-       checkout main
-       commit id: "change 5"
+%%{init: {
+  'theme': 'redux-color'
+}}%%
+gitGraph
+   commit id: "change 1"
+   commit id: "change 2"
+   branch devel
+   commit id: "exp. change 1"
+   commit id: "exp. change 2"
+   commit id: "exp. change 3"
+   checkout main
+   commit id: "change 3"
+   commit id: "change 4"
+   checkout devel
+   commit id: "exp. change 4"
+   commit id: "exp. change 5"
+   checkout main
+   commit id: "change 5"
 ```
+
 </div>
 
 After the tests in "devel" branch were successful, all new development from that "devel" branch can be merged into the "main" branch:
 
 <div align="center">
+
 ```mermaid
-	gitGraph
-       commit id: "change 1"
-       commit id: "change 2"
-       branch devel
-       commit id: "exp. change 1"
-       commit id: "exp. change 2"
-       commit id: "exp. change 3"
-       checkout main
-       commit id: "change 3"
-       commit id: "change 4"
-       checkout devel
-       commit id: "exp. change 4"
-       commit id: "exp. change 5"
-       checkout main
-       merge devel
-       commit id: "change 5"
+%%{init: {
+  'theme': 'redux-color'
+}}%%
+gitGraph
+   commit id: "change 1"
+   commit id: "change 2"
+   branch devel
+   commit id: "exp. change 1"
+   commit id: "exp. change 2"
+   commit id: "exp. change 3"
+   checkout main
+   commit id: "change 3"
+   commit id: "change 4"
+   checkout devel
+   commit id: "exp. change 4"
+   commit id: "exp. change 5"
+   checkout main
+   merge devel
+   commit id: "change 5"
 ```
+
 </div>
 
 How such merging is performed in practice using Git commands is discussed in detail and supported with concrete examples in later section "[Combining changes: merge, rebase and cherry-pick](#combining.changes.merge.rebase.and.cherry.pick)."
@@ -411,7 +426,11 @@ git tag 2.0.4 -m "some additional text describing the content of this tag"
 Diagrammatically, relation between tag, branch and commits on that branch, can be illustrated as follows:
 
 <div align="center">
+
 ```mermaid
+%%{init: {
+  'theme': 'redux-color'
+}}%%
 gitGraph
    commit
    commit id: "" tag: "2.0.4"
@@ -423,6 +442,7 @@ gitGraph
    commit id: "" tag: "2.1.0"
    commit
 ```
+
 </div>
 
 With each new commit, the branch named pointer "main" automatically advances, pointing to newer and newer commits on that branch. On the other hand, tags ```2.0.4```, ```2.0.5```, ```2.1.0```, etc., remain fixed to commits for which they were made. Using tags it is much easier to trace back the version of the project at particular point in the past, than using commit identifiers. To checkout version of the project corresponding to particular tag, one uses simply:
@@ -1318,16 +1338,19 @@ There are several ways changes on different branches can be combined by using _m
 
 <div align="center">
 ```mermaid
-	gitGraph
-       commit id: "change 1"
-       commit id: "change 2"
-       branch devel
-       commit id: "exp. change 1"
-       commit id: "exp. change 2"
-       commit id: "exp. change 3"
-       checkout main
-       merge devel
-       commit id: "change 3"
+%%{init: {
+  'theme': 'redux-color'
+}}%%
+gitGraph
+   commit id: "change 1"
+   commit id: "change 2"
+   branch devel
+   commit id: "exp. change 1"
+   commit id: "exp. change 2"
+   commit id: "exp. change 3"
+   checkout main
+   merge devel
+   commit id: "change 3"
 ```
 </div>
 
@@ -1371,21 +1394,26 @@ flowchart RL
 **Three-way-merge (a.k.a. 'ort' strategy)** is a more general merging strategy, and it is a default strategy when pulling or merging one branch. The name for this algorithm is an acronym for _"Ostensibly Recursive’s Twin"_ and it was developed as a replacement for the previous default algorithm, simply named _"recursive"_. It is illustrated with the following diagram:
 
 <div align="center">
+
 ```mermaid
-	gitGraph
-       commit id: "change 1"
-       commit id: "change 2"
-       branch devel
-       commit id: "exp. change 1"
-       checkout main
-       commit id: "change 3"
-       commit id: "change 4"
-       checkout devel
-	   commit id: "exp. change 2"
-       checkout main
-       merge devel id: "merge commit" type: REVERSE
-       commit id: "change 5"
+%%{init: {
+  'theme': 'redux-color'
+}}%%
+gitGraph
+   commit id: "change 1"
+   commit id: "change 2"
+   branch devel
+   commit id: "exp. change 1"
+   checkout main
+   commit id: "change 3"
+   commit id: "change 4"
+   checkout devel
+   commit id: "exp. change 2"
+   checkout main
+   merge devel id: "merge commit" type: REVERSE
+   commit id: "change 5"
 ```
+
 </div>
 
 Unlike in the fast-forward merge case, here after the _devel_ branch was made, for some time the development was done concurrently in both the _main_ and the _devel_ branch. In this case, all commits on the _devel_ branch are not direct successors of HEAD on the _main_ branch, and Git will merge all commits from _devel_ into _main_ by using the following approach: 
@@ -1622,21 +1650,24 @@ Occasionally, one wants to select changes introduced only by specific commits on
 
 <div align="center">
 ```mermaid
-	gitGraph
-       commit id: "change 1"
-       commit id: "change 2"
-       branch devel
-       commit id: "exp. change 1"
-       checkout main
-       commit id: "change 3"
-       commit id: "change 4"
-       checkout devel
-	   commit id: "exp. change 2"
-	   commit id: "exp. change 3"
-	   commit id: "exp. change 4"
-       checkout main
-       cherry-pick id:"exp. change 2"
-       commit id: "change 5"
+%%{init: {
+  'theme': 'redux-color'
+}}%%
+gitGraph
+   commit id: "change 1"
+   commit id: "change 2"
+   branch devel
+   commit id: "exp. change 1"
+   checkout main
+   commit id: "change 3"
+   commit id: "change 4"
+   checkout devel
+   commit id: "exp. change 2"
+   commit id: "exp. change 3"
+   commit id: "exp. change 4"
+   checkout main
+   cherry-pick id:"exp. change 2"
+   commit id: "change 5"
 ```
 </div>
 
