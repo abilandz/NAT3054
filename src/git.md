@@ -1,7 +1,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20261030-2
+**Last update**: 20261030-3
 
 <!-- this is a comment -->
 
@@ -228,7 +228,7 @@ Branches are symbolic names for an independent *line of development* in the Git 
 
 ```mermaid
 %%{init: {
-  'theme': 'redux-color'
+  'theme': 'neutral'
 }}%%
 gitGraph
    commit
@@ -359,7 +359,7 @@ At the most elementary level, one has the default branch typically named "main" 
 
 ```mermaid
 %%{init: {
-  'theme': 'redux-color'
+  'theme': 'neutral'
 }}%%
 gitGraph
    commit id: "change 1"
@@ -386,7 +386,7 @@ After the tests in "devel" branch were successful, all new development from that
 
 ```mermaid
 %%{init: {
-  'theme': 'redux-color'
+  'theme': 'neutral'
 }}%%
 gitGraph
    commit id: "change 1"
@@ -444,7 +444,7 @@ Diagrammatically, relation between tag, branch and commits on that branch, can b
 
 ```mermaid
 %%{init: {
-  'theme': 'redux-color'
+  'theme': 'neutral'
 }}%%
 gitGraph
    commit
@@ -1347,7 +1347,7 @@ There are several ways changes on different branches can be combined by using _m
 <div align="center">
 ```mermaid
 %%{init: {
-  'theme': 'redux-color'
+  'theme': 'neutral'
 }}%%
 gitGraph
    commit id: "change 1"
@@ -1405,7 +1405,7 @@ flowchart RL
 
 ```mermaid
 %%{init: {
-  'theme': 'redux-color'
+  'theme': 'neutral'
 }}%%
 gitGraph
    commit id: "change 1"
@@ -1659,7 +1659,7 @@ Occasionally, one wants to select changes introduced only by specific commits on
 <div align="center">
 ```mermaid
 %%{init: {
-  'theme': 'redux-color'
+  'theme': 'neutral'
 }}%%
 gitGraph
    commit id: "change 1"
