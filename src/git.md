@@ -1,7 +1,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20261030-1
+**Last update**: 20261030-2
 
 <!-- this is a comment -->
 
@@ -10,16 +10,18 @@
 ### Outline
 1. [Introduction to version control system](#introduction.to.version.control.system)
 
-2. [Git design and main goals](#git.design.and.main.goals)
+2. [Git design (part 1/2)](#git.design.part.1)
 
-    * [The first Git repository from scratch](#the.first.git.repository.from.scratch)  		
+3. [The first Git repository from scratch](#the.first.git.repository.from.scratch)  		
 
-3. [Configuring Git](#configuring.git)
+4. [Git design (part 2/2)](#git.design.part.2)
+
+5. [Configuring Git](#configuring.git)
 
     * [Configuration variables](#configuration.variables)  		
     * [Configuration files](#configuration.files)  		
 
-4. [Typical Git workflows](#typical.git.workflows)
+6. [Typical Git workflows](#typical.git.workflows)
 
 	* [Quick setup of standalone local repository](#quick.setup.of.standalone.local.repository)
 	* [Quick setup of local and remote online repository](#quick.setup.of.local.and.remote.online.repository)
@@ -32,11 +34,14 @@
 		* [b) rebase](#rebase)
 		* [c) cherry-pick](#cherry-pick) 
 		<!-- * [Resolving merging conflicts](#resolving.merging.conflicts) -->
-6. [Executive and exemplary summary of main Git commands ](#executive.and.exemplary.summary.of.main.git.commands)
+
+7. [Executive and exemplary summary of main Git commands ](#executive.and.exemplary.summary.of.main.git.commands)
 	* [The most commonly used Git commands](#the.most.commonly.used.git.commands)
 	* [Git examples](#git.examples)
-7. [Git how-tos](#git.how.tos)
-8. [Further reading](#further.reading)
+
+8. [Git how-tos](#git.how.tos)
+
+9. [Further reading](#further.reading)
 
    
 
@@ -127,7 +132,7 @@ For instance, when there is a change in the "Local repository 1", the owner of t
 
 
 
-### 2. Git design and main goals <a name="git.design.and.main.goals"></a>
+### 2. Git design (part 1/2) <a name="git.design.part.1"></a>
 
 To leading order, and covering only its essential features, Git design can be summarized with the following two diagrams:
 
@@ -156,9 +161,11 @@ To leading order, and covering only its essential features, Git design can be su
     ```
 	</div>
 
+Below we elaborate in detail on all items in the above diagrams.
 
 
-**Working tree** denotes the current collection of all physical files in a directory, after that directory was placed under the Git version control system using command **git init**. From Git perspective, each file in the working tree can have one of these states:
+#### Working tree
+Working tree denotes the current collection of all physical files in a directory, after that directory was placed under the Git version control system using command **git init**. From Git perspective, each file in the working tree can have one of these states:
 
 * _untracked_ &mdash; the file is in the working tree, but was never either added to the staging area or committed to the Git repository;
 * _tracked_ &mdash; the file that was once added to the staging area or committed, i.e. these are the files that Git knows about;
@@ -167,16 +174,16 @@ To leading order, and covering only its essential features, Git design can be su
 * _ignored_ &mdash; these are files which were added to the special file _.gitignore_ (discussed in detail later). Although these files physically exist in the working tree, Git will not report them as _untracked_, i.e. Git literally ignores these files.
 
 
-
-**Staging area** represents an intermediate step towards making the changes introduced in the working tree final and permanently added in the Git repository. Staging area is an important part of Git design and it serves few important purposes. Firstly, it distills trivial from important changes in the working tree and permanently records in repository only important changes. Secondly, it enables a user to add multiple files to the staging area, and commit all files accumulated in the staging area to Git repository in one go with the same commit identifier. Files from working tree are added to the staging area with the Git command **git add**.    
-
-
-
-**Git repository** comprises a working tree and information about all changes made in the working tree. Git keeps track of all changes in a directory added to its revision in the hidden subdirectory named _.git_ . One can think of a Git repository being the content of a subdirectory _.git_ . This subdirectory contains the complete history of the repository, and the repository can be thought of as a collection of all files and all changes of each file (i.e. complete history of all files). The user works in the working tree and, at specific intervals (typically after important development has been accomplished), commits the changes in the repository. Then, at any point afterward, solely from information stored in the Git repository, a user can restore the status of the working tree as it was at any particular commit by using the commit identifier. It is the user's responsibility to commit changes in the repository each time an important change in the working tree has been achieved. Files from the staging area are added permanently to the Git repository with the Git command **git commit**. Deleting the Git repository is equivalent to executing **rm -rf .git** command.
+#### Staging area
+Staging area represents an intermediate step towards making the changes introduced in the working tree final, and permanently added in the Git repository. Staging area is an important part of Git design and it serves few important purposes. Firstly, it distills trivial from important changes in the working tree and permanently records in repository only important changes. Secondly, it enables a user to add multiple files to the staging area, and commit all files accumulated in the staging area to Git repository in one go with the same commit identifier. Files from working tree are added to the staging area with the Git command **git add**.    
 
 
+#### Git repository (.git)
+Git repository comprises a working tree and information about all changes made in the working tree. Git keeps track of all changes in a directory added to its revision in the hidden subdirectory named _.git_ . One can think of a Git repository being the content of a subdirectory _.git_ . This subdirectory contains the complete history of the repository, and the repository can be thought of as a collection of all files and all changes of each file (i.e. complete history of all files). The user works in the working tree and, at specific intervals (typically after important development has been accomplished), commits the changes in the repository. Then, at any point afterward, solely from information stored in the Git repository, a user can restore the status of the working tree as it was at any particular commit by using the commit identifier. It is the user's responsibility to commit changes in the repository each time an important change in the working tree has been achieved. Files from the staging area are added permanently to the Git repository with the Git command **git commit**. Deleting the Git repository is equivalent to executing **rm -rf .git** command.
 
-**Commit** identifier corresponds conceptually to the "named snapshot" of the content of all files in the working tree at the time when that commit was made using the Git command **git commit**. After this command was executed, the staging area was emptied, and we have the following situation in the repository:
+
+#### Commit
+Commit identifier, or shortly  _commit_, corresponds conceptually to the "named snapshot" of the content of all files in the working tree at the time when that commit was made using the Git command **git commit**. After this command was executed, the staging area was emptied, and we have the following situation in the repository:
 
 <div align="center">
 ```mermaid
@@ -214,8 +221,8 @@ Of course, one does not need to memorize these cryptic commit identifiers. While
 Commit identifier works both directions: one uses commit identifier to record the status of all files at a given time in the repository, and then at some pointer later when the content of files in working tree changes, one can use that same commit identifier to recover the status of all files at the time that commit identifier was created. For simplicity, in what follows next we will refer to commit identifier simply as _commit_.
 
 
-
-**Branches** are symbolic names for an independent *line of development* in the Git repository. One can think of a branch as being the named pointer to the commit. When a new commit is made within that branch, a branch name automatically advances to that new commit. Diagrammatically, if one is developing in the branch named "main", it looks as follows after 3 commits were made at times t0 < t1 < t2:
+#### Branches
+Branches are symbolic names for an independent *line of development* in the Git repository. One can think of a branch as being the named pointer to the commit. When a new commit is made within that branch, a branch name automatically advances to that new commit. Diagrammatically, if one is developing in the branch named "main", it looks as follows after 3 commits were made at times t0 < t1 < t2:
 
 <div align="center">
 
@@ -235,9 +242,13 @@ The branch named pointer "main" automatically advances, pointing to newer and ne
 
 Branches enable a user to work in parallel on different versions of the collection of all files in the working tree. It is possible to switch from one branch to another, i.e. from one state of all files to another state, by using Git command **git checkout**. Before switching from one branch to another, it is mandatory to commit, revert or stash all changes in the current branch, otherwise the command **git checkout** will fail. The first time this command is used a new branch is created.
 
-#### The first Git repository from scratch <a name="the.first.git.repository.from.scratch"></a>
 
-All Git concepts introduced in this section are now supported with concrete step-by-step example. First, one creates a new directory and places it under Git version control system with **git init** command: 
+
+
+
+### 3. The first Git repository from scratch <a name="the.first.git.repository.from.scratch"></a>
+
+All Git concepts introduced in the previoous section are now supported with concrete step-by-step example. First, one creates a new directory and places it under Git version control system with **git init** command: 
 
 ```bash
 $ mkdir someDir
@@ -401,11 +412,15 @@ How such merging is performed in practice using Git commands is discussed in det
 
 
 
-We finalize discussion on the Git design by introducing **tags**, **HEAD**, and **detached HEAD**, which are closely related to branches. 
 
 
 
-**tag :** A tag represents a version of a particular branch at a moment in time. Tags are symbolic names for a given revision. They always point to the same commit (usually to the same revision), i.e. they do not change (as apposed to branches). Tags are typically used to mark and announce an important new milestone in the project development (e.g. a new release, etc.). A widely adopted naming convention for release tags is ```[major].[minor].[patch]```, where three counters are increased if: 
+### 4. Git design (part 2/2) <a name="git.design.part.2"></a>
+In this section we finalize discussion on the Git design by introducing **tags** and **HEAD**, and **detached HEAD**.
+
+
+#### Tag
+Tag represents a version of a particular branch at a moment in time. Tags are symbolic names for a given revision. They always point to the same commit (usually to the same revision), i.e. they do not change (as apposed to branches). Tags are typically used to mark and announce an important new milestone in the project development (e.g. a new release, etc.). A widely adopted naming convention for release tags is ```[major].[minor].[patch]```, where three counters are increased if: 
 
 * ```major``` &mdash; any backward incompatible change is introduced;
 * ```minor``` &mdash; new backward compatible functionality is introduced;
@@ -453,8 +468,8 @@ git checkout 2.0.4
 ```
 
 
-
-**HEAD** is a symbolic reference usually pointing to the branch which is currently checked out. Since the branch name is a named pointer to the latest commit on that branch, indirectly, **HEAD** usually points to the latest commit on the current branch. One can see its current content directly by inspecting the content of a special file ".git/HEAD" in the repository, e.g.
+#### HEAD
+HEAD is a symbolic reference usually pointing to the branch which is currently checked out. Since the branch name is a named pointer to the latest commit on that branch, indirectly, HEAD usually points to the latest commit on the current branch. One can see its current content directly by inspecting the content of a special file ".git/HEAD" in the repository, e.g.
 
 ```bash
 # Checkout the branch "master":
@@ -472,7 +487,8 @@ $ cat .git/HEAD
 
 
 
-**detached HEAD** : If you checkout a commit ID or tag, you are in _detached HEAD_ state. While it is possible to make new commits in _detached HEAD_ state, those commits will not cause the branch pointer to automatically advance with them, and therefore committed changes in this mode are difficult to track later. If you switch to another branch, **HEAD** points to that new branch, i.e. it will automatically advance to a new commit on that new branch. 
+#### Detached HEAD
+Detached HEAD is a state after you checkout a commit ID or tag. While it is possible to make new commits in detached HEAD state, those commits will not cause the branch pointer to automatically advance with them, and therefore committed changes in this mode are difficult to track later. If you switch to another branch, HEAD points to that new branch, i.e. it will automatically advance to a new commit on that new branch. 
 
 
 
@@ -480,7 +496,7 @@ $ cat .git/HEAD
 
 
 
-### 3. Configuring Git <a name="configuring.git"></a>
+### 5. Configuring Git <a name="configuring.git"></a>
 
 There are files and variables which have a special meaning to Git and which can be used to modify its default behavior. Before setting up the workflow and making the first commit in a Git repository, it is necessary to review, set or adapt some of these special files and variables, i.e. it is necessary to configure Git.
 
@@ -718,15 +734,7 @@ A few concluding remarks on the usage of ".gitignore":
 
 
 
-
-
-
-
-
-
-### 4. Typical Git workflows <a name="typical.git.workflows"></a>
-
-
+### 6. Typical Git workflows <a name="typical.git.workflows"></a>
 
 
 #### Quick setup of standalone local repository <a name="quick.setup.of.standalone.local.repository"></a>
@@ -1737,7 +1745,7 @@ $ git log --oneline
 
 
 
-### 5. Executive and exemplary summary of main Git commands <a name="executive.and.exemplary.summary.of.main.git.commands"></a>
+### 7. Executive and exemplary summary of main Git commands <a name="executive.and.exemplary.summary.of.main.git.commands"></a>
 In this section, we list in alphabetical order the most commonly used **git** commands with an executive summary of their meaning. This summary is followed up with a series of examples illustrating their simple use cases in practice. 
 
 The generic usage of **git** command is: 
@@ -2562,7 +2570,7 @@ Dropped refs/stash@{0} (9b04bc441f665be83aef5342c762f60fbcd7fa3e)
 
 
 
-### 6. Git how-tos <a name="git.how.tos"></a>
+### 8. Git how-tos <a name="git.how.tos"></a>
 
 In this section, some of the frequently encountered real-case scenarios are summarized in an exemplary way for their solution.
 
@@ -2793,16 +2801,24 @@ In this section, some of the frequently encountered real-case scenarios are summ
 
 
 
+* **How to completely undo the latest commit?**
+
+Frequently, one makes a new commit in the local Git repository, and immediately realizes that that commit still wasn't ready. To undo that commit completely, it suffices to exectue:
+
+```bash
+git reset HEAD~
+```
+
+This will literally bring back everything in the Git repository into the status just before the latest commit.
 
 
 
 
 
-
-
-### 7. Further reading <a name="further.reading"></a>
+### 9. Further reading <a name="further.reading"></a>
 
 * _"Distributed Version Control with Git: Mastering the Git command line"_, Lars Vogel
 * Official website https://git-scm.com/doc and documentation therein
 * Online developer platforms using Git for code development and sharing: [GitHub](https://github.com/) and [GitLab](https://about.gitlab.com/)
 * All diagrams were made using [Mermaid](https://mermaid.ai/docs/getting-started/what-is-mermaid), an open-source JavaScript-based diagramming and charting tool that generates diagrams from text-based descriptions
+* A lot of practical Git examples and solutions can be obtained from [https://stackoverflow.com](https://stackoverflow.com/questions/tagged/git) .
