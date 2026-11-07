@@ -1,7 +1,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20261103-1
+**Last update**: 20261107-1
 
 <!-- this is a comment -->
 
@@ -141,7 +141,7 @@ To leading order, and covering only its essential features, Git design can be su
         WorkingTree["`Working tree + .git`"]
 
         Directory ==" Init " ==> WorkingTree 	
-  	```
+	```
 
 * Regular workflow in Git:
 
