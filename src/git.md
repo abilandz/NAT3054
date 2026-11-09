@@ -1,7 +1,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20261107-1
+**Last update**: 20261109-1
 
 <!-- this is a comment -->
 
@@ -49,7 +49,7 @@
 
 
 ### 1. Introduction to version control system <a name="introduction.to.version.control.system"></a>
-When developing a source code in a particular programming language, writing a thesis, etc., one frequently encounters the requirements which deal with the specific version of that project, i.e. with the status of all of its files at a specified time. One example is creating a backup of current version of all files in the project, before progressing with a further development. Another example is a request to revert back the latest changes introduced in the project, because it turned out those changes were erroneous. Frequently, one wants to be able to develop concurrently in parallel multiple versions of the same project, maintaining in parallel the main line of development and the separate line(s) in which all new features are being tested. Finally, especially when working on a large-scale projects, it is important to set up the workflow for project development in such a way so that different individuals can collaborate on it.
+When developing source code in a particular programming language, writing a thesis, etc., one frequently encounters the requirements which deal with the specific version of that project, i.e. with the status of all of its files at a specified time. One example is creating a backup of current version of all files in the project, before progressing with a further development. Another example is a request to revert back the latest changes introduced in the project, because it turned out those changes were erroneous. Frequently, one wants to be able to develop concurrently in parallel multiple versions of the same project, maintaining in parallel the main line of development and the separate line(s) in which all new features are being tested. Finally, especially when working on large-scale projects, it is important to set up the workflow for project development in such a way so that different individuals can collaborate on it.
 
 All these requests can be attained with the software category dubbed _version control system_. Currently, by far the most popular software in this category is an open-source distributed version control system called _Git_, and in this lecture it is used exclusively.
 
@@ -73,7 +73,7 @@ $ cd subDir
 $ touch file4
 ```
 
-After all 3 steps were performed, we would like to be able any time later to recover the status of all files in the top-level directory "someDir", as they were in each of these steps.
+After all 3 steps were performed, we would like to be able to recover at any time later the status of all files in the top-level directory "someDir", as they were in each of these steps.
 
 Schematically, the above example is illustrated with the following diagram (made using open-source [Mermaid](https://mermaid.ai/docs/getting-started/what-is-mermaid)): 
 
@@ -226,7 +226,7 @@ gitGraph
 
 The branch named pointer "main" automatically advances, pointing to newer and newer commits. In the above diagram, "main" corresponds to the latest commit created at time t2.
 
-Branches enable a user to work in parallel on different versions of the collection of all files in the working tree. It is possible to switch from one branch to another, i.e. from one state of all files to another state, by using Git command **git checkout**. Before switching from one branch to another, it is mandatory to commit, revert or stash all changes in the current branch, otherwise the command **git checkout** will fail. The first time this command is used a new branch is created.
+Branches enable a user to work in parallel on different versions of the collection of all files in the working tree. It is possible to switch from one branch to another, i.e. from one state of all files to another state, by using Git commands **git checkout "another-branch-name"** or **git switch "another-branch-name"**. Before switching from one branch to another, it is advisable to commit, discard or stash all changes in the current branch, otherwise these commands might fail, if switching from one branch to another leads to conflicting changes. A new branch is created with explicit usage of additional flags **-b** and **-c**, respectively, e.g. **git checkout -b "new-branch-name"** or **git switch -c "new-branch-name"**.
 
 
 
@@ -293,7 +293,7 @@ On branch main
 nothing to commit, working tree clean
 ```
 
-We can now continue to develop the file "someFile.txt" in two independent branches. The new branch named "devel" is made using the command **git checkout -b** _newBranchName_ (newer Git versions also support **git switch -c** _newBranchName_):
+We can now continue to develop the file "someFile.txt" in two independent branches. The new branch named "devel" is made using the command **git checkout -b "new-branch-name"**, or in newer Git versions **git switch -c "new-branch-name"**:
 
 ```bash 
 # make new branch and switch to it:
@@ -326,7 +326,7 @@ $ git commit -m "example commit on devel branch"
 1 file changed, 1 insertion(+)
 ```
 
-And now comes the important point. We can now switch back to the default branch "main" and inspect the content of "someFile.txt" on that branch:
+And now comes the important point &mdash; we can now switch back to the default branch "main" and inspect the content of "someFile.txt" on that branch:
 
 ```bash
 $ git checkout main
@@ -394,26 +394,26 @@ How such merging is performed in practice using Git commands is discussed in det
 
 
 ### 4. Git design (part 2/2) <a name="git.design.part.2"></a>
-In this section we finalize discussion on the Git design by introducing **tags** and **HEAD**, and **detached HEAD**.
+In this section we finalize discussion on the Git design by introducing **tags**, **HEAD**, and **detached HEAD**.
 
 
 #### Tag
-Tag represents a version of a particular branch at a moment in time. Tags are symbolic names for a given revision. They always point to the same commit (usually to the same revision), i.e. they do not change (as apposed to branches). Tags are typically used to mark and announce an important new milestone in the project development (e.g. a new release, etc.). A widely adopted naming convention for release tags is ```[major].[minor].[patch]```, where three counters are increased if: 
+A tag represents a status of a particular branch at a moment in time. Tags are symbolic names for a given revision. They always point to the same commit (usually to the same revision), i.e. they do not change (as opposed to branches). Tags are typically used to mark and announce an important new milestone in the project development (e.g. a new release, etc.). A widely adopted naming convention for release tags is ```[major].[minor].[patch]```, where three counters are increased if: 
 
 * ```major``` &mdash; any backward incompatible change is introduced;
 * ```minor``` &mdash; new backward compatible functionality is introduced;
 * ```patch``` &mdash; new backward compatible fix (typically a minor bug fix) is introduced.
 
-Further details on these conventions can be found at https://semver.org/ . For instance, the current ROOT release is ```6.34.08``` and introduces new, but backward compatible, functionalities with respect to ```6.32.00```, and only minor bug fixes with respect to ```6.34.06```. On the other hand, an upcoming ROOT 7 release ```7.00.00``` is basically a new project, with a lot of new functionalities developed from scratch and introduced for the first time with this version.  
+Further details on these conventions can be found at [https://semver.org/](https://semver.org/). For instance, the recent ROOT release was ```6.34.08``` and introduced new, but backward compatible, functionalities with respect to ```6.32.00```, and only minor bug fixes with respect to ```6.34.06```. On the other hand, an upcoming ROOT 7 release ```7.00.00``` (expected to be released in 2028) is basically a new project, with a lot of new functionalities developed from scratch and introduced for the first time with this version.  
 
 Tags can be lightweight (just a pointer to the commit without any additional information) or annotated (contains additional information):
 
 ```bash
 # lightweight tag:
-git tag 2.0.4
+$ git tag 2.0.4
 
 # annotated tag:
-git tag 2.0.4 -m "some additional text describing the content of this tag"
+$ git tag 2.0.4 -m "some additional text describing the content of this tag"
 ```
 
 Diagrammatically, relation between tag, branch and commits on that branch, can be illustrated as follows:
@@ -438,12 +438,12 @@ With each new commit, the branch named pointer "main" automatically advances, po
 
 ```bash 
 # checkout the status of the project at particular tag in the past:
-git checkout 2.0.4
+$ git checkout 2.0.4
 ```
 
 
 #### HEAD
-HEAD is a symbolic reference usually pointing to the branch which is currently checked out. Since the branch name is a named pointer to the latest commit on that branch, indirectly, HEAD usually points to the latest commit on the current branch. One can see its current content directly by inspecting the content of a special file ".git/HEAD" in the repository, e.g.
+HEAD is a symbolic reference usually pointing to the branch which is currently checked out. Since the branch name is a named pointer to the latest commit on that branch, indirectly, HEAD usually points to the latest commit on the current branch. One can see its current content directly by inspecting the special file ".git/HEAD" in the repository, e.g.
 
 ```bash
 # Checkout the branch "master":
@@ -458,12 +458,12 @@ $ git checkout 33f4fc7
 $ cat .git/HEAD 
 33f4fc75e4e3382f3a6c027baa375ddebcfaf41c
 ```
+There is a fundamental difference in the two examples above &mdash; in the second case, the **HEAD** is fixed to the specific commit, i.e. we end up in a **detached HEAD** state, which is clarified next. 
 
 
 
 #### Detached HEAD
-Detached HEAD is a state after you checkout a commit ID or tag. While it is possible to make new commits in detached HEAD state, those commits will not cause the branch pointer to automatically advance with them, and therefore committed changes in this mode are difficult to track later. If you switch to another branch, HEAD points to that new branch, i.e. it will automatically advance to a new commit on that new branch. 
-
+Detached HEAD is a state after you check out a commit ID or tag which is not the tip of any branch. While it is possible to make new commits in detached HEAD state, those commits will not cause the branch pointer to automatically advance with them, and therefore committed changes in this mode are difficult to track later. If you switch to another branch, HEAD points to the tip of that branch, and it will automatically advance afterward to any newly created commit on that branch. 
 
 
 
@@ -520,7 +520,7 @@ $ git config --global --list
 $ git config --system --list
 ```
 
-For instance, by default Git is typically configured to use **nano** editor internally. If a user prefers another editor to be used within Git (e.g. to write commit messages) in all his repositories, the configuration variable "core.editor" needs be set at "global" level as follows:
+For instance, by default Git is typically configured to use **nano** editor internally. If a user prefers another editor to be used within Git (e.g. to write commit messages) in all his repositories, the configuration variable "core.editor" needs to be set at "global" level as follows:
 
 ```bash
 # set default Git editor to "gedit":
@@ -553,7 +553,7 @@ $ git config --global user.email "someEmail@tum.de"
 # use the valid email address
 ```
 
-Related to this, one can prevent Git for annoyingly prompting for credentials too frequently by setting:
+Related to this, one can prevent Git from annoyingly prompting for credentials too frequently by setting:
 
 ```bash
 $ git config --global credential.helper "cache --timeout=86400" 
@@ -568,7 +568,7 @@ In the next section, the most important Git configuration files are addressed.
 
 #### Configuration files <a name="configuration.files"></a>
 
-In addition to the configuration variables, there are also configuration files that have a special meaning to Git. Arguably, the most frequently used configuration file is a hidden file named _.gitignore_ . In this file, all files and/or directories in the working tree that Git shall not track can be listed. It is very important to realize that this mechanism can be used only for the new files (i.e. untracked files) in the working tree, but it can not be used to stop tracking already tracked files (in this case, one has to use first **git rm --cached**, see later sections). Finally, both the creation of _.gitignore_ itself in the working tree and any changes in _.gitignore_ afterward need to be staged and committed as well, for its current content to be taken into account by Git.
+In addition to the configuration variables, there are also configuration files that have a special meaning to Git. Arguably, the most frequently used configuration file is a hidden file named _.gitignore_ . In this file, all files and/or directories in the working tree that Git shall not track can be listed. It is very important to realize that this mechanism can be used only for the new files (i.e. untracked files) in the working tree, but it can not be used to stop tracking already tracked files (in this case, one has to use first **git rm --cached**, see later sections). Finally, both the creation of _.gitignore_ itself in the working tree and any changes in _.gitignore_ afterward need to be staged and committed as well, for its current content to be taken into account by other collaborators on the same project (only in the current local repository any changes in _.gitignore_ have immediate effect).
 
 Each Git repository has its own set of _.gitignore_ files, whose scope can be interpreted as follows:
 
@@ -639,7 +639,7 @@ Untracked files:
 nothing added to commit but untracked files present (use "git add" to track)
 ```
 
-As it can be seen, the LaTeX auxiliary files "source.aux" and "source.log", although still present in the working tree, are ignored now by Git after they have been enlisted in the special configuration file ".gitignore", and after ".gitignore" was committed with that new information to the revision itself.
+As it can be seen, the LaTeX auxiliary files "source.aux" and "source.log", although still present in the working tree, are ignored now by Git after they have been listed in the special configuration file ".gitignore", and after ".gitignore" was committed with that new information to the revision itself.
 
 A few concluding remarks on the usage of ".gitignore":
 
@@ -922,7 +922,7 @@ To establish such a workflow, it's much easier to start by creating an online re
 5. On the other hand, to pull the new commits from online repository locally, one simply in the local repository executes:
 
    ```bash
-   # pill all new commits from the remote repository into local repository:
+   # pull all new commits from the remote repository into local repository:
    $ git pull
    remote: Enumerating objects: 9, done.
    remote: Counting objects: 100% (8/8), done.
@@ -1007,12 +1007,12 @@ To achieve that, one creates an online repository (e.g. on [GitHub](https://gith
 # Execute on "Personal computer": 
 $ cd $HOME
 $ git clone https://github.com/abilandz/Transfer.git Transfer
-$ git config --global credential.helper "cache --timeout=86400" 
+$ git config --global credential.helper 'cache --timeout=86400' 
 
 # Login remotely, and execute on "Computer behind the firewall": 
 $ cd $HOME
 $ git clone https://github.com/abilandz/Transfer.git Transfer
-$ git config --global credential.helper "cache --timeout=86400"
+$ git config --global credential.helper 'cache --timeout=86400'
 ```
 
 The shell function ```Transfer``` which will automate copying back and forth from "Personal computer" to "Computer behind the firewall" using the Git repository "Transfer" may look as follows:
@@ -2122,7 +2122,7 @@ TBI 20250529 add diagram for both cases
 * it can perform search in the working tree corresponding to another branch or some previous commit of the current branch, without a need to checkout first that branch or commit.
 
 ```bash
-# search resursively for "somePattern" in all tracked files
+# search recursively for "somePattern" in all tracked files
 # in the current working tree:
 $ git grep "somePattern"
 
@@ -2409,7 +2409,7 @@ git revert someCommitID
 
 
 
-**git shortlog** &mdash; summarizes the 'git log' output. It groups all commits by the author (alphabetically by default), and it includes the first line of the commit message. This command gives a nice summary of who the most productive developers were in the repository.
+**git shortlog** &mdash; summarizes the output of 'git log'. It groups all commits by the author (alphabetically by default), and it includes the first line of the commit message. This command gives a nice summary of who the most productive developers were in the repository.
 
 ```bash
 # default printout is aplhabetical:
