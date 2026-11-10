@@ -1,7 +1,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20261109-1
+**Last update**: 20261110-1
 
 <!-- this is a comment -->
 
@@ -458,7 +458,7 @@ $ git checkout 33f4fc7
 $ cat .git/HEAD 
 33f4fc75e4e3382f3a6c027baa375ddebcfaf41c
 ```
-There is a fundamental difference in the two examples above &mdash; in the second case, the **HEAD** is fixed to the specific commit, i.e. we end up in a **detached HEAD** state, which is clarified next. 
+There is a fundamental difference in the two examples above &mdash; in the second case, the HEAD is fixed to the specific commit, i.e. we end up in a **detached HEAD** state, which is clarified next. 
 
 
 
@@ -509,7 +509,7 @@ A given configuration variable can be defined in all three special configuration
 The current settings at each configuration level can be listed as follows:
 
 ```bash
-# list all set local configuration variables for a specific repository:
+# list all the set local configuration variables for a specific repository:
 $ cd someGitRepository
 $ git config --local --list
 
@@ -541,7 +541,7 @@ To unset some variable at "global" level, e.g. in this example "core.editor", th
 $ git config --global --unset core.editor
 ```
 
-In the same way, configuration variables can be defined and set at "local" and "system" level, by replacing **git config --global** with **git config --local** and **sudo git config --system**, respectively (in the latter case, admin privileges are needed, therefore **sudo** must be used as well).
+In the same way, configuration variables can be defined and set at "local" and "system" level, by replacing **git config \-\-global** with **git config \-\-local** and **sudo git config \-\-system**, respectively (in the latter case, admin privileges are needed, therefore the command **sudo** must be used as well).
 
 Before making the first commit, only the following two variables must be configured: "user.name" and "user.email". Naturally, they are configured at the "global" level as long as a user keeps his credentials the same across different Git repositories on the same computer. Therefore, the lines below represent the mandatory and minimum action to configure Git, before the first commit can be made in any repository:
 
@@ -556,7 +556,7 @@ $ git config --global user.email "someEmail@tum.de"
 Related to this, one can prevent Git from annoyingly prompting for credentials too frequently by setting:
 
 ```bash
-$ git config --global credential.helper "cache --timeout=86400" 
+$ git config --global credential.helper 'cache --timeout=86400' 
 # you will be prompted for credentials only once in 86400s, i.e. once per day
 ```
 
@@ -568,7 +568,7 @@ In the next section, the most important Git configuration files are addressed.
 
 #### Configuration files <a name="configuration.files"></a>
 
-In addition to the configuration variables, there are also configuration files that have a special meaning to Git. Arguably, the most frequently used configuration file is a hidden file named _.gitignore_ . In this file, all files and/or directories in the working tree that Git shall not track can be listed. It is very important to realize that this mechanism can be used only for the new files (i.e. untracked files) in the working tree, but it can not be used to stop tracking already tracked files (in this case, one has to use first **git rm --cached**, see later sections). Finally, both the creation of _.gitignore_ itself in the working tree and any changes in _.gitignore_ afterward need to be staged and committed as well, for its current content to be taken into account by other collaborators on the same project (only in the current local repository any changes in _.gitignore_ have immediate effect).
+In addition to the configuration variables, there are also configuration files that have a special meaning to Git. Arguably, the most frequently used configuration file is a hidden file named _.gitignore_ . In this file, all files and/or directories in the working tree that Git shall not track can be listed. It is very important to realize that this mechanism can be used only for the new files (i.e. untracked files) in the working tree, but it can not be used to stop tracking already tracked files (in this case, one has to use first **git rm \-\-cached**, see later sections). Finally, both the creation of _.gitignore_ itself in the working tree and any changes in _.gitignore_ afterward need to be staged and committed as well, for its current content to be taken into account by other collaborators on the same project (only in the current local repository any changes in _.gitignore_ have immediate effect).
 
 Each Git repository has its own set of _.gitignore_ files, whose scope can be interpreted as follows:
 
@@ -639,22 +639,24 @@ Untracked files:
 nothing added to commit but untracked files present (use "git add" to track)
 ```
 
-As it can be seen, the LaTeX auxiliary files "source.aux" and "source.log", although still present in the working tree, are ignored now by Git after they have been listed in the special configuration file ".gitignore", and after ".gitignore" was committed with that new information to the revision itself.
+As it can be seen, the LaTeX auxiliary files "source.aux" and "source.log", although still present in the working tree, are ignored now by Git after they have been listed in the special configuration file ".gitignore".
 
 A few concluding remarks on the usage of ".gitignore":
 
-* Comments are supported in ".gitignore" and they start with "#" (similar as in Bash);
+* Comments are supported in ".gitignore" and they start with "#" (similar as in the Bash shell);
 
 * It is not necessary to enlist all files and/or directories using the full names, because a certain number of wildcards are supported by Git. For instance, to ignore files named "someFile_1.log", "anotherFile_2.log" and "alsoThisFile.log", one can add to ".gitignore" only the pattern "\*.log", where the metacharacter ```*``` matches any sequence of characters except a slash ```/``` (a detailed explanation of Git metacharacters which can be used in ".gitignore" can be found online under section [Pattern Format](https://git-scm.com/docs/gitignore) in the official documentation);
 
 * To ignore all files in a specific directory, use the directory name followed by a slash "/". For instance, if there is a directory named "temp" in the working tree, all files in that directory can be ignored at once with the following lines added to ".gitignore":
 
-  ```bash	
-  # ignore all files in "temp" dir:
-  temp/
-  ```
+    ```bash	
+    # ignore all files in "temp" dir:
+    temp/
+    ```
 
 * By default Git does not track empty directories. To preserve the overall design and directory structure of project in a Git repository, one typically adds dummy ".gitkeep" files (any other name would also work) in otherwise empty directories. These files are not special and their sole purpose is to populate a directory so that Git adds it to the repository from the very beginning;
+
+* It is a good programming practice to commit all changes in ".gitignore" itself;
 
 * When a new Git repository is initiated on [GitHub](https://github.com) (an online developer platform for code development and sharing using Git), it is possible to choose which files not to track from the list of predefined ".gitignore" templates. For instance, when a new repository is made on GitHub for the C++ code development, immediately when that repository is being initiated on GitHub one can choose the specifically prepared ".gitignore" template for C++, which contains the line like this:
 
@@ -676,7 +678,7 @@ A few concluding remarks on the usage of ".gitignore":
 	... many more lines ...
 	```
 	
-	On the other hand, predefined ".gitignore" template for LaTeX looks like this on GitHub:
+	On the other hand, predefined ".gitignore" template for LaTeX can be found under the name "TeX" and it looks like this on GitHub:
 	
 	```bash
 	## Core latex/pdflatex auxiliary files:
@@ -713,7 +715,9 @@ A few concluding remarks on the usage of ".gitignore":
 
 #### Quick setup of standalone local repository <a name="quick.setup.of.standalone.local.repository"></a>
 
-This is the simplest Git workflow, and corresponds to the case when the whole project development will take place on the same computer. Only the standalone local Git repository is needed on that computer for the project, and the Git workflow for this case can be established as follows:
+This is the simplest Git workflow, and corresponds to the case when the whole project development will take place on the same computer (the recommended and more elaborate Git workflow including online repository, both for personal and collaborative projects, is introduced in the next section).
+
+Only the standalone local Git repository is needed on that computer for the project, and the Git workflow for this case can be established as follows:
 
 ```bash
 # initialize Git repository for some local directory:
@@ -722,7 +726,7 @@ $ cd someDirectory
 $ git init
 Initialized empty Git repository in /home/abilandz/someDirectory/.git/
 ```
-With the above initialization, local directory "someDirectory" will host all files of the project in question. After it was added to the Git repository, in subdirectory ".git" the history of all committed changes of all files is kept. Most importantly, at any point later, we can recover any previous version of any file.
+With the above initialization, local directory "someDirectory" will host all files of the project in question. After it was added to the Git repository, in subdirectory ".git" the history of all committed changes of all files is kept after the first commit is made. Most importantly, at any point later after the first commit, we can recover any previous version of any file.
 
 The current status can be inspected with the command **git status**: 
 ```bash
@@ -848,130 +852,129 @@ The commands **git log** and **git reflog** are not entirely equivalent, and the
 
 However, much more frequently, as a central repository one establishes an online repository, using some of freely available online developer platforms for code development and sharing, which rely on Git. Two such very popular online platforms are [GitHub](https://github.com/) and [GitLab](https://about.gitlab.com/). In what follows next, all examples will be illustrated using GitHub, but a very similar procedure applies to GitLab as well.
 
-One starts by establishing an online repository on GitHub, which is then cloned into a local repository on one or more different computers. This way, one can continuously work on the same project using a desktop computer in the office and/or a laptop at home, and in addition, always have a safe backup in the online repository itself. This is particularly beneficial when ones uses different operating systems and corresponding software to develop the same project (e.g. Linux on desktop computer and Windows on laptop) because the online Git repository takes care automatically of different line endings (```'\n'``` on Linux vs. ```'\r\n'``` on Windows, etc.).
+One starts by establishing an online repository on GitHub, which is then cloned into a local repository on one or more different computers. This way, one can continuously work on the same project using a desktop computer in the office and/or a laptop at home, and in addition, always have a safe backup in the online repository itself. This is particularly beneficial when ones uses different operating systems and corresponding software to develop the same project (e.g. Linux on desktop computer and Windows on laptop) because Git takes care automatically of different line endings (```'\n'``` on Linux vs. ```'\r\n'``` on Windows, etc.).
 
 To establish such a workflow, it's much easier to start by creating an online repository first directly on GitHub and clone it locally, then to first create it locally, then move it to GitHub. Therefore, we summarize step-by-step only the former approach:
 
-1. Go to [GitHub](https://github.com/) and in case you already do not have an account, sign up for free and create one
+1. Go to [GitHub](https://github.com/) and if you already do not have an account, sign up for free and create one;
 
-2. Make a new repository online in GitHub: 
+2. Make a new repository online in GitHub by following these steps:: 
+    * Click on "+" menu in the top-right corner;
+    * Choose from drop-down menu "New repository";
+    * Type in the empty box marked with "Repository name" the name for your new repository, e.g. "testRepo";
+    * Optionally add a description of what this repository is meant for, and choose whether you want this repository to be "Public" or "Private" (can be changed at any time later, in case of doubt choose "Private");
+    * Choose to initialize the repository with special file "README.md". The file "README.md" can be edited either online or offline. This file is read first by default, i.e. if there are both "README.md" and "READMe.md", the former is read. The file "READMe.md" is read as an educated guess only if there is no "README.md", and so on;
+    * Choose ".gitignore" template file, which is specific to your project (if you are writing a thesis in LaTeX choose "TeX" from drop-down menu, if you are developing project in C++ in this repository choose "C++" as a template, etc.). This is important, because Git will automatically ignore and not add to the revision all auxiliary and temporary files which pop up in the repository during compilation;
+    * Optionally, add a license for your project &mdash; it's perfectly fine if you set up the repository with "No license";
+    * Finally, click "Create repository". You have created your first online Git repository on GitHub, which is hosted at URL https://github.com/yourUserNameOnGitHub/testRepo .
 
-   * Click on "+" menu in bottom right corner;
-   * Choose from drop-down menu "New repository";
-   * Type in the empty box marked with "Repository name" the name for your new repository, e.g. "testRepo";
-   * Optionally add a description of what this repository is meant for, and choose whether you want this repository to be "Public" or "Private" (can be changed at any time later, in case of doubt choose "Private");
-   * Choose to initialize the repository with special file "README.md". The file "README.md" can be edited either online or offline. This file is read first by default, i.e. if there are both "README.md" and "READMe.md", the former is read. The file "READMe.md" is read as an educated guess only if there is no "README.md", and so on;
-   * Choose ".gitignore" template file, which is specific to your project (if you are writing a thesis in LaTeX choose "TeX" from drop-down menu, if you are developing project in C++ in this repository choose "C++" as a template, etc.). This is important, because Git will automatically ignore and not add to the revision all auxiliary and temporary files which pop up in the repository during compilation;
-   * Optionally, add a license for your project &mdash; it's perfectly fine if you set up the repository with "No license";
-   * Finally, click "Create repository". Now you have created your first online Git repository on GitHub, which is sitting at the URL https://github.com/yourUserNameOnGitHub/testRepo .
+3. Clone the online repository "testRepo" locally, by executing in the terminal (using your GitHub username instead of "abilandz" in the path below): 
 
-3. Clone the online repository "testRepo" locally, by executing in the terminal (using your GitHub username in the path below): 
+    ```bash
+    $ git clone https://github.com/abilandz/testRepo.git testRepo
+    Cloning into 'testRepo'...
 
-   ```bash
-   $ git clone https://github.com/abilandz/testRepo.git testRepo
-   Cloning into 'testRepo'...
-   ... You will be prompted for your GitHub credentials ...
-   remote: Enumerating objects: 3, done.
-   remote: Counting objects: 100% (3/3), done.
-   remote: Total 3 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
-   Receiving objects: 100% (3/3), done.
-   ```
+    ... You will be prompted for your GitHub credentials ...
 
-   A few important things are automatically set after cloning: _push_ and _pull_ are set, and the local name for the remote repository is defaulted to "origin". You can inspect that with the command **git remote -v** as follows:
+    remote: Enumerating objects: 3, done.
+    remote: Counting objects: 100% (3/3), done.
+    remote: Total 3 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
+    Receiving objects: 100% (3/3), done.
+    ```
 
-   ```bash
-   $ cd testRepo
-   $ git remote -v
-   origin  https://github.com/abilandz/testRepo.git (fetch)
-   origin  https://github.com/abilandz/testRepo.git (push)
-   ```
+    A few important things are automatically set after cloning: _push_ and _pull_ are set, and the local name for the remote repository is defaulted to "origin". You can inspect that with the command **git remote -v** as follows:
 
-   After cloning, your local _master_ branch is created automatically as a **tracking branch** for the _master_ branch of the remote repository. The tracking branch allows you to use **git pull** and **git push** commands directly, without specifying either the branch names or repository paths afterward.
+    ```bash
+    $ cd testRepo
+    $ git remote -v
+    origin  https://github.com/abilandz/testRepo.git (fetch)
+    origin  https://github.com/abilandz/testRepo.git (push)
+    ```
+
+    After cloning, your local _master_ branch is created automatically as a **tracking branch** for the _master_ branch of the remote repository. The tracking branch allows you to use **git pull** and **git push** commands directly, without specifying either the branch names or repository paths afterward.
 
 4. After both local and remote online repositories are established, one can start working. After making a change in the local repository, one needs to stage and commit that change in the local repository, and finally push that commit to the online repository: 
 
-   ```bash
-   # make some change in the working tree in the local repository:
-   $ echo "some text" > file.txt
-   
-   # stage that change:
-   $ git add file.txt
-   
-   # commit that change:
-   $ git commit -m "some change"
-   [master e47db10] some change
-   ... some more irrelevant lines ...
-    1 file changed, 1 insertion(+)
-    create mode 100644 file.txt
-   
-   # finally, push that change to the remote repository:
-   $ git push
-   Enumerating objects: 4, done.
-   Counting objects: 100% (4/4), done.
-   Delta compression using up to 8 threads
-   Compressing objects: 100% (2/2), done.
-   Writing objects: 100% (3/3), 266 bytes | 266.00 KiB/s, done.
-   Total 3 (delta 1), reused 0 (delta 0), pack-reused 0
-   remote: Resolving deltas: 100% (1/1), completed with 1 local object.
-   ... some more irrelevant lines ...
-      27ab7b4..e47db10  master -> master
-   ```
+    ```bash
+    # make some change in the working tree in the local repository:
+    $ echo "some text" > file.txt
 
-   This procedure works straightforwardly only when pushing the commits can be trivially merged into the current status of the remote repository. 
+    # stage that change:
+    $ git add file.txt
+
+    # commit that change:
+    $ git commit -m "some change"
+    [master e47db10] some change
+
+    ... some more irrelevant lines ...
+
+     1 file changed, 1 insertion(+)
+     create mode 100644 file.txt
+
+    # finally, push that change to the remote repository:
+    $ git push
+    Enumerating objects: 4, done.
+    Counting objects: 100% (4/4), done.
+    Delta compression using up to 8 threads
+    Compressing objects: 100% (2/2), done.
+    Writing objects: 100% (3/3), 266 bytes | 266.00 KiB/s, done.
+    Total 3 (delta 1), reused 0 (delta 0), pack-reused 0
+    remote: Resolving deltas: 100% (1/1), completed with 1 local object.
+
+    ... some more irrelevant lines ...
+
+       27ab7b4..e47db10  master -> master
+    ```
+
+    This procedure works straightforwardly only when pushing the commits can be trivially merged into the current status of the remote repository. 
 
 5. On the other hand, to pull the new commits from online repository locally, one simply in the local repository executes:
 
-   ```bash
-   # pull all new commits from the remote repository into local repository:
-   $ git pull
-   remote: Enumerating objects: 9, done.
-   remote: Counting objects: 100% (8/8), done.
-   remote: Compressing objects: 100% (2/2), done.
-   remote: Total 5 (delta 3), reused 5 (delta 3), pack-reused 0 (from 0)
-   Unpacking objects: 100% (5/5), 988 bytes | 247.00 KiB/s, done.
-   ... some more irrelevant lines ...
-      e47db10..d95598d  master     -> origin/master
-   Updating e47db10..d95598d
-   Fast-forward
-    git.md | 30 ++++++++++++++++++++++++++----
-    1 file changed, 26 insertions(+), 4 deletions(-)
-   ```
+    ```bash
+    # pull all new commits from the remote repository into local repository:
+    $ git pull
+    remote: Enumerating objects: 9, done.
+    remote: Counting objects: 100% (8/8), done.
+    remote: Compressing objects: 100% (2/2), done.
+    remote: Total 5 (delta 3), reused 5 (delta 3), pack-reused 0 (from 0)
+    Unpacking objects: 100% (5/5), 988 bytes | 247.00 KiB/s, done.
+	
+    ... some more irrelevant lines ...
+	
+       e47db10..d95598d  master     -> origin/master
+    Updating e47db10..d95598d
+    Fast-forward
+     git.md | 30 ++++++++++++++++++++++++++----
+     1 file changed, 26 insertions(+), 4 deletions(-)
+    ```
 
-   This is relevant when one clones the same central online repository on two local computers, e.g. on desktop and laptop, and then develops a project concurrently in parallel on desktop computer and laptop, using the central online repository both to exchange information and to maintain safe online backup of the project.
+	This is relevant when one clones the same central online repository on two local computers, e.g. on desktop and laptop, and then develops a project concurrently in parallel on desktop computer and laptop, using the central online repository both to exchange information and to maintain safe online backup of the project.
 
-
-
-We summarize the workflow in this example with the following diagram:
+We summarize the workflow in this example with the following diagrams:
 
 * If the new development was made in a Git repository on a desktop computer:
 
-```mermaid	
-flowchart LR
-    central["Online repository on GitHub"]
-    local_1["Git repository on desktop"]
-    local_2["Git repository on laptop"]
-    local_1 == push the commit ==> central     
-    central == pull the commit ==> local_2     
-```
+    ```mermaid	
+    flowchart LR
+        central["Online repository on GitHub"]
+        local_1["Git repository on desktop"]
+        local_2["Git repository on laptop"]
+        local_1 == push the commit ==> central     
+        central == pull the commit ==> local_2     
+    ```
 
 * If the new development was made in a Git repository on a laptop:
 
-```mermaid	
-flowchart LR
-    central["Online repository on GitHub"]
-    local_1["Git repository on laptop"]
-    local_2["Git repository on desktop"]
-    local_1 == push the commit ==> central     
-    central == pull the commit ==> local_2     
-```
+    ```mermaid	
+    flowchart LR
+        central["Online repository on GitHub"]
+        local_1["Git repository on laptop"]
+        local_2["Git repository on desktop"]
+        local_1 == push the commit ==> central     
+        central == pull the commit ==> local_2     
+    ```
 
-* Before starting a new development either on desktop or laptop, one first executes **git pull** to integrate all changes from online repository.
-
-
-
-
-
-
+Finally, we remark that fefore starting a new development either on desktop or laptop, one first executes **git pull** to integrate all changes from online repository.
 
 
 
@@ -979,8 +982,6 @@ flowchart LR
 
 #### Transfer <a name="transfer"></a>
 In this case, the Git workflow is outlined which can be used to copy files from one computer to another, even if one computer is behind the firewall (in the sense that direct login to it is not possible). Such a configuration frequently occurs in practice when one wants to utilize remotely some large-scale computing facility, as the following diagram illustrates:
-
-
 
 ```mermaid	
 flowchart LR
@@ -1087,7 +1088,7 @@ function Transfer
 }
 ```
 
-One deploys the above shell function ```Transfer``` both on "Personal computer" and "Computer behind the firewall", e.g. in the file ```~/myFunctions.sh```, and enables it permanently by adding to ```~/.bashrc``` the following lines:
+One deploys the above shell function ```Transfer``` both on "Personal computer" and "Computer behind the firewall", e.g. in the file ```~/myFunctions.sh```, and enables it permanently by adding to ```~/.bashrc``` (or the corresponding configuration file of some other shell which is used by default) the following lines:
 
 ```bash
 source ~/myFunctions.sh
@@ -1110,7 +1111,7 @@ $ tl
 
 Analogously, one copies the files in the other direction. 
 
-This approach to copying files from one computer to another using Git is recommended if the size of the files is not too large. Otherwise, an alternative is to use a multi-stage version of **scp** via proxy jump. However, the Git approach has another significant advantage &mdash; all copied files (and their different versions) are securely backed-up in the Git repository, and can be retrieved at any time later.
+This approach to copying files from one computer to another using Git is recommended if the size of the files is not too large. Otherwise, an alternative is to use a multi-stage version of the  **scp** command via proxy jump. However, the Git approach has another significant advantage &mdash; all copied files (and their different versions) are securely backed-up in the Git repository, and can be retrieved at any time later (but if such backup-ing is not needed, then this approach leads to unnecessary history bloat). 
 
 
 
@@ -1122,9 +1123,9 @@ In this section, we illustrate the workflow that is frequently used in major col
 
 * a large number of developers (typically more than 100) shall be able to develop the project on a daily basis concurrently;
 * each new commit must be reviewed and approved by an expert, and automatically tested with various test suites, before being merged into the central repository. This requirement is essential, to prevent scenarios in which an error introduced by one developer hinders the work of the rest;
-* common programming style (formatting, naming conventions, etc.).
+* common programming style (formatting, naming conventions, etc.) can be enforced.
 
-This can be achieved with _forks_ and _pull requests_. Schematically, this workflow is illustrated with the following diagram for two collaborators developing concurrently, which can be trivially generalized:
+This can be achieved with _forks_ and _pull requests_. Schematically, this workflow is illustrated with the following diagram for two collaborators developing concurrently, which can be trivially generalized to additional collaborators:
 
 ```mermaid
 	flowchart RL
@@ -1703,7 +1704,7 @@ $ git log --oneline
 
 
 
-### 7. Executive and exemplary summary of main Git commands <a name="executive.and.exemplary.summary.of.main.git.commands"></a>
+### 7. Executive and exemplary summary of the main Git commands <a name="executive.and.exemplary.summary.of.main.git.commands"></a>
 In this section, we list in alphabetical order the most commonly used **git** commands with an executive summary of their meaning. This summary is followed up with a series of examples illustrating their simple use cases in practice. 
 
 The generic usage of **git** command is: 
@@ -1850,9 +1851,9 @@ With a series of examples, sorted in alphabetical order, we now illustrate how t
 
 **git bisect** &mdash; TBI 20241006 Check the book + see https://thoughtbot.com/blog/git-bisect
 
-**git blame** _someFile_ &mdash; Inspect which commit and author modified this file on a per-line basis, showing only lines which were modified or added. Works for committed and not committed yet changes.
+**git blame** _someFile_ &mdash; Inspect which commit and author modified this file on a per-line basis, annotating lines which were modified or added. Works fully for committed and only partially for not committed yet changes (in the latter case, commit ID and author are missing and only "0000000 (Not Committed Yet …)" is printed instead, but all changes are nevertheless shown). Alternatively, for uncommitted changes one can also use **git diff** (see further below).
 
-**git blame -L 1,5** _someFile_ &mdash; Inspect which commit and author modified this file on a per-line basis,  showing only lines which were modified or added, and showing only lines 1 through 5. The typical output could look like this:
+**git blame -L 1,5** _someFile_ &mdash; Inspect which commit and author modified this file on a per-line basis, showing only lines 1 through 5. The typical output could look like this:
 
 ```bash
 $ git blame -L 1,5 Lecture_2/git.md
@@ -1871,7 +1872,7 @@ $ git branch
   master
 ```
 
-The currently enabled branch in the working tree is indicated with "*". Typically, and only as a matter of convention, the branch named "devel" captures ongoing development, gets the latest bug fixes, and is where new features appear. The "master" branch is typically updated only for stable releases and important patches. A new addition in the "devel" branch, which passed all the tests, is ported to the "master" branch, and when a lot of newly approved features appear in the "master" branch, the "master" is tagged into a new release (see **git tag** below).
+The currently enabled branch in the working tree is indicated with "\*". Typically, and only as a matter of convention, the branch named "devel" captures ongoing development, gets the latest bug fixes, and is where new features appear. The "master" branch is typically updated only for stable releases and important patches. A new addition in the "devel" branch, which passed all the tests, is ported to the "master" branch, and when a lot of newly approved features appear in the "master" branch, the "master" is tagged into a new release (see **git tag** below).
 
 **git branch -a** &mdash; List available branches both in the local repository and including the remote-tracking branches. This command works only after the first commit is made in the repository:
 
@@ -1944,9 +1945,8 @@ TBI 20241010 explain meaning of "[ahead 1]" or point to the previous example
 
 **git branch -u origin/**_someBranch_ _someBranch_ &mdash; No tracking initially, but after this command, start tracking. TBI 20241003 check until the end + provide examples 
 
-​	o **git branch -u origin/20190925_tris 20190925_tris** 
-
-  	\# Branch 20190925_tris set up to track remote branch 20190925_tris from origin.
+**git branch -u origin/20190925_tris 20190925_tris** &mdash; 
+Branch 20190925_tris set up to track remote branch 20190925_tris from origin. TBI 20261110 finalize this example
 
 
 
@@ -1956,7 +1956,7 @@ TBI 20241010 explain meaning of "[ahead 1]" or point to the previous example
 
 **git checkout** _someBranch_ &mdash; In order to start working on the branch, we need to checkout that branch first. After checkout, HEAD points to the last commit in _someBranch_, and the files in the working tree are set to the state of that last commit. Two important remarks:
 
- *  Use with care, because **git checkout** deletes the unstaged and uncommitted changes of tracked files in the working tree, and it is not possible to restore deletion of those changes via **git**; TBI 20241011 I cannot reproduce this one, in the test I am doing locally, modifed files are carried over in the checked out branch
+*  Use with care, because **git checkout** deletes the unstaged and uncommitted changes of tracked files in the working tree, and it is not possible to restore deletion of those changes via **git**; TBI 20241011 I cannot reproduce this one, in the test I am doing locally, modifed files are carried over in the checked out branch
 *  But it doesn't delete the untracked new files? TBI 2024103 check and document this further
 
 **git checkout -b** _someBranch_ &mdash; Make new branch and start to work on it immediately. AB: Shall be the same as git branch <some-branch> TBI 20241003 it's not see the explanation above for **git branch**
@@ -2536,17 +2536,17 @@ In this section, some of the frequently encountered real-case scenarios are summ
 
 * **How to push a newly created local branch or local tag to remote repository?**
 
-  Imagine that in GitHub and locally you have only the _master_ branch (e.g. after the initial cloning of online repository locally), and then locally you create a new branch with the name _newBranchName_. You can propagate that new branch to the same online repository at GitHub by using:
+Imagine that in GitHub and locally you have only the _master_ branch (e.g. after the initial cloning of online repository locally), and then locally you create a new branch with the name _newBranchName_. You can propagate that new branch to the same online repository at GitHub by using:
 
-  ```bash 
-  git push --set-upstream origin newBranchName
-  ```
+```bash 
+git push --set-upstream origin newBranchName
+```
 
-  or equivalently:
+or equivalently:
 
-  ```bash 
-  git push -u origin newBranchName
-  ```
+```bash 
+git push -u origin newBranchName
+```
 
   After that, changes in the local _master_ branch are pushed into the remote _master_, while changes in the local branch _newBranchName_ are pushed in the remote branch _newBranchName_.
 
