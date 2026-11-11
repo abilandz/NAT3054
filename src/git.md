@@ -1,7 +1,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20261110-1
+**Last update**: 20261111-1
 
 <!-- this is a comment -->
 
@@ -738,7 +738,7 @@ No commits yet
 
 nothing to commit (create/copy files and use "git add" to track)
 ```
-The output of this command is very verbose and usually gives helpful hints what can be done next.
+The output of the command **git status** is very verbose and usually gives helpful hints what can be done next.
 
 Now we create and edit some content in the project, typically by adding new or editing existing files. In Git parlance, we are changing the status of its _working tree_ (by definition the collection of all files in the project):
 
@@ -777,7 +777,7 @@ Changes to be committed:
         new file:   someFile.txt
 ```
 
-If one or more files were added to the staging area by mistake, they can be removed simply with the command **git rm --cached** as the above message says. On the other hand, if after adding a file to the staging area we still want to make some changes in that file before making the final commit, we first edit that file, and then stage it again with the **git add** command. 
+If one or more files were added to the staging area by mistake, they can be removed simply with the command **git rm --cached** as the above message says. On the other hand, if after adding a file to the staging area we still want to make some changes in that file before making the final commit, we first edit that file, and then simply stage it again with the **git add** command &mdash; the staged file will automatically get updated. 
 
 Finally, when no further changes for the time being are planned in the staged files, we can commit all staged files permanently to the Git repository using the **git commit** command : 
 
@@ -852,13 +852,13 @@ The commands **git log** and **git reflog** are not entirely equivalent, and the
 
 However, much more frequently, as a central repository one establishes an online repository, using some of freely available online developer platforms for code development and sharing, which rely on Git. Two such very popular online platforms are [GitHub](https://github.com/) and [GitLab](https://about.gitlab.com/). In what follows next, all examples will be illustrated using GitHub, but a very similar procedure applies to GitLab as well.
 
-One starts by establishing an online repository on GitHub, which is then cloned into a local repository on one or more different computers. This way, one can continuously work on the same project using a desktop computer in the office and/or a laptop at home, and in addition, always have a safe backup in the online repository itself. This is particularly beneficial when ones uses different operating systems and corresponding software to develop the same project (e.g. Linux on desktop computer and Windows on laptop) because Git takes care automatically of different line endings (```'\n'``` on Linux vs. ```'\r\n'``` on Windows, etc.).
+One starts by establishing an online repository on GitHub, which is then cloned into a local repository on one or more different computers. This way, one can continuously work on the same project using a desktop computer in the office and/or a laptop at home, and in addition, always have a safe backup in the online repository itself. This is particularly beneficial when ones uses different operating systems and corresponding software to develop the same project (e.g. Linux on desktop computer and Windows on laptop) because Git can take care automatically of different line endings (```\n``` on Linux vs. ```\r\n``` on Windows), etc.
 
 To establish such a workflow, it's much easier to start by creating an online repository first directly on GitHub and clone it locally, then to first create it locally, then move it to GitHub. Therefore, we summarize step-by-step only the former approach:
 
 1. Go to [GitHub](https://github.com/) and if you already do not have an account, sign up for free and create one;
 
-2. Make a new repository online in GitHub by following these steps:: 
+2. Make a new repository online in GitHub by following these steps: 
     * Click on "+" menu in the top-right corner;
     * Choose from drop-down menu "New repository";
     * Type in the empty box marked with "Repository name" the name for your new repository, e.g. "testRepo";
@@ -868,7 +868,7 @@ To establish such a workflow, it's much easier to start by creating an online re
     * Optionally, add a license for your project &mdash; it's perfectly fine if you set up the repository with "No license";
     * Finally, click "Create repository". You have created your first online Git repository on GitHub, which is hosted at URL https://github.com/yourUserNameOnGitHub/testRepo .
 
-3. Clone the online repository "testRepo" locally, by executing in the terminal (using your GitHub username instead of "abilandz" in the path below): 
+3. Clone the online repository "testRepo" locally, by executing in the terminal (using your GitHub username instead of "abilandz" and adapting the repository name "testRepo" if necessary in the path below): 
 
     ```bash
     $ git clone https://github.com/abilandz/testRepo.git testRepo
@@ -911,7 +911,7 @@ To establish such a workflow, it's much easier to start by creating an online re
      1 file changed, 1 insertion(+)
      create mode 100644 file.txt
 
-    # finally, push that change to the remote repository:
+    # finally, push that change to the remote online repository:
     $ git push
     Enumerating objects: 4, done.
     Counting objects: 100% (4/4), done.
@@ -974,7 +974,7 @@ We summarize the workflow in this example with the following diagrams:
         central == pull the commit ==> local_2     
     ```
 
-Finally, we remark that fefore starting a new development either on desktop or laptop, one first executes **git pull** to integrate all changes from online repository.
+Finally, we remark that before starting a new development either on desktop or laptop, it is important that one first executes **git pull** to integrate all changes from online repository, otherwise later **git push** will fail if the online repository contains new commits which are still not integrated in the local repositories (in case of such a failure, this can be nevertheless resolved with **git stash** command, which is described in later sections).
 
 
 
@@ -1002,7 +1002,7 @@ flowchart LR
 
 In the above configuration, one wants to copy files back and forth from the "Personal computer" to the "Computer behind the firewall", without being prompted each time for credentials, and bypassing entirely the "Login server". Typically, one develops the analysis code locally on a "Personal computer", then copies and compiles it on "Computer behind the firewall", and the resulting executable is then used on computers "Working node 1", "Working node 2", ... "Working node N", out of which the large-scale computing facility is built. The output of this large-scale analysis is then copied back from "Computer behind the firewall" to the "Personal computer", for the final post-processing of the obtained results. 
 
-To achieve that, one creates an online repository (e.g. on [GitHub](https://github.com/), as detailed in the previous section) named "Transfer", and clones it from the terminal both on "Personal computer" and on "Computer behind the firewall":
+To achieve that, one creates an online repository (e.g. on [GitHub](https://github.com/), as detailed in the previous section) named "Transfer", and clones it from the terminals both on "Personal computer" and on "Computer behind the firewall":
 
 ```bash
 # Execute on "Personal computer": 
@@ -1021,6 +1021,8 @@ The shell function ```Transfer``` which will automate copying back and forth fro
 ```bash
 function Transfer
 {
+ # Last update: 20261111
+ 
  # Example usage:
  ## 1. Transfer --push file1 file2 # push file1 file2 to Git repository 
  ## 2. cd SomeDir && Transfer --pull # pull new files from Git repository into SomeDir
@@ -1053,9 +1055,9 @@ function Transfer
    # Add, commit and push:
    ( 
      cd $GitTransferDir/
-     git add "${ToCommit[@]}" || { echo "git add failed"; return 1; }
-     git commit -m 'auto transfer' || { echo "git commit failed"; return 1; }
-     git push || { echo "git push failed"; return 1; }
+     git add "${ToCommit[@]}" || { echo "git add failed"; exit 1; } # use 'exit' in subshell
+     git commit -m 'auto transfer' || { echo "git commit failed"; exit 1; }
+     git push || { echo "git push failed"; exit 1; }
    ) 
 
  fi # if [[ $ModusOperandi == '--push' ]]; then 
@@ -1063,15 +1065,15 @@ function Transfer
  ## d) Option '--pull':
  if [[ $ModusOperandi == '--pull' ]]; then 
    local CopyDest=$PWD
-   # Pull, get the list of files from the last commit, and copy them in the current workig dir:
+   # Pull, get the list of files from the last commit, and copy them in the current working dir:
    (
-     cd $GitTransferDir/ || { echo "cd $GitTransferDir/ failed"; return 1; }
-     CurrentLastCommitID=$(git rev-parse --short HEAD) || { echo "git rev-parse --short HEAD failed"; return 1; }
-     git pull || { echo "git pull failed"; return 1; }
-     NewLastCommitID=$(git rev-parse --short HEAD) || { echo "git rev-parse --short HEAD failed"; return 1; }
+     cd $GitTransferDir/ || { echo "cd $GitTransferDir/ failed"; exit 1; } # use 'exit' in subshell
+     CurrentLastCommitID=$(git rev-parse --short HEAD) || { echo "git rev-parse --short HEAD failed"; exit 1; }
+     git pull || { echo "git pull failed"; exit 1; }
+     NewLastCommitID=$(git rev-parse --short HEAD) || { echo "git rev-parse --short HEAD failed"; exit 1; }
      if [[ $CurrentLastCommitID == $NewLastCommitID ]]; then 
        echo "After git pull was executed, nothing changed in the git repo, there are no new files."
-       return 1
+       exit 1
      fi  
      FilesInLastCommit=( $( git diff-tree --no-commit-id --name-only $NewLastCommitID ) )
      local filc
@@ -1088,6 +1090,8 @@ function Transfer
 }
 ```
 
+This is not a state-of-the-art shell function and can be further improved and generalized (e.g. in its current version it will copy over only files from the very last commit), but already the above somewhat stripped-down version will work correctly in most cases of practical interest. 
+
 One deploys the above shell function ```Transfer``` both on "Personal computer" and "Computer behind the firewall", e.g. in the file ```~/myFunctions.sh```, and enables it permanently by adding to ```~/.bashrc``` (or the corresponding configuration file of some other shell which is used by default) the following lines:
 
 ```bash
@@ -1096,7 +1100,7 @@ alias tl='Transfer --pull'
 alias th='Transfer --push'
 ```
 
-After that, when one wants to copy files from "Personal computer" to "Computer behind the firewall" without getting promoted for credentials, bypassing entirely the "Login server", it suffices to execute in the terminal on a  "Personal computer":
+After that, when one wants to copy files from "Personal computer" to "Computer behind the firewall" without getting prompted for credentials, bypassing entirely the "Login server", it suffices to execute in the terminal on a  "Personal computer":
 
 ```bash
 $ th file1 file2
@@ -1111,7 +1115,7 @@ $ tl
 
 Analogously, one copies the files in the other direction. 
 
-This approach to copying files from one computer to another using Git is recommended if the size of the files is not too large. Otherwise, an alternative is to use a multi-stage version of the  **scp** command via proxy jump. However, the Git approach has another significant advantage &mdash; all copied files (and their different versions) are securely backed-up in the Git repository, and can be retrieved at any time later (but if such backup-ing is not needed, then this approach leads to unnecessary history bloat). 
+This approach to copying files from one computer to another using Git is recommended if the size of the files is not too large. Otherwise, an alternative is to use a multi-stage version of the **scp** command via proxy jump. However, the Git approach has another significant advantage &mdash; all copied files (and their different versions) are securely backed-up in the Git repository, and can be retrieved at any time later (but if such backup-ing is not needed, then this approach leads to unnecessary history bloat). 
 
 
 
@@ -1125,11 +1129,11 @@ In this section, we illustrate the workflow that is frequently used in major col
 * each new commit must be reviewed and approved by an expert, and automatically tested with various test suites, before being merged into the central repository. This requirement is essential, to prevent scenarios in which an error introduced by one developer hinders the work of the rest;
 * common programming style (formatting, naming conventions, etc.) can be enforced.
 
-This can be achieved with _forks_ and _pull requests_. Schematically, this workflow is illustrated with the following diagram for two collaborators developing concurrently, which can be trivially generalized to additional collaborators:
+This can be achieved with _forks_ and _pull requests_ (or _merge requests_). Schematically, this workflow is illustrated with the following diagram for two collaborators developing concurrently a project hosted on GitHub, which can be trivially generalized to additional collaborators:
 
 ```mermaid
 	flowchart RL
-	subgraph Local repositories
+	subgraph Local repository
     l1["Clone of the fork"]
     end
 	subgraph Local repository
@@ -1149,16 +1153,16 @@ This can be achieved with _forks_ and _pull requests_. Schematically, this workf
     l2 == push ==> o3
 ```
 
-Each developer first creates an online fork of the central repository, and then clones that fork locally. Each developer works directly only in a local repository. Any new commit in the local repository is pushed first to developer's personal online fork, and then the developer makes online a pull request in this fork. This is the step where the developer's commits in this pull request are reviewed and tested, before finally being approved for merging into the central repository. 
+Each developer first creates an online fork of the central repository, and then clones that fork locally. Each developer works directly only in a local repository. Any new commit in the local repository is pushed first to developer's personal online fork, and then the developer opens online a pull request from their fork into the central repository. This is the step where the developer's commits in this pull request are reviewed and tested, before finally being approved for merging into the central repository. 
 
-Both in GitHub and GitLab, it is straightforward to establish such a workflow, and all steps won't be detailed here. 
+Both in [GitHub](https://github.com/) and [GitLab](https://about.gitlab.com/), it is straightforward to establish such a workflow, and all steps won't be detailed here. 
 
 
 
 
 
 #### Collaborating locally <a name="collaborating.locally"></a>
-Even though in most cases of practical interest work on a collaborative project is set up up via an online developer platform using Git software (e.g. GitHub or GitLab), it is also possible to set up a collaborative project using Git locally. For instance, when two or more developers have access to the same shared disk area (e.g. on the computer from which jobs on a local batch farm can be submitted using commonly developed software), they can set up central repository on that shared disk area. For completeness' sake and in order to introduce a few additional Git-related concepts, in this section all steps needed to establish such a workflow are illustrated, even though in practice this is rarely used. 
+Even though in most cases of practical interest work on a collaborative project is set up via an online developer platform using Git software (e.g. [GitHub](https://github.com/) or [GitLab](https://about.gitlab.com/)), it is also possible to set up a collaborative project using Git locally. For instance, when two or more developers have access to the same shared disk area (e.g. on the computer from which jobs on a local batch farm can be submitted using commonly developed software), they can set up central repository on that shared disk area. For completeness' sake and in order to introduce a few additional Git-related concepts, in this section all steps needed to establish such a workflow are illustrated, even though in practice this is rarely used. 
 
 
 ```bash
@@ -1167,7 +1171,7 @@ $ git init --bare headquarter
 Initialized empty Git repository in /home/abilandz/headquarter/
 ```
 
-This is a central repository which will be used to exchange information related to the project development among all developers. We remark that this central repository has to be _bare_ (i.e. it has no working tree and no default remote repository). One can think of a bare Git repository having nothing but the ".git" folder inside your local working repository.
+This is a central repository which will be used to exchange information related to the project development among all developers. We remark that this central repository has to be _bare_ (i.e. it has no working tree and usually no default remote repository). One can think of a bare Git repository having nothing but the ".git" folder inside your local working repository.
 
 From developer's point of view, we can now proceed in two ways: "clone" and "init". We illustrate the "clone" approach because it is easier, starting with the developer named "Marcel":
 
@@ -1177,10 +1181,11 @@ $ git clone headquarter Marcel
 Cloning into 'Marcel'...
 warning: You appear to have cloned an empty repository.
 done.
-# Remark 1: Instead of the relative path "headquarter", you can also specify the absolute path to
-#           central repository, this is NOT the name of remote repository (see below)
-# Remark 2: After cloning, the repository "Marcel" knows automatically that "headquarter" 
-#           is a remote repository, with a default name "origin".
+# Remark 1: Instead of the relative path "headquarter", you can also specify 
+#           the absolute path to central repository, this is NOT the name 
+#           of remote repository (see below)
+# Remark 2: After cloning, the repository "Marcel" knows automatically that
+#           "headquarter" is a remote repository, with a default name "origin".
 
 # Inspect the status of cloned repository with:
 $ cd Marcel && git config --local -l
@@ -1199,11 +1204,13 @@ $ touch README.md && git add README.md && git commit -m "added file README.md"
  1 file changed, 0 insertions(+), 0 deletions(-)
  create mode 100644 README.md
 
-# After the first commit, the local branch with the default name "master" is automatically created:
+# After the first commit, the local branch with the default name "master" is 
+# automatically created:
 $ git branch
 * master
 
-# By this point, it is still not clear which local branch is tracking which remote branch.
+# By this point, it is still not clear which local branch is tracking which
+# remote branch, because the repository was empty when it was cloned.
 # Therefore, as you push, you need to set the upstream branch:
 $ git push --set-upstream origin master
 Enumerating objects: 3, done.
@@ -1225,7 +1232,8 @@ $ git branch -a
 $ git branch -vv
 * master eac42f0 [origin/master] added file README.md
 
-# From this point onward, all changes can be pushed directly into the central repository:
+# From this point onward, all changes can be pushed directly into the
+# central repository:
 $ touch temp.log && git add temp.log && git commit -m "added file temp.log"
 [master 853290a] added file temp.log
  1 file changed, 0 insertions(+), 0 deletions(-)
@@ -1247,9 +1255,13 @@ headquarter  Marcel
 $ git clone headquarter Cindy
 Cloning into 'Cindy'...
 done.
+
+# For this developer, the repository was not empty when it was cloned, 
+# and it that case Git usually sets up tracking automatically:
 $ cd Cindy && ls
 README.md  temp.log
-$ echo "some text" >> temp.log && git add temp.log && git commit -m "modified file temp.log" 
+$ echo "some text" >> temp.log
+$ git add temp.log && git commit -m "modified file temp.log" 
 [master 805def4] modified file temp.log
  1 file changed, 1 insertion(+)
 $ git push # this works automatically after cloning
@@ -1353,10 +1365,10 @@ Updating 8442595..a31b43a
 Fast-forward
 ... summary of specific changes ...
 
-# ctd. with development on the 'main' branch
+# continue with development on the 'main' branch
 ```
 
-Immediately after fast-forward merging is performed, both the _main_ branch and the _devel_ branch have all commits the same (check by using **git log** on either branch), and the HEAD of both branches points to the same commit ID. This is illustrated with the following diagram (corresponding to the above example):
+Immediately after fast-forward merging is performed, both the _main_ branch and the _devel_ branch have all commits the same (check by using **git log** on either branch), and the HEAD of both branches points to the same commit ID (i.e. the branch pointers are now identical despite two branches having different names). This is illustrated with the following diagram (corresponding to the above example):
 
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": false}} }%%
@@ -1492,7 +1504,7 @@ With this approach, merging conflicts can occur if the same file is modified in 
 
 ##### b) rebase  <a name="rebase"></a>
 
-Another way to incorporate changes from one branch into another is to use _rebase_. If you rebase a branch named A onto another branch named B, **git** will take all commits of branch A and replay them on the HEAD of branch B. This technique is particularly suitable for incorporating changes from the remote repository into the currently active local branch.
+Another way to incorporate changes from one branch into another is to use _rebase_. If you rebase a branch named A onto another branch named B, Git will take all commits of branch A and replay them on the HEAD of branch B. This technique is particularly suitable for incorporating changes from the remote repository into the currently active local branch.
 
 We use the following diagram to illustrate the repository that contains two branches, named _main_ and _devel_, in which development is carried out in parallel:
 
@@ -1514,7 +1526,7 @@ $ git checkout devel
 $ git rebase main
 ```
 
-all changes introduced with the _devel_ branch will be applied on the HEAD of the _main_ branch. In the above example, **git** will: 
+all changes introduced with the _devel_ branch will be applied on the HEAD of the _main_ branch. In the above example, Git will: 
 
 * establish first the common ancestor of the two branches (the commit named "change 2");
 * determine with respect to this commit the diff file (i.e. patch of the change) introduced by each subsequent commit of the branch we are on (the _devel_ branch in this case; the diff file will be created between commits named "exp. change 1" and "change 2");
@@ -1646,16 +1658,20 @@ Programmatically:
 ... make some development and corresponding two commits named ...
 ... 'change 1' and 'change 2' on 'main' branch ... 
 
-# pause the development on the 'main' branch, checkout new 'devel' branch:
-$ git checkout -b devel # Reminder: flag -b is needed only when new branch is created
+# pause the development on the 'main' branch, checkout new 'devel' branch.
+# Reminder: flag -b is needed only when new branch is created:
+$ git checkout -b devel 
+
 ... make some development with commits 'exp. change 1' on 'devel' branch ... 
 
 # pause the development on 'devel' branch, checkout again 'main' branch:
 $ git checkout main
-... make some development with two commits 'change 3' and 'change 4' on 'main' branch ... 
 
-# pause the development on 'main' branch, and continue development on 'devel' branch:
+... make some development with commits 'change 3' and 'change 4' on 'main' branch ... 
+
+# pause the development on 'main' branch, continue development on 'devel' branch:
 $ git checkout devel
+
 ... make some development with commits 'exp. change 2', 'exp. change 3', ...
 ... and 'exp. change 4' on 'devel' ... 
 
@@ -1673,7 +1689,7 @@ $ git checkout main
 
 # inspect the status of all commits on the 'main' branch:
 $ git log --oneline
-15e8839 (HEAD -> master) change 4
+15e8839 (HEAD -> main) change 4
 137f5e2 change 3
 1192d2b change 2
 009e81b change 1
@@ -1682,18 +1698,18 @@ $ git log --oneline
 # named 'exp. change 2' (its commit id is '3d85507', see above), and introduce
 # only those changes (i.e. cherry-pick) on the 'main' branch:
 $ git cherry-pick 3d85507
-[master 8f79132] exp. change 2
+[main 8f79132] exp. change 2
 ... some more Git messages specific to changes introduced with this commit ...
 
 # inspect the status of all commits on the 'main' branch after cherry-picking:
 $ git log --oneline
-8f79132 (HEAD -> master) exp. change 2
+8f79132 (HEAD -> main) exp. change 2
 15e8839 change 4
 137f5e2 change 3
 1192d2b change 2
 009e81b change 1
 
-# ctd. development on the 'main' branch, make new commit 'change 5', etc.
+# continue development on the 'main' branch, make new commit 'change 5', etc.
 ```
 
 
@@ -1705,36 +1721,40 @@ $ git log --oneline
 
 
 ### 7. Executive and exemplary summary of the main Git commands <a name="executive.and.exemplary.summary.of.main.git.commands"></a>
-In this section, we list in alphabetical order the most commonly used **git** commands with an executive summary of their meaning. This summary is followed up with a series of examples illustrating their simple use cases in practice. 
+In this section, we list in alphabetical order the most commonly used Git commands with an executive summary of their meaning. This summary is followed up with a series of examples illustrating their simple use cases in practice. 
 
-The generic usage of **git** command is: 
+The general usage of Git command is: 
 
 ```bash
-git commandName optionsOrArguments
+$ git commandName optionsOrArguments
 ```
 
 where _optionsOrArguments_ are specific to particular _commandName_. 
 
-The list of all **git** commands can be generated using the standard auto-complete mechanism by hitting two consecutive "TAB" after **git** at the command line:
+The list of all Git commands can be generated using the standard auto-complete mechanism by hitting two consecutive "TAB" after Git at the command line:
 
-```Bash
+```bash
 $ git + TAB + TAB
-add               clang-format-10   grep              range-diff        show 
-am                clean             gui               rebase            show-branch 
-apply             clone             help              reflog            sparse-checkout 
-archive           commit            init              remote            stage 
-bisect            config            instaweb          repack            stash 
-blame             describe          log               replace           status 
-branch            diff              merge             request-pull      submodule 
-bundle            difftool          mergetool         reset             switch 
-checkout          fetch             mv                restore           tag 
-cherry            format-patch      new-workdir       revert            whatchanged 
-cherry-pick       fsck              notes             rm                worktree 
-citool            gc                pull              send-email        
-clang-format      gitk              push              shortlog
+add               describe          merge             revert 
+am                diff              mergetool         rm 
+apply             difftool          mv                send-email 
+archive           fetch             notes             shortlog 
+bisect            format-patch      prune             show 
+blame             fsck              pull              show-branch 
+branch            gc                push              sparse-checkout 
+bundle            gitk              range-diff        stage 
+checkout          grep              rebase            stash 
+cherry            gui               reflog            status 
+cherry-pick       help              remote            submodule 
+citool            init              repack            switch 
+clean             instaweb          replace           tag 
+clone             latexdiff         request-pull      whatchanged 
+commit            log               reset             worktree 
+config            maintenance       restore
 ```
 
-The list of all **git** commands, with a short one-line summary of their meaning, can be generated as follows:
+
+The list of all Git commands, with a short one-line summary of their meaning, can be generated as follows:
 
 ```bash  
 $ git help -a
@@ -1753,7 +1773,7 @@ Main Porcelain Commands
 ... many more lines in the printout ...
 ```
 
-Finally, the detailed documentation of any **git** command, basically the individual man page of each **git** command, can be obtained with:
+Finally, the detailed documentation of any Git command, basically the individual 'man' page of each Git command, can be obtained with:
 
 ```bash
 git help commandName
@@ -1781,7 +1801,7 @@ DESCRIPTION
 ... many more lines in the printout ...
 ```
 
-In what follows next, we discuss in more detail only the most commonly used **git** commands.
+In what follows next, we discuss in more detail only the most commonly used Git commands.
 
 
 
@@ -1831,7 +1851,7 @@ For each of these commands, we provide an example use case in the next section.
 
 #### Git examples <a name="git.examples"></a>
 
-With a series of examples, sorted in alphabetical order, we now illustrate how these Git commands can be used in practice. They were successfully tested and validated with **git 2.34.1** version.
+With a series of examples, sorted in alphabetical order, we now illustrate how these Git commands can be used in practice. They were successfully tested and validated with Git 2.34.1 version.
 
 
 
@@ -1956,7 +1976,7 @@ Branch 20190925_tris set up to track remote branch 20190925_tris from origin. TB
 
 **git checkout** _someBranch_ &mdash; In order to start working on the branch, we need to checkout that branch first. After checkout, HEAD points to the last commit in _someBranch_, and the files in the working tree are set to the state of that last commit. Two important remarks:
 
-*  Use with care, because **git checkout** deletes the unstaged and uncommitted changes of tracked files in the working tree, and it is not possible to restore deletion of those changes via **git**; TBI 20241011 I cannot reproduce this one, in the test I am doing locally, modifed files are carried over in the checked out branch
+*  Use with care, because **git checkout** deletes the unstaged and uncommitted changes of tracked files in the working tree, and it is not possible to restore deletion of those changes via Git; TBI 20241011 I cannot reproduce this one, in the test I am doing locally, modifed files are carried over in the checked out branch
 *  But it doesn't delete the untracked new files? TBI 2024103 check and document this further
 
 **git checkout -b** _someBranch_ &mdash; Make new branch and start to work on it immediately. AB: Shall be the same as git branch <some-branch> TBI 20241003 it's not see the explanation above for **git branch**
@@ -1997,7 +2017,7 @@ nothing to commit (create/copy files and use "git add" to track)
 
 **git cherry-pick** _commitID_ &mdash; Cherry-pick the changes introduced with the commit _commitID_ on some other branch, and introduce only those changes (therefore cherry-pick) into the current branch.
 
-**git clean** &mdash; Remove in one go all *untracked* files from the working tree (use with care, as there is no way back). If the **git** configuration variable _clean.requireForce_ is not set to false, **git clean** will refuse to clean untracked files, unless it is additionally forced with flag "-f".
+**git clean** &mdash; Remove in one go all *untracked* files from the working tree (use with care, as there is no way back). If the Git configuration variable _clean.requireForce_ is not set to false, **git clean** will refuse to clean untracked files, unless it is additionally forced with flag "-f".
 
 ```bash
 # remove all untracked files:
@@ -2530,244 +2550,302 @@ Dropped refs/stash@{0} (9b04bc441f665be83aef5342c762f60fbcd7fa3e)
 
 ### 8. Git how-tos <a name="git.how.tos"></a>
 
-In this section, some of the frequently encountered real-case scenarios are summarized in an exemplary way for their solution.
+In this section, some of the frequently encountered real-case scenarios are summarized in a concrete and exemplary way for their solution:
+
+* [**How to change the commit message of the most recent commit?**](#how.to.change.the.commit.message.of.the.most.recent.commit)
+* [**How to completely undo the latest commit?**](#how.to.completely.undo.the.latest.commit)
+* [**How to restore a deleted file in Git repository?**](#how.to.restore.a.deleted.file.in.git.repository)
+* [**How to revert a file to the status of latest staged (or committed) version?**](#how.to.revert.a.file.to.the.status.of.latest.staged.or.committed.version)
+* [**How to revert a file to the status of specific commit?**](#how.to.revert.a.file.to.the.status.of.specific.commit)
+* [**How to unstage the staged changes?**](#how.to.unstage.the.staged.changes)
+* [**How to delete commit locally, and propagate that deletion also to remote repository?**](#how.to.delete.commit.locally.and.propagate.that.deletion.also.to.remote.repository)
+* [**How to push a newly created local branch or local tag to remote repository?**](#how.to.push.a.newly.created.local.branch.or.local.tag.to.remote.repository)
+* [**How to rename branch both locally and remotely?**]( #how.to.rename.branch.both.locally.and.remotely)
+* [**How to clone all remote branches?**](#how.to.clone.all.remote.branches)
+* [**How to clone locally only the specific branch or tag (without cloning the whole repository)?**](#how.to.clone.locally.only.the.specific.branch.or.tag.without.cloning.the.whole.repository)
+
+
+Below is a detailed solutions for each of these cases.
+
+* **How to change the commit message of the most recent commit?** <a name="how.to.change.the.commit.message.of.the.most.recent.commit"></a>
+
+When the commit was already made with a particular message, and if there is a typo or missing information which needs to be edited afterward in that message, that can be achieved for the most recent commit directly with the command **git commit --amend** as follows:
+
+```bash
+# initial commit with a typo in the commit message:
+$ git commit -m "some wrong message"
+
+# change the commit message into a new one:
+$ git commit --amend -m "new correct message"
+
+# check reflogs:
+$ git reflog
+c32b4f2 (HEAD -> master) HEAD@{0}: commit (amend): new correct message
+04c5ba9 HEAD@{1}: commit: some wrong message
+...
+    
+# check logs - only new commit is present:
+$ git log --oneline 
+c32b4f2 (HEAD -> master) new correct message
+```
+
+As can be seen from the reflogs, the command **git commit --amend** creates a new commit identifier.  Therefore, this command shall be used only if the initial commit with the typo was still not pushed outside of the current local repository.
 
 
 
-* **How to push a newly created local branch or local tag to remote repository?**
+
+
+* **How to completely undo the latest commit?** <a name="how.to.completely.undo.the.latest.commit"></a>
+
+Frequently, one makes a new commit in the local Git repository, and immediately realizes that that commit still wasn't ready. To undo that commit, it suffices to execute:
+
+```bash
+$ git reset HEAD~
+```
+
+This will literally bring back everything in the Git repository into the status just before the latest commit has been made, i.e., all the changes from that commit remain in your working directory as unstaged modifications.
+
+
+
+
+
+* **How to restore a deleted file in Git repository?** <a name="how.to.restore.a.deleted.file.in.git.repository"></a>
+
+If a tracked file was deleted, and its deletion was committed, at any point later that file can be recovered. The case is illustrated as follows:
+
+```bash
+# delete a tracked file "someFile":
+$ git rm someFile
+
+# stage file deletion:
+$ git add someFile
+
+# commit file deletion:
+$ git commit -m "deleted someFile"
+... some info messages ...
+
+# at some point later, it was realized "someFile" is needed again - 
+# find a commit in which this file was deleted:
+$ git log --follow --oneline -- "someFile"
+... list of other commits ...
+70483d4 "deleted someFile"
+... list of other commits ...
+
+# fall back to the version of "someFile" as it was one commit
+# before the commit ID "70483d4":
+$ git checkout 70483d4~1 -- someFile 
+```
+
+In the last command above, we have used the special syntax ```commitID~N``` , which stands for the ```Nth``` commit before the specified commit ```commitID```. Therefore, ```70483d4~1``` will point to the first commit before the commit ```70483d4``` was made.
+
+
+
+
+* **How to revert a file to the status of latest staged (or committed) version?** <a name="how.to.revert.a.file.to.the.status.of.latest.staged.or.committed.version"></a>
+
+This is needed when one wants to remove all new development in a file in the working tree, and fall back to its previous version. The changes in the working tree can be reverted as follows:
+  
+```bash
+$ git checkout -- someFile
+```
+  
+If "someFile" is staged, its previous version corresponds to the staged version, otherwise, to its version in the latest commit.
+
+
+
+
+
+* **How to revert a file to the status of specific commit?** <a name="how.to.revert.a.file.to.the.status.of.specific.commit"></a>
+
+This is needed when one wants to discard all changes introduced in a file with a series of commits. Typically, this happens when one or more bugs were introduced in the code with the new commits, and one wants to fall back to the version which is known to be bug-free. In that case, one can differentially enlist all commits in which that specific file was changed, and than fall back to the desired commit: 
+  
+```bash
+# list all commits in which the specific file was changed: 
+$ git log --follow --oneline -- someFile
+...
+4b53a48 "another commit message"
+da7bda4 "some commit message" 
+
+# restore the content of "someFile" in the working tree 
+# to what it was after the commit "da7bda4":
+$ git checkout da7bda4 -- someFile
+```
+
+It is important to specify the file name, otherwise **git checkout** _commitID_ reverts the whole working tree to the status of this commit (and in the latter case, the resulting state is DETACHED HEAD).
+
+TBI 20261111 Check still if the restored content is also staged automatically.
+
+
+
+
+
+* **How to unstage the staged changes?** <a name="how.to.unstage.the.staged.changes"></a>
+
+If files _file-1_, _file-2_, ..., were modified in the working tree and those modifications were staged with **git add** command, but later it was realized that those modifications are not ready or needed for the next commit, files can be removed from staging area:
+
+```Bash
+# remove files from staging area, but keep their changes in the working tree:
+$ git restore --staged file-1 file-2 ...
+```
+
+Alternatively, that can be achieved with:
+
+```bash
+# remove files from staging area, but keep their changes in the working tree:
+$ git reset HEAD file-1 file-2 ...
+```
+
+With the above approach, modifications are kept in the files in the working tree. If also modifications have to be removed from the working tree, one has to use **git checkout** command:
+
+```bash
+# remove files from staging area and undo their changes in the working tree:
+$ git checkout HEAD -- file-1 file-2 ...
+```
+
+With the above approach, modifications are not kept in the files in the working tree. 
+
+
+
+
+
+* **How to delete commit locally, and propagate that deletion also to remote repository?**<a name="how.to.delete.commit.locally.and.propagate.that.deletion.also.to.remote.repository"></a>
+
+TBI 20261111 This section is not yet finished and validated
+
+```bash
+# initial setup:
+$ git log --pretty=oneline --abbrev-commit
+f80109c (origin/master, master) update .... Sat Apr 11 10:21:54 CEST 2020
+094026f (HEAD) update .... Sat Apr 11 10:21:42 CEST 2020
+ab51558 update .... Sat Apr 11 10:21:36 CEST 2020
+...
+```
+
+And now I want to delete the commit ```f80109c``` and rebase to the previous commit, and propagate that deletion to remote. Do:
+
+```bash
+$ git rebase -i 094026f HEAD~2
+# Successfully rebased and updated detached HEAD.
+```
+
+
+
+
+* **How to push a newly created local branch or local tag to remote repository?**<a name="how.to.push.a.newly.created.local.branch.or.local.tag.to.remote.repository"></a>
 
 Imagine that in GitHub and locally you have only the _master_ branch (e.g. after the initial cloning of online repository locally), and then locally you create a new branch with the name _newBranchName_. You can propagate that new branch to the same online repository at GitHub by using:
 
 ```bash 
-git push --set-upstream origin newBranchName
+$ git push --set-upstream origin newBranchName
 ```
 
 or equivalently:
 
 ```bash 
-git push -u origin newBranchName
+$ git push -u origin newBranchName
 ```
 
-  After that, changes in the local _master_ branch are pushed into the remote _master_, while changes in the local branch _newBranchName_ are pushed in the remote branch _newBranchName_.
+After that, changes in the local _master_ branch are pushed into the remote _master_, while changes in the local branch _newBranchName_ are pushed in the remote branch _newBranchName_.
 
-  To push a newly created local tag, e.g. with the name "v1.2.3" to the same online repository at GitHub, one needs to execute:
-
-  ```bash
-  git push origin tag v1.2.3
-  ```
-
-  
-
-* **How to rename branch both locally and remotely?**
-
-  Let's assume that the name of the remote repository is _origin_, the old branch name is _old-name_, and the new branch name is _new-name_. Then, we can proceed as follows: 	
-
-    ```bash
-    # a) if you are on a branch you want to rename:
-    git branch -m new-name # this works , otherwise use git branch -m old-name new-name
-    
-    # b) alternatively, if you are not on a branch you want to rename:
-    git branch -m old-name new-name
-    
-    # delete the remote branch "old-name":
-    git push origin :old-name new-name 
-    ... some info lines ...
-     - [deleted]         old-name
-     * [new branch]      new-name -> new-name
-    
-    # set the upstream branch for the new local branch "new-name"
-    git push origin -u new-name
-    Branch 'new-name' set up to track remote branch 'new-nam' from 'origin'.
-    ```
-
-
-
-* **How to clone all remote branches?**
-
-	When an existing remote repository is cloned, even though it contains multiple branches, after cloning only the branch "master" is available locally:
-
-    ```bash
-    $ git clone https://github.com/abilandz/PH8124.git PH8124
-    $ cd PH8124
-    $ git branch
-    *master
-    ```
-
-	However, the remote repository on GitHub has many other branches, and that can be inspected by executing:
-
-    ```bash
-    $ git branch -a
-    remotes/origin/HEAD -> origin/master
-    remotes/origin/SS2020
-    remotes/origin/SS2021
-    remotes/origin/SS2022
-    remotes/origin/SS2023
-    remotes/origin/SS2024
-    remotes/origin/master
-    ```
-
-	To clone any of remaining remote branches locally, one can proceed as follows:
-
-    ```bash
-    $ git checkout remotes/origin/SS2022
-    
-    $ git checkout SS2022
-    Branch 'SS2022' set up to track remote branch 'SS2022' from 'origin'.
-    Switched to a new branch 'SS2022'
-    
-    $ git branch
-    *SS2022
-    master
-    ```
-
-	And so on for other remote branches. There is no direct way in Git to checkout all remote branches in one go, but the procedure can be simply automated with a shell script, by parsing through the output of **git branch -a**, and repeating the above procedure for each branch.
-	
-	
-
-
-* **How to clone locally only the specific branch or tag (without cloning the whole repository)?**
-
-  This functionality is needed when one wants to clone locally and compile only the specific version. The syntax is the same, either for branch or tag:
-  
-  ```bash
-  git clone --depth 1 --branch someBranchOrTagName repositoryURL
-  ```
-  
-  For instance, if one wants to download locally only the source code of Bash, version 5.2, one can use:
-  
-  ```bash
-  git clone --depth 1 --branch bash-5.2 https://git.savannah.gnu.org/git/bash.git
-  ```
-
-
-
-
-* **How to change the commit message?**
-
-  When the commit was already made with a particular message, and if there is a typo or missing information which needs to be edited afterward in that message, that can be achieved with the command **git commit --amend** as follows:
-
-    ```bash
-  # initial commit with a typo in the commit message:
-  $ git commit -m "some wrong message"
-  
-  # change the commit message into a new one:
-  $ git commit --amend -m "new correct message"
-  
-  # check reflogs:
-  $ git reflog
-  c32b4f2 (HEAD -> master) HEAD@{0}: commit (amend): new correct message
-  04c5ba9 HEAD@{1}: commit: some wrong message
-  ...
-    
-  # check logs - only new commit is present:
-  $ git log --oneline 
-  c32b4f2 (HEAD -> master) new correct message
-    ```
-  As can be seen from the reflogs, the command **git commit --amend** creates a new commit identifier.  Therefore, this command shall be used only if the initial commit with the typo was still not pushed outside of the current local repository.
-
-
-
-* **How to unstage the staged changes?**
-
-	If files _file-1_, _file-2_, ..., were modified in the working tree and those modifications were staged with **git add** command, but later it was realized that those modifications are not ready or needed for the next commit, files can be removed from staging area:
-	
-	```Bash
-	# remove files from staging area, but keep their changes in the working tree:
-	git restore --staged file-1 file-2 ...
-	```
-
-	Alternatively, that can be achieved with:
-
-	```bash
-	# remove files from staging area, but keep their changes in the working tree:
-	git reset HEAD file-1 file-2 ...
-	```
-	
-	With the above approach, modifications are kept in the files in the working tree. If also modifications have to be removed from the working tree, one has to use **git checkout** command:
-	
-	```bash
-	# remove files from staging area and undo their changes in the working tree:
-	git checkout HEAD file-1 file-2 ...
-	```
-
-	With the above approach, modifications are not kept in the files in the working tree. 
-
-
-
-
-* **How to revert the file to the status of latest staged (or committed) version?**
-
-  This is needed when one wants to remove all new development in a file in the working tree, and fall back to its previous version. The changes in the working tree can be reverted as follows:
-  
-  ```bash
-  git checkout -- someFile
-  ```
-  
-   If "someFile" is staged, its previous version corresponds to the staged version, otherwise, to its version in the latest commit.
-  
-  
-
-* **How to revert a file to the status of specific commit?**
-
-  This is needed when one wants to discard all changes introduced in a file with a series of commits. Typically, this happens when one or more bugs were introduced in the code with the new commits, and one wants to fall back to the version which is known to be bug-free. In that case, one can differentially enlist all commits in which that specific file was changed, and than fall back to the desired commit: 
-  
-  ```bash
-  # list all commits in which the specific file was changed: 
-  $ git log --follow --oneline -- someFile
-  ...
-  4b53a48 "another commit message"
-  da7bda4 "some commit message" 
-  
-  # restore the content of "someFile" in the working tree 
-  # to what it was after the commit "da7bda4":
-  $ git checkout da7bda4 someFile
-  ```
-
-	It is important to specify the file name, otherwise **git checkout** _commitID_ reverts the whole working tree to the status of this commit (and in the latter case, the resulting state is DETACHED HEAD).
-
-
-
-* **How to restore a deleted file in Git repository?**
-
-  If a tracked file was deleted, and its deletion was committed, at any point later that file can be recovered. The case is illustrated as follows:
-
-  ```bash
-  # delete a tracked file "someFile":
-  $ git rm someFile
-  
-  # stage file deletion:
-  $ git add someFile
-  
-  # commit file deletion:
-  $ git commit -m "deleted someFile"
-  ... some info messages ...
-  
-  # at some point later, we realize we need "someFile" again; 
-  # find a commit in which this file was deleted:
-  $ git log --follow --oneline -- "someFile"
-  ... list of other commits ...
-  70483d4 "deleted someFile"
-  ... list of other commits ...
-  
-  # fall back to the version of "someFile"
-  # in one commit BEFORE the commit "70483d4":
-  $ git checkout 70483d4~1 -- someFile
-  ```
-
-  In the last command above, we have used the special syntax ```commitID~N``` , which stands for the Nth commit before the specified commit _commitID_. Therefore, "70483d4~1" will point to the first commit before the commit "70483d4" was made.
-
-
-
-
-* **How to completely undo the latest commit?**
-
-Frequently, one makes a new commit in the local Git repository, and immediately realizes that that commit still wasn't ready. To undo that commit completely, it suffices to exectue:
+To push a newly created local tag, e.g. with the name "v1.2.3" to the same online repository at GitHub, one needs to execute:
 
 ```bash
-git reset HEAD~
+$ git push origin tag v1.2.3
 ```
 
-This will literally bring back everything in the Git repository into the status just before the latest commit.
+
+
+
+
+* **How to rename branch both locally and remotely?**<a name="how.to.rename.branch.both.locally.and.remotely"></a>
+
+Let's assume that the name of the remote repository is _origin_, the old branch name is _old-name_, and the new branch name is _new-name_. Then, we can proceed as follows: 	
+
+```bash
+# a) if you are on a branch you want to rename:
+$ git branch -m new-name
+
+# b) alternatively, if you are not on a branch you want to rename:
+$ git branch -m old-name new-name
+
+# c) delete the remote branch "old-name":
+$ git push origin :old-name new-name 
+... some info lines ...
+ - [deleted]         old-name
+ * [new branch]      new-name -> new-name
+
+# d) set the upstream branch for the new local branch 'new-name':
+$ git push origin -u new-name
+Branch 'new-name' set up to track remote branch 'new-name' from 'origin'.
+```
+
+
+
+
+
+* **How to clone all remote branches?**<a name="how.to.clone.all.remote.branches"></a>
+
+When an existing remote repository is cloned, even though it contains multiple branches, after cloning only the branch "master" is available locally:
+
+```bash
+$ git clone https://github.com/abilandz/PH8124.git PH8124
+$ cd PH8124
+$ git branch
+*master
+```
+
+However, the remote repository on GitHub has many other branches, and that can be inspected by executing:
+
+```bash
+$ git branch -a
+remotes/origin/HEAD -> origin/master
+remotes/origin/SS2020
+remotes/origin/SS2021
+remotes/origin/SS2022
+remotes/origin/SS2023
+remotes/origin/SS2024
+remotes/origin/master
+```
+
+To clone any of remaining remote branches locally, one can proceed as follows:
+
+```bash
+$ git checkout remotes/origin/SS2022
+
+$ git checkout SS2022
+Branch 'SS2022' set up to track remote branch 'SS2022' from 'origin'.
+Switched to a new branch 'SS2022'
+
+$ git branch
+*SS2022
+master
+```
+
+And so on for other remote branches. There is no direct way in Git to checkout all remote branches in one go, but the procedure can be simply automated with a shell script, by parsing through the output of **git branch -a**, and repeating the above procedure for each branch.
+	
+TBI 20261111 review once again this section, and check all steps
+
+
+
+
+
+* **How to clone locally only the specific branch or tag (without cloning the whole repository)?**<a name="how.to.clone.locally.only.the.specific.branch.or.tag.without.cloning.the.whole.repository"></a>
+
+This functionality is needed when one wants to clone locally and compile only the specific version. The general syntax is the same, either for branch or tag:
+
+```bash
+$ git clone --depth 1 --branch someBranchOrTagName repositoryURL
+```
+
+For instance, if one wants to download locally only the source code of Bash, version 5.2, one can use:
+  
+```bash
+$ git clone --depth 1 --branch bash-5.2 https://git.savannah.gnu.org/git/bash.git
+```
+
+
+
+
 
 
 
