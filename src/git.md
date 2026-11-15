@@ -1,7 +1,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20261111-1
+**Last update**: 20261115-1
 
 <!-- this is a comment -->
 
@@ -1403,7 +1403,7 @@ gitGraph
    commit id: "change 5"
 ```
 
-Unlike in the fast-forward merge case, here after the _devel_ branch was made, for some time the development was done concurrently in both the _main_ and the _devel_ branch. In this case, all commits on the _devel_ branch are not direct successors of HEAD on the _main_ branch, and Git will merge all commits from _devel_ into _main_ by using the following approach: 
+Unlike in the fast-forward merge case, here after the _devel_ branch was made, for some time the development was done concurrently in both the _main_ and the _devel_ branch. In this case, all commits on the _devel_ branch are not direct successors of HEAD on the _main_ branch, and Git will merge the commits from _devel_ into _main_ by using the following approach: 
 
 1. find the most recent common commit in both branches (in the above diagram and example, that would be the commit named "change 2");
 2. make a new _merge commit_ on the _main_ branch that combines all changes from two branches being merged.
@@ -1495,10 +1495,16 @@ Date:   Thu Nov 13 08:08:26 2025 +0100
 ... info related to the previous commits ...    
 ```
 
-It can be seen clearly that the "merge commit" was obtained after merging two commits on two different branches, commit "ae36502" from the _main_ branch and commit "cd97227" from the _devel_ branch.
+It can be seen clearly that the "merge commit" was obtained after merging two commits on two different branches, commit "ae36502" from the _main_ branch and commit "cd97227" from the _devel_ branch. With the "merge commit" Git has merely combined the changes corresponding to the latest commits on each branch. 
 
-With this approach, merging conflicts can occur if the same file is modified in two branches in an incompatible way, and this typically needs to be resolved manually by editing the file to the final version during merging. 
+With this approach, merging conflicts can occur if the same file is modified in two branches in an incompatible way, and this typically needs to be resolved manually by editing the file to the final version during merging.
 
+If one has several parallel branches for concurrent experimental development, e.g. _devel-1_, _devel-2_, ..., one can attempt to merge changes from all of them into the _master_ branch in one go by using:
+```bash
+# switch to branch "master" and execute:
+$ git merge devel-1 devel-2 ...
+```
+In this case, Git will use another strategy for merging, the so-called _"octopus"_ strategy. However, this is not recommended, as the  _"octopus"_ merging strategy will be aborted by Git if there is a single merging conflict. After such a failure, the recommendation in any case will be that one branch is merged at a time with the standard _"ort"_ strategy, and merging conflicts (if any) are fixed individually .
 
 
 
@@ -2328,7 +2334,7 @@ nothing to commit (create/copy files and use "git add" to track)
      3/ git rebase origin/master # if you are fine with the changes, rebase
 ```
 
-**git reflog** &mdash; Lists the history of all commits, using either HEAD (default) or the branch name as the reference. It lists also the commits which were removed. When you reset the branch pointer to some older commit ID, **git log** does not show the new commits, but **git reflog** does. It's usage is illustrated with the following two examples:
+**git reflog** &mdash; List the history of commits, using either HEAD (default) or the branch name as the reference. It lists also the commits which were removed. When you reset the branch pointer to some older commit ID, **git log** does not show the new commits, but **git reflog** does. Its usage is illustrated with the following two examples:
 
 ```bash
 # lists all commits using HEAD as a reference:
@@ -2350,7 +2356,7 @@ c3eeded someBranchName@{2}: commit: minor update
 ...
 ```
 
-Using HEAD as a reference will lists all commits across different branches, while using branch name as a reference will lists only the commits made on that branch.
+Since one can think oh HEAD being the last commit on the current branch, using HEAD as a reference will lists commits across different branches, while using branch name as a reference will lists only the commits made on that branch.
 
 **git remote** &mdash; just prints the chosen name of remote repo
 
@@ -2644,11 +2650,11 @@ In the last command above, we have used the special syntax ```commitID~N``` , wh
 * **How to revert a file to the status of latest staged (or committed) version?** <a name="how.to.revert.a.file.to.the.status.of.latest.staged.or.committed.version"></a>
 
 This is needed when one wants to remove all new development in a file in the working tree, and fall back to its previous version. The changes in the working tree can be reverted as follows:
-  
+
 ```bash
 $ git checkout -- someFile
 ```
-  
+
 If "someFile" is staged, its previous version corresponds to the staged version, otherwise, to its version in the latest commit.
 
 
@@ -2658,7 +2664,7 @@ If "someFile" is staged, its previous version corresponds to the staged version,
 * **How to revert a file to the status of specific commit?** <a name="how.to.revert.a.file.to.the.status.of.specific.commit"></a>
 
 This is needed when one wants to discard all changes introduced in a file with a series of commits. Typically, this happens when one or more bugs were introduced in the code with the new commits, and one wants to fall back to the version which is known to be bug-free. In that case, one can differentially enlist all commits in which that specific file was changed, and than fall back to the desired commit: 
-  
+
 ```bash
 # list all commits in which the specific file was changed: 
 $ git log --follow --oneline -- someFile
@@ -2838,7 +2844,7 @@ $ git clone --depth 1 --branch someBranchOrTagName repositoryURL
 ```
 
 For instance, if one wants to download locally only the source code of Bash, version 5.2, one can use:
-  
+
 ```bash
 $ git clone --depth 1 --branch bash-5.2 https://git.savannah.gnu.org/git/bash.git
 ```
