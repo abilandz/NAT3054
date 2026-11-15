@@ -1,7 +1,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20261115-1
+**Last update**: 20261115-2
 
 <!-- this is a comment -->
 
@@ -1504,15 +1504,15 @@ If one has several parallel branches for concurrent experimental development, e.
 # switch to branch "master" and execute:
 $ git merge devel-1 devel-2 ...
 ```
-In this case, Git will use another strategy for merging, the so-called _"octopus"_ strategy. However, this is not recommended, as the  _"octopus"_ merging strategy will be aborted by Git if there is a single merging conflict. After such a failure, the recommendation in any case will be that one branch is merged at a time with the standard _"ort"_ strategy, and merging conflicts (if any) are fixed individually .
+In this case, Git will use another strategy for merging, the so-called _"octopus"_ strategy. However, this is not recommended, as the  _"octopus"_ merging strategy will be aborted by Git if there is a single merging conflict. After such a failure, the recommendation in any case will be that one branch is merged at a time with the standard _"ort"_ strategy, and merging conflicts (if any) are fixed individually.
 
 
 
 ##### b) rebase  <a name="rebase"></a>
 
-Another way to incorporate changes from one branch into another is to use _rebase_. If you rebase a branch named A onto another branch named B, Git will take all commits of branch A and replay them on the HEAD of branch B. This technique is particularly suitable for incorporating changes from the remote repository into the currently active local branch.
+Another way to incorporate changes from one branch into another is to use _rebase_. If you rebase a branch named A onto another branch named B, Git will take all commits of branch A and replay them on the HEAD of branch B. The net effect is that all development on branch B is now part of branch A, and no development on branch A is being lost. This technique is particularly suitable for incorporating changes from the remote repository into the currently active local branch.
 
-We use the following diagram to illustrate the repository that contains two branches, named _main_ and _devel_, in which development is carried out in parallel:
+In the first example, we use the following diagram to illustrate the repository that contains two branches, named _main_ and _devel_, in which development is carried out in parallel:
 
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": false}} }%%
@@ -1627,6 +1627,68 @@ flowchart RL
     devel --> commitExp1Star 
 ```
 
+One important technical aspect about **git rebase** is that it rewrites the commit history, i.e. it will assign a new commit IDs (SHA-1 hashes) to the commits after they have been replayed on the HEAD of the branch on which rebase is performed. Concretely, for the above example, the commit identifier for the commit "exp. change 1" will be different on the _devel_ branch before and after **git rebase** is performed. Because of that, **git rebase** is not recommended for changes which were already published or shared outside of the local repository.  
+
+In the second example, the Git's rebase technique is used for incorporating changes from the remote repository into the currently active local branch &mdash; this case is illustrated with the following diagram:
+
+```mermaid	
+flowchart TD
+    central@{ shape: cloud, label: "Central online repository" } 
+    local_1["Local repository 1"]
+    local_2["Local repository 2"]
+    central <==> local_1    
+    central <==> local_2    
+```
+<!-- If cloud diagram doesn't work, fall back to:
+central["Central online repository"] 
+-->
+
+In this example, two developers are collaborating on the same project, whose Git repository is hosted online (e.g. on GitHub) in the repository named "Central online repository". Each developer has on a local computer a clone of that shared online repository named "Local repository 1" and "Local repository 2", respectively , from where new commits are regularly pushed into the shared online repository. However, each developer has to be careful not to try to push the commits from the local repository to the shared online repository before incorporating first the latest developments from other collaborators, i.e. before pulling into the local repository all new commits which are available online. Otherwise, the following standard "rejected - fetch first" error can occur:
+
+```bash
+$ git push
+To https://github.com/abilandz/someOnlineRepo
+ ! [rejected]        main -> main (fetch first)
+error: failed to push some refs to 'https://github.com/abilandz/someOnlineRepo'
+hint: Updates were rejected because the remote contains work that you do
+hint: not have locally. This is usually caused by another repository pushing
+hint: to the same ref. You may want to first integrate the remote changes
+hint: (e.g., 'git pull ...') before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+```
+
+What happened is that one of the developers has pushed successfully new commits to the shared online repository. After that, another developer can push their new commits online only after first integrating the new commits from other developers which are already available online. This can be achieved by following the step-by-step procedure below.
+
+1. Stage all changes and commit them in the local repository:
+
+	```bash
+	$ git add .
+	$ git commit -m 'some commit message'
+	```
+	
+2. Rebase the local branch to the remote-tracking upstream branch using **git pull --rebase** as follows:
+
+	```bash
+	$ git pull --rebase
+	remote: Enumerating objects: 5, done.
+    remote: Counting objects: 100% (5/5), done.
+    remote: Compressing objects: 100% (2/2), done.
+    remote: Total 3 (delta 0), reused 3 (delta 0), pack-reused 0 (from 0)
+    Unpacking objects: 100% (3/3), 264 bytes | 264.00 KiB/s, done.
+    From https://github.com/abilandz/someOnlineRepo
+       6e3fc09..4cb915b  main       -> origin/main
+    Successfully rebased and updated refs/heads/main.
+	```
+	
+	After this step, the net effect is that all new commits from the online remote-tracking branch are now also in the local repository, and the local changes introduced with the commit made in Step 1 above are applied locally on top of them. 
+
+3. Push the commit:
+
+	```bash
+	$ git push
+	```
+
+In essence, **git pull --rebase** will perform a combined operation of **git fetch** and **git rebase**, while **git pull** by default will perform a combined operation of **git fetch** and **git merge**. In most cases the former should be prefered, because it avoids the creation of unnecessary "merge commit", but with the latter approach it's typically easier to resolve the merging conflicts because they have to be resolved only once for the "merge commit". 
 
 
 
