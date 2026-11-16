@@ -1,7 +1,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20261115-2
+**Last update**: 20261116-1
 
 <!-- this is a comment -->
 
@@ -1763,7 +1763,7 @@ $ git log --oneline
 009e81b change 1
 
 # finally, cherry-pick the changes introduced on the 'devel' branch with commit
-# named 'exp. change 2' (its commit id is '3d85507', see above), and introduce
+# named 'exp. change 2' (its commit ID is '3d85507', see above), and introduce
 # only those changes (i.e. cherry-pick) on the 'main' branch:
 $ git cherry-pick 3d85507
 [main 8f79132] exp. change 2
@@ -1780,8 +1780,47 @@ $ git log --oneline
 # continue development on the 'main' branch, make new commit 'change 5', etc.
 ```
 
+It is worth noting that **git cherry-pick** created a new commit ID on the 'main' branch '8f79132' corresponding to 'exp. change 2', i.e. it did not merely move the original commit ID '3d85507' from the 'devel' branch. If later the whole 'devel' branch is merged into the 'main' branch, this might lead to the duplication of commits, depending which merging strategy Git is using (in general, such duplication will occur after **git merge** is used, but can be  avoided with **git rebase**).
 
+In case cherry-picking failed due to conflicts, Git will stop the whole operation halfway through. In case of such a failure, one can clean up and revert to the status before cherry-picking started by using simply **git cherry-pick --abort**. For instance, reusing the example above, on the 'main' branch one would need to execute
 
+```bash
+# revert changes introduced by the failed cherry-pick command:
+$ git cherry-pick --abort
+```
+
+However, if **git cherry-pick** succeeded, but only later it was realized that that cherry-picked commit was erroneous or still not ready, one can locally revert the cherry-picked commit in the standard way:
+
+```bash
+# revert locally changes introduced by the completed cherry-pick command:
+$ git reset --hard HEAD~1
+```
+
+Finally, we remark that one can cherry-pick several specific commits in one go using the following general syntax:
+
+```bash
+$ git cherry-pick commit-id-1 commit-id-2 commit-id-3 ...
+```
+
+It is possible also to specify a range of commits to be cherry-picked using:
+
+```bash
+$ git cherry-pick commit-id-first^..commit-id-last
+```
+
+For instance, for the above commits on 'devel' branch ranging from '49682e6 (exp. change 1)' through '0c36839 exp. change 3', one needs to use on the 'main' branch
+
+```bash
+$ git cherry-pick 49682e6^..0c36839
+```
+
+or equivalently 
+
+```bash
+$ git cherry-pick 49682e6~1..0c36839
+```
+
+to cherry-pick all 3 commits in one go. The syntax ```^``` (or equivalently ```~1``` when commits have single parent) is needed because by default the range of commits is specified using the mathematical notation as ```( ... ]```, i.e. the lower boundary is not included and the upper boundary is included, where the meaning of ```commit-id^``` (or ```commit-id~1```) is literally "one commit before commit-id" (in general, one can use ```commit-id~N``` to specify the N-th commit before ```commit-id```).  
 
 
 
