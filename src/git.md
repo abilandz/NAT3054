@@ -1,7 +1,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20261116-1
+**Last update**: 20261116-2
 
 <!-- this is a comment -->
 
@@ -1924,9 +1924,10 @@ In the table below, we summarize the most frequently used Git commands, with an 
 | **blame**    | Show what revision and author last modified each line of a file |
 | **branch**   | List, create, or delete branches |
 | **checkout** | Switch branches or restore working tree files |
+| **cherry-pick** | Apply the changes introduced by some existing commits |
+| **clean**    | Remove untracked files from the working tree |
 | **clone**    | Clone a repository into a new directory |
 | **commit**   | Record changes to the repository |
-| **cherry-pick** | Apply the changes introduced by some existing commits |
 | **config** | Get and set repository or global options |
 | **diff**     | Show changes between commits, commit and working tree, etc. |
 | **fetch**    | Download objects and refs from another repository |
@@ -1945,8 +1946,8 @@ In the table below, we summarize the most frequently used Git commands, with an 
 | **reset**   | Reset current HEAD to the specified state |
 | **revert**   | Revert some existing commits |
 | **rm**   | Remove files from the working tree and from the stage area |
-| **show**   | Show various types of objects |
 | **shortlog**   | Summarize 'git log' output |
+| **show**   | Show various types of objects |
 | **stash**   | Stash the changes in a dirty working directory away |
 | **status**   | Show the working tree status |
 | **switch**   | Switch branches |
@@ -1958,7 +1959,7 @@ For each of these commands, we provide an example use case in the next section.
 
 #### Git examples <a name="git.examples"></a>
 
-With a series of examples, sorted in alphabetical order, we now illustrate how these Git commands can be used in practice. They were successfully tested and validated with Git 2.34.1 version.
+With a series of examples, sorted in alphabetical order, we now illustrate how these Git commands can be used in practice. They were successfully tested and validated last time with Git 2.34.1 version.
 
 
 
@@ -2624,6 +2625,11 @@ Dropped refs/stash@{0} (9b04bc441f665be83aef5342c762f60fbcd7fa3e)
 ```
 
 **git status** &mdash; show the status of working tree. Typically, it provides an executive summary of all changes in the working tree with respect to the previous commit, accompanied with suggestion how to deal with those changes (e.g. list of files which were modified, etc.) TBI 20250305 see if i need to expand this further, see page 85
+
+
+**git switch** _someBranchName_  &mdash; TBI 20261116 finalize this one
+
+**git switch -c** _someBranchName_  &mdash; TBI 20261116 finalize this one
 
 
 
