@@ -10,5 +10,6 @@
     * [Scoresheet](src/Homeworks/Scoresheet.md)
     * [Homework 1](src/Homeworks/Homework_1.md)
     * [Homework 2](src/Homeworks/Homework_2.md)
+    * [Homework 3](src/Homeworks/Homework_3.md)
 * [Past semesters](src/history.md)
 # * [Test suite](src/testSuite.md)
