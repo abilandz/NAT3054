@@ -1,7 +1,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20261116-2
+**Last update**: 20261118-1
 
 <!-- this is a comment -->
 
@@ -1317,7 +1317,7 @@ The above workflow is summarized with the following diagram:
 
 
 
-#### Combining changes on different branches: merge, rebase and cherry-pick <a name="combining.changes.merge.rebase.and.cherry.pick"></a>
+#### Combining changes: merge, rebase and cherry-pick <a name="combining.changes.merge.rebase.and.cherry.pick"></a>
 
 In this section, we illustrate the workflow that can be used to combine changes on two different branches. This material is relevant for two frequently encountered cases when into the current local branch one wants to incorporate changes from: 
 
@@ -1977,7 +1977,7 @@ With a series of examples, sorted in alphabetical order, we now illustrate how t
 
 
 
-**git bisect** &mdash; TBI 20241006 Check the book + see https://thoughtbot.com/blog/git-bisect
+**git bisect** &mdash; Find quickly the commit that introduced a bug. A concrete example of its usage can be found in the official documentation at this [link](https://git-scm.com/docs/git-bisect). 
 
 **git blame** _someFile_ &mdash; Inspect which commit and author modified this file on a per-line basis, annotating lines which were modified or added. Works fully for committed and only partially for not committed yet changes (in the latter case, commit ID and author are missing and only "0000000 (Not Committed Yet …)" is printed instead, but all changes are nevertheless shown). Alternatively, for uncommitted changes one can also use **git diff** (see further below).
 
@@ -1997,21 +1997,19 @@ cfd0b003 (abilandz 2025-09-15 09:35:15 +0200 1) <img src="Figures/git.png" alt="
 ```bash
 $ git branch
 * devel
-  master
+  main
 ```
 
-The currently enabled branch in the working tree is indicated with "\*". Typically, and only as a matter of convention, the branch named "devel" captures ongoing development, gets the latest bug fixes, and is where new features appear. The "master" branch is typically updated only for stable releases and important patches. A new addition in the "devel" branch, which passed all the tests, is ported to the "master" branch, and when a lot of newly approved features appear in the "master" branch, the "master" is tagged into a new release (see **git tag** below).
+The currently enabled branch in the working tree is indicated with "\*". Typically, and only as a matter of convention, the branch named "devel" captures ongoing development, gets the latest bug fixes, and is where new features appear. The "main" branch is typically updated only for stable releases and important patches (in many projects "master" is preferred as a name for that branch). A new addition in the "devel" branch, which passed all the tests, is ported to the "main" branch, and when a lot of newly approved features appear in the "main" branch, the "main" is tagged into a new release (see **git tag** below).
 
 **git branch -a** &mdash; List available branches both in the local repository and including the remote-tracking branches. This command works only after the first commit is made in the repository:
 
 ```bash
 $ git branch -a
-* master
-  remotes/origin/HEAD -> origin/master
-  remotes/origin/master
+* main
+  remotes/origin/HEAD -> origin/main
+  remotes/origin/main
 ```
-
-TBI 20241010 Clarify the meaning of above output. Check the book
 
 **git branch -d** _someBranch_ &mdash; Delete the local branch named _someBranch_. This command will not work if: 
 
@@ -2019,9 +2017,7 @@ TBI 20241010 Clarify the meaning of above output. Check the book
 
 * the branch contains uncommitted changes.
 
-  TBI 20241010 I need to clarify what happens to remote-tracking branch (if any) of local branch which was just deleted
-
-**git branch -D** _someBranch_ &mdash; Force delete of the local branch named _someBranch_, even if there are uncommitted changes.
+You can force delete of the local branch even if there are uncommitted changes on it, by using a flag ```-D``` instead of ```-d```.
 
 **git branch -d -r origin/[remote_branch]** &mdash; Stop track a remote branch without deleting the remote branch in the repository. Same (or similar!? TBI) as git branch --unset-upstream <local-branch-name> (but check further). To delete the branch in remote repo, use instead 'git push origin :<branch-name>' TBI 20240310 check this example and re-word TBI 20250529 See again Chapter 42
 
@@ -2039,11 +2035,9 @@ TBI 20250529 test this example + move it better to How to's
 
 ```bash
 $ git branch -r
-  origin/HEAD -> origin/master
-  origin/master
+  origin/HEAD -> origin/main
+  origin/main
 ```
-
-TBI 20241010 This is example from MVC paper, explain above lines.
 
 **git branch -v** &mdash; List available local branches, with more info. 
 
@@ -2052,8 +2046,6 @@ $ git branch -v
 * master 5cf889d0 [ahead 1] additional event cuts
 ```
 
-TBI 20241010 explain meaning of "[ahead 1]"
-
 **git branch -vv** &mdash; List available local branches and the corresponding remote branches, with more info.
 
 ```bash
@@ -2061,9 +2053,7 @@ $ git branch -vv
 * master 5cf889d0 [upstream/master: ahead 1] additional event cuts
 ```
 
-TBI 20241010 explain meaning of "[ahead 1]" or point to the previous example
-
-**git branch** _someName_ &mdash; Make new branch with the name _someName_ and stay on the current branch. By default, the starting point is the commit to which the current HEAD points to. If you want to achieve the same, but also immediately switch to a new branch, use **git checkout -b** _someName_ instead.
+**git branch** _someName_ &mdash; Make new branch with the name _someName_ and stay on the current branch. By default, the starting point is the commit to which the current HEAD points to. If you want to achieve the same, but also immediately switch to a new branch, use instead **git switch -c** _someName_, or equivalently **git checkout -b** _someName_ (the former is recommended, but it is supported only in recent Git versions).
 
 **git branch** _someName_ _someHash_ &mdash; Make new branch with the name _someName_, and non-default starting point (commit ID, remote, or local branch). AB : just as previous, this is analogy: git checkout -b <some-name> <hash> TBI 20241003 check until the end + provide examples
 
@@ -2099,7 +2089,7 @@ Branch 20190925_tris set up to track remote branch 20190925_tris from origin. TB
 
 **git checkout** _commitID_ _someFile_ &mdash; Restores the status of file _someFile_ in the current working tree as it was in the working tree corresponding to the commit named _commitID_. TBI 20241003 see if I need to improve the wording
 
-**git checkout** _commitID_ &mdash; This command will reset your complete working tree to the status described by this commit. After this, you are in **detached head mode (DHM)**, commits in this mode are harder to find, after you checkout another branch. It's a good practice before committing in this mode to create a new branch, to leave the DHM. For a more differential treatment of what needs to be reset either on the staging area or in the working tree, see below the usage of **git reset** _committID_ for available options.  
+**git checkout** _commitID_ &mdash; This command will reset your complete working tree to the status described by this commit. After this, you are in **detached head mode (DHM)**, commits in this mode are harder to find, after you checkout another branch. It's a good practice before committing in this mode to create a new branch, to leave the DHM. For a more differential treatment of what needs to be reset either on the staging area or in the working tree, see below the usage of **git reset** _committID_ for available options (the comparison to related commands **git reset** and **git revert** is summarized in a table below, where **git revert** is introduced).
 
 **git checkout** _commitID_ ^ -- _someFile-path_ &mdash; trick to restore deleted file, using predecessors operator ```^ ``` 
 
@@ -2427,13 +2417,17 @@ nothing to commit (create/copy files and use "git add" to track)
 
 
 
-**git rebase** &mdash; Rebase local branch based on the latest fetch
+**git rebase** &mdash; Rebase local branch based on the latest fetch. For instance:
 
 ```bash
-     Example:
-     1/ git checkout master # switch to particular branch
-     2/ git fetch # update remote-tracking branches
-     3/ git rebase origin/master # if you are fine with the changes, rebase
+# switch to particular branch:
+$ git checkout master
+
+# update remote-tracking branches:
+$ git fetch
+
+# if you are fine with the changes, rebase:
+$ git rebase origin/master
 ```
 
 **git reflog** &mdash; List the history of commits, using either HEAD (default) or the branch name as the reference. It lists also the commits which were removed. When you reset the branch pointer to some older commit ID, **git log** does not show the new commits, but **git reflog** does. Its usage is illustrated with the following two examples:
@@ -2476,60 +2470,84 @@ Since one can think oh HEAD being the last commit on the current branch, using H
 
 
 
-**git reset** &mdash; manually resets the current branch to the specified state (e.g. to the state corresponding to particular commit ID). When used by default without additional parameters, HEAD remains the same. When compared to **git checkout** command, HEAD is not in _detached head mode_ after using **git reset**, meaning that all subsequent commits can be easily found later, because HEAD automatically advances to them. Typically, this command is used to nullify the effect of **git add**, i.e. to unstage the specified files. When used this way, this command avoids that the changes are included in the next commit, but the changes are still available in the working tree (and can be staged at some point later again):
+**git reset** &mdash; Manually reset the current branch to the specified state (e.g. to the state corresponding to particular commit ID). When used by default, i.e. without additional options and arguments, HEAD remains the same:
+
+```bash
+# unstage all files, but keep all changes in the working tree:
+$ git reset
+```
+
+The above command leaves the working tree untouched, i.e. all files which were staged are now unstaged, but all latest changes in those files are still up-to-date in the working tree. Typically, this command is used to nullify the effect of **git add**, i.e. to unstage the specified files. When used this way, this command avoids that the changes are included in the next commit, but the changes are still available in the working tree (and can be staged at some point later again):
 
 ```bash
 # stage the files and make them ready for the next commit:
-git add file1 file2 ...
+$ git add file1 file2 ... fileN
 
-# unstage the files temporarily in order not to include them in the next commit, but keep all changes in the working tree, 
-# and stage these files again later, in some other commit: 
-git reset file1 file2 ...
+# unstage a few specific files temporarily in order not to include them
+# in the next commit, but keep all changes in the working tree, and stage 
+# these files again later, in some other commit: 
+$ git reset file4 file7
+Unstaged changes after reset:
+M	file4
+M	file7
 ```
 
-What gets reset with this command can be further refined by using additionally one of the three parameters below. In each case, HEAD is moved:
+What gets reset with the command **git reset** can be further refined by using additionally one of the three options below. In each case, HEAD is moved:
 
-* **--soft** &mdash; moves only the HEAD pointer. Neither the staging area nor working tree are affected. Can be used to squash multiple commits **(TBI 20250517: read again page 117 and see if you want to add that among examples below)**
+* **--soft** &mdash; moves only the HEAD pointer. Neither the staging area nor working tree are affected. Can be used to squash multiple commits;
 
-* **--mixed** &mdash; (the default) moves the HEAD pointer and resets the staging area to new HEAD
+* **--mixed** &mdash; (the default option) moves the HEAD pointer and resets the staging area to new HEAD;
 
-* **--hard** &mdash; moves the HEAD pointer, and resets both the staging area and working tree to new HEAD
+* **--hard** &mdash; moves the HEAD pointer, and resets both the staging area and working tree to new HEAD.
 
-Usage of these parameters is illustrated with following examples:
+Usage of these options is illustrated with following examples:
 
 ```bash
-# move the HEAD pointer to the previous commit, without affecting staging area or working tree: 
+# move the HEAD pointer to the previous commit, without affecting 
+# staging area or working tree: 
 git reset --soft HEAD~1
 
-# move the HEAD pointer to specific commit ID, and reset the staging area to correspond to that commit ID:
+# move the HEAD pointer to specific commit ID, and reset the staging area 
+# to correspond to that commit ID:
 git reset --mixed 5ae1014
 
-# move the HEAD pointer to specific commit ID, and reset the staging area and the working tree to that commit ID:
+# move the HEAD pointer to specific commit ID, and reset the staging area 
+# and the working tree to that commit ID:
 git reset --hard 5ae1014
 
-# remove staged and working tree changes of committed files => after this, working tree exactly matches HEAD:
+# remove staged and working tree changes of committed files. After this,
+# working tree exactly matches HEAD:
 git reset --hard
 ```
+
+We remark that **git reset** and  **git reset --mixed HEAD** are equivalent and either version can be used only to unstages files (the comparison to related commands **git checkout** and **git revert** is summarized in a table below, where **git revert** is introduced).
 
 Finally, we remark that **git reset** does not remove untracked files &mdash; use **git clean** for that.
 
 
 
-**git revert** &mdash; reverts the changes introduced with particular commit.
+**git revert** _commitID_ &mdash; Revert the changes introduced by a particular commit _commitID_. This command creates a new commit in which all changes introduced by the previous commit _commitID_ are undone. It does not rewrite or remove the original commit from history (unlike **git reset**). Therefore, if one reverts the commit that reverted the original commit, one will fall back to the original commit (at the expense of populating repository's commit history). The syntax is simple:
 
 ```bash
-# remove all changes in the working tree introduced by particular commit, 
-# and document immediately in the editor why these changes were withdrawn: 
-git revert someCommitID
+$ git revert commitID
 ```
 
+The above command will undo all changes in the working tree introduced by the particular commit _commitID_. Automatically, the default Git editor opens, and one can immediately document in the editor why these changes were withdrawn, which later can be traced with **git log** or **git reflog** commands. This command shall be preferred over **git reset** when the commit to be withdrawn has already been shared with others.
+
+It is instructive to compare and summarize the effect of using **git revert** _commitID_ to two related, but nevertheless different commands, namely **git checkout** _commitID_ and **git reset**  _commitID_:
+
+|            | detached head | original commit reusable | new commit created | branch pointer moved  |
+| :------------ | :--: | :--: | :--: | :--: |
+| **checkout** |  yes  |  yes   |  no   | no  |
+| **reset**    |  no   |  no    |  no   | yes |
+| **revert**   |  no   |  yes   |  yes  | no  |
 
 
-**git rm**
 
-**git rm --cached <some-file>** &mdash; stop tracking this file
 
-**git rm -r --cached <some-directory>** &mdash; stop tracking this directory
+**git rm --cached** _someFile_ &mdash; Stop tracking the file _someFile_.
+
+**git rm -r --cached** _someDirectory_ &mdash; Stop tracking the directory _someDirectory_.
 
 
 
@@ -2537,11 +2555,12 @@ git revert someCommitID
 
 
 
-**git shortlog** &mdash; summarizes the output of 'git log'. It groups all commits by the author (alphabetically by default), and it includes the first line of the commit message. This command gives a nice summary of who the most productive developers were in the repository.
+**git shortlog** &mdash; Summarize and reorganize the somewhat lengthy output of **git log**. It groups all commits by the author (alphabetically by default), and it includes the first line of the commit message. This command gives a nice summary of who the most productive developers were in the repository.
 
 ```bash
-# default printout is aplhabetical:
-$ git shortlog # use flag -n to order by number of commits, instead alphabetical
+# default printout is alphabetical, use flag -n to order 
+# by number of commits, instead of alphabetically:
+$ git shortlog
 Alice Malice (2):
       fix for something (#8588)
       fix for something else (#8632)
@@ -2553,8 +2572,9 @@ Bob Blob (3):
 
 ... many more lines ...
 
-# sort out all developers per number of commits, most productive are printed last:
-$ git shortlog -s | sort -k1 -n -r
+# sort out all developers per number of commits, most productive
+# developers are printed at the end:
+$ git shortlog -s | sort -k1 -n
    2  Alice Malice
    3  Bob Blob
 
@@ -2569,7 +2589,7 @@ $ git shortlog --author="abilandz" --since="2 months"
 
 
 
-**git show**  &mdash; shows the full content of a file in specified commit, branch, or tag, but without affecting the status of that file in the current working tree. For instance, this command enables comparison of file content across different branches, or to trace down differences introduced by the specified commit on this file. General syntax is:
+**git show**  &mdash; Show the full content of a file in specified commit, branch, or tag, but without affecting the status of that file in the current working tree. For instance, this command enables comparison of file content across different branches, or to trace down differences introduced by the specified commit on this file. General syntax is:
 
 ```bash
 git show someReference:someFile
@@ -2578,16 +2598,16 @@ git show someReference:someFile
 where _someReference_ can be branch, tag, HEAD, or commitID, and _someFile_ is the file name including the relative path to the root directory of current Git repository (not the absolute path in the file system!). The usage of this command is illustrated with few examples:
 
 ```bash 
-# show the full content of file someFile.txt in the previous commitID eb7f37c:
+# show the full content of "someFile.txt" in the commitID eb7f37c:
 git show eb7f37c:someFile.txt
 
-# show the full content of file someFile.txt on another branch named 'otherBranch'
+# show the full content of "someFile.txt" on another branch named "otherBranch"
 git show otherBranch:someFile.txt
 ```
 
 
 
-**git stash** &mdash; allows to temporarily record the current state of the working directory and the staging area, and to revert to the last committed revision (_to stash_ literally means to store something safely in a hidden or secret place). This enables you to pull from the remote repository the latest important changes, or to start working immediately in your local repository on an urgent change, e.g. to develop an urgent bug fix. Afterwards, you can restore the stashed change, which will be applied to the current new and updated version of the source code. 
+**git stash** &mdash; Record temporarily the current state of the working directory and the staging area, and revert to the last committed revision (_to stash_ literally means to store something safely in a hidden or secret place). This enables you to pull from the remote repository the latest important changes, or to start working immediately in your local repository on an urgent change, e.g. to develop an urgent bug fix. Afterwards, you can restore the stashed change, which will be applied to the current new and updated version of the source code. 
 
 ```bash
 # working on a file "file-1.txt"
@@ -2624,7 +2644,7 @@ Dropped refs/stash@{0} (9b04bc441f665be83aef5342c762f60fbcd7fa3e)
 # we continue to work on file-1.txt, nothing was lost
 ```
 
-**git status** &mdash; show the status of working tree. Typically, it provides an executive summary of all changes in the working tree with respect to the previous commit, accompanied with suggestion how to deal with those changes (e.g. list of files which were modified, etc.) TBI 20250305 see if i need to expand this further, see page 85
+**git status** &mdash; Show the status of working tree. Typically, it provides an executive summary of all changes in the working tree with respect to the previous commit, accompanied with suggestion how to deal with those changes. This command can always be executed, as it never leads to any changes in the working tree. 
 
 
 **git switch** _someBranchName_  &mdash; TBI 20261116 finalize this one
@@ -2639,15 +2659,15 @@ Dropped refs/stash@{0} (9b04bc441f665be83aef5342c762f60fbcd7fa3e)
 
 **git tag** &mdash; List all tags.
 
-**git tag -l <some-pattern>** &mdash; search for a tag which has <some-pattern> in the name. You have to use wildcards
+**git tag -l** _somePattern_ &mdash; Search for a tag which has _somePattern_ in the name (you can use wildcards in pattern).
 
-**git tag 1.0.0** &mdash; create lightweight tag "1.0.0" from the current branch TBI 20250503 replace 1.0.0 with general. Also below
+**git tag 1.0.0** &mdash; Create lightweight tag named "1.0.0" from the current branch.
 
-**git tag 1.0.0 -m some additional text describing the content of this particular tag** &mdash; create annotated tag "1.0.0" from the current branch with accompanied message
+**git tag 1.0.0 -m "some additional text describing the content of this particular tag"** &mdash; Create annotated tag named "1.0.0" from the current branch, with some accompanied message.
 
-**git tag 1.0.0 commitID** &mdash; create a tag from this commit TBI 20250503 improve the text 
+**git tag 1.0.0** _commitID_ &mdash; Create a tag corresponding to the _commitID_ revision.    
 
-**git tag -d v1.0.0** &mdash; delete locally tag v1.0.0
+**git tag -d 1.0.0** &mdash; Delete locally tag 1.0.0.
 
 
 
