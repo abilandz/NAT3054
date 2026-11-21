@@ -1,4 +1,4 @@
-**Last update**: 20261116-1
+**Last update**: 20261121-1
 
 ### Introduction
 
@@ -22,5 +22,6 @@ The formal course description can be found at the TUM website at the following p
     * [Homework 1](src/Homeworks/Homework_1.md)
     * [Homework 2](src/Homeworks/Homework_2.md)
     * [Homework 3](src/Homeworks/Homework_3.md)
+    * [Homework 4](src/Homeworks/Homework_4.md)
 * [Past semesters](src/history.md)
 <!-- * [Test suite](src/testSuite.md) -->

@@ -1,8 +1,8 @@
-# Homework 3: Git
+# Homework 4: Git (2/2)
 
-**Last update:** 20261116-1
+**Last update:** 20261121-1
 
-**Challenge #TBI:** As a starting point for this challenge, we take the following current situation in the project development:
+**Challenge #1:** As a starting point for this challenge, we take the following current situation in the project development:
 
 ```mermaid
 %%{init: {
@@ -36,7 +36,7 @@ Write down the Git commands to achieve the following:
 
 
 
-**Challenge #TBI:** **Recovery from deletion.** In this challenge, various recovery scenarios are presented when one intentionally or accidentally deletes something in the Git repository, and needs it later. Outline the procedure and write down the concrete Git commands to recover from the following situations: 
+**Challenge #2:** **Recovery from deletion.** In this challenge, various recovery scenarios are presented when one intentionally or accidentally deletes something in the Git repository, and needs it later. Outline the procedure and write down the concrete Git commands to recover from the following situations: 
 
 1. A file was mistakenly deleted in the current working tree — how to recover its content to the content when that file was last:
     - staged;
