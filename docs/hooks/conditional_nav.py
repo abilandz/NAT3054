@@ -46,7 +46,7 @@ def on_config(config):
                 {"Homework 4" : "Homeworks/Homework_4.md"},
             ]},
             {"Past semesters": "history.md"},
-            {"Test suite": "testSuite.md"},
+#            {"Test suite": "testSuite.md"},
         ]
 
     elif theme_name == "readthedocs": # Different structure for "ReadTheDocs" theme
