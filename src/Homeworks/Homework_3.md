@@ -1,6 +1,6 @@
 # Homework 3: Git (1/2)
 
-**Last update:** 20261124-1
+**Last update:** 20261124-2
 
 **Automatically building and hosting a static website on GitHub**
 
@@ -97,21 +97,25 @@ The step-by-step procedure goes as follows:
 
 9. Next, one defines the files that hold the concrete website content, and how to navigate (the ```nav``` field in the above configuration file) from one file to another while browsing the site content online. For instance, one can start with the following trivial content of those files:
 
-    ```Markdown title="File: docs/index.md"
-    --8<-- "Homeworks/Homework_3/index.md"
-    ```
+	* Content of file "docs/index.md":
+		```markdown
+		This page is the homepage.
+		```
 
-	```Markdown title="File: docs/src/welcome.md"
-    --8<-- "Homeworks/Homework_3/welcome.md"
-    ```
+	* Content of file "docs/src/welcome.md":
+		```markdown
+		Very warm welcome to my site ...
+		```
 
-	```Markdown title="File: docs/src/section_1.md"
-    --8<-- "Homeworks/Homework_3/section_1.md"
-    ```
+	* Content of file "docs/src/section_1.md":
+		```markdown
+		The content of Section 1 ...
+		```
 
-	```Markdown title="File: docs/src/section_2.md"
-    --8<-- "Homeworks/Homework_3/section_2.md"
-    ```
+	* Content of file "docs/src/section_2.md":
+		```markdown
+		The content of Section 2 ...
+		```
 
 10. Finally, one can build and preview the static site locally, by executing the following command in the directory where the main configuration file "mkdocs.yml" is placed:
 	```bash
