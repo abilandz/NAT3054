@@ -1,7 +1,7 @@
 
 # Git - a distributed version control system
 
-**Last update**: 20261118-1
+**Last update**: 20261124-1
 
 <!-- this is a comment -->
 
@@ -1501,7 +1501,7 @@ With this approach, merging conflicts can occur if the same file is modified in 
 
 If one has several parallel branches for concurrent experimental development, e.g. _devel-1_, _devel-2_, ..., one can attempt to merge changes from all of them into the _master_ branch in one go by using:
 ```bash
-# switch to branch "master" and execute:
+# switch to branch 'main' and execute:
 $ git merge devel-1 devel-2 ...
 ```
 In this case, Git will use another strategy for merging, the so-called _"octopus"_ strategy. However, this is not recommended, as the  _"octopus"_ merging strategy will be aborted by Git if there is a single merging conflict. After such a failure, the recommendation in any case will be that one branch is merged at a time with the standard _"ort"_ strategy, and merging conflicts (if any) are fixed individually.

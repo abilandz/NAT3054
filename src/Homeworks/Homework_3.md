@@ -1,20 +1,22 @@
 # Homework 3: Git (1/2)
 
-**Last update:** 20261121-1
+**Last update:** 20261124-1
 
 **Automatically building and hosting a static website on GitHub**
 
-In this challenge, a step-by-step procedure is outlined that can be used to automatically build and host a static website on [GitHub](https://github.com), using one of the freely available static-site generators. Such static generators are particularly suitable to build a website hosting documentation, when dynamical interaction with the user is not needed. As a concrete example in this challenge, a very popular [MkDocs](https://www.mkdocs.org/) static-site generator is used to automatically generate the documentation website for the project written in the Markdown source code. The three predefined [MkDocs](https://www.mkdocs.org/) themes are tested, namely: "mkdocs", "material" (the recommended one), and "readthedocs".
+In this challenge, a step-by-step procedure is outlined that can be used to automatically build and host a static website on [GitHub](https://github.com), using one of the freely available static-site generators. Such static generators are particularly suitable to build a website hosting documentation, when dynamic interaction with the user is not needed. As a concrete example in this challenge, a very popular [MkDocs](https://www.mkdocs.org/) static-site generator is used to automatically generate the documentation website for the project written in [Markdown](https://daringfireball.net/projects/markdown/) (a very popular lightweight markup language). The three [MkDocs](https://www.mkdocs.org/) themes are tested, namely: predefined built-in themes "mkdocs" and "readthedocs", and a third-party "material" theme (the recommended one). 
 
-1. Make a new public repository (it has to be public in this example!) on [GitHub](https://github.com), e.g. named "myWebsite" with a default "README.md" file (in this challenge, there will be no need for a predefined ".gitignore" template, or a specific license), and clone it locally, e.g.:
+The step-by-step procedure goes as follows:
+
+1. Make a new public repository (it has to be public in this example!) on [GitHub](https://github.com), e.g. named "myWebsite" with a default "README.md" file. In this challenge, there will be no need for a predefined ".gitignore" template since the project will be written mainly in [Markdown](https://daringfireball.net/projects/markdown/), and there will be no need for a specific license. Upon creation, clone that public repository locally, e.g.:
 
     ```bash
     $ git clone https://github.com/abilandz/myWebsite myWebsite 
     ```
 
-    Do not forget above to replace "abilandz" with your account on [GitHub](https://github.com).
+    Do not forget in the above command input to replace "abilandz" with your account on [GitHub](https://github.com).
 
-2. Install [MkDocs](https://www.mkdocs.org/) locally, and its very popular custom theme "material", using the following command:
+2. Install [MkDocs](https://www.mkdocs.org/) locally, and its third-party theme "material", using the following command:
 
     ```bash
     $ pip install mkdocs mkdocs-material
@@ -27,7 +29,7 @@ In this challenge, a step-by-step procedure is outlined that can be used to auto
     $ sudo apt install python3-pip
     ```
 
-	Similarly, on other Linux distributions it can be installed using their default package managers instead of Ubuntu's **apt** (for instance **pacman** on Arch Linux, etc.).
+	Similarly, on other Linux distributions it can be installed using their default package managers instead of Ubuntu's **apt** (for instance, using **pacman** on Arch Linux, etc.).
 
 3. Initially, organize the local directory "myWebsite" and populate it with files as follows:
 
@@ -40,53 +42,54 @@ In this challenge, a step-by-step procedure is outlined that can be used to auto
         ├── index.md
         ├── figures/
         │   ├── favicon.png
-        │	└── logo.png
+        │   └── logo.png
         └── src/
             ├── welcome.md
             ├── section_1.md
             └── section_2.md
 	```
 	
-4. The content of the file "README.md" is written using the Markdown syntax, and this content will be automatically displayed on the repository's main page on [GitHub](https://github.com). You can add for instance the following trivial content:
+4. The content of the file "README.md" is written using the [Markdown](https://daringfireball.net/projects/markdown/) syntax, and this content will be automatically displayed on the repository's main page on [GitHub](https://github.com). You can add for instance the following trivial content:
 
-       ```markdown
-       # My website
-    
-       On this website, I ...
-       ```
+    ```markdown
+    # My website
 
-	and then see later how the repository's page on [GitHub](https://github.com) looks like, when you make the commit locally with these changes, and push it to the online repository. 
+    On this website, I ...
+    ```
 
-5. In the file ".gitignore" add the following content initially:
+	and then see later how the repository's page on [GitHub](https://github.com) looks, when you make the commit locally with these changes, and push it to the online repository. 
 
-       ```bash
-       site/
-       ```
+5. In the file ".gitignore" add only the following content initially:
 
-	This is needed, so that all the generated site files, which are automatically created in this directory by [MkDocs](https://www.mkdocs.org/) and are getting updated at each build, are not unnecessarily added to the version control by Git. 
+    ```bash
+    site/
+    ```
+
+	This is needed, so that all the generated site files, which are automatically created in this directory by the [MkDocs](https://www.mkdocs.org/) engine and are getting updated on each build, are not unnecessarily added to the version control by Git. 
 
 6. The file "mkdocs.yml" is the most important configuration file, and its syntax and internal structure are specific to the [MkDocs](https://www.mkdocs.org/) static-site generator. Other static-site generators use different syntax or even different language in the configuration files, but the overall idea is the same. The initial content of "mkdocs.yml" needs to resemble the above directory structure and could look as follows:
 
-       ```yaml
-       site_name: "This is my website"
-       
-       theme:
-         name: material
-         favicon: figures/favicon.png
-         logo: figures/logo.png
-            
-       nav:
-         - "Home": "index.md"
-         - "Welcome": "src/welcome.md"
-         - "Sections":
-             - "Section 1": "src/section_1.md"
-             - "Section 2": "src/section_2.md"     
-       ```
-	According to the internal YAML syntax, indentation is not fixed to some specific value, but once the starting indentation is set, it has to remain consistent throughout the document.
+    ```yaml
+    site_name: "This is my website"
 	
-7. By default the custom theme ```material``` is used (it needs to be installed separately, see above), but one can always experiment with two built-in themes, for instance ```mkdocs``` and ```readthedocs``` (no separate installation is needed, they come with [MkDocs](https://www.mkdocs.org/) installation).
+    theme:
+      name: material
+      favicon: figures/favicon.png
+      logo: figures/logo.png
+	
+    nav:
+      - "Home": "index.md"
+      - "Welcome": "src/welcome.md"
+      - "Sections":
+         - "Section 1": "src/section_1.md"
+         - "Section 2": "src/section_2.md"
+    ```
 
-8. The website logo and favicon icon (the small icon in the tab when the website is open in a browser) can be specified separately with the corresponding fields in the "mkdocs.yml" configuration file. If this is not needed, these two fields can be commented out using the ```#``` symbol (similar to shell syntax):
+	In [YAML](https://yaml.org/) (a recursive acronym for "YAML Ain't Markup Language"), indentation is not fixed to some specific value, but once the starting indentation is set, it has to remain consistent throughout the configuration file.
+	
+7. By default, the theme "material" is used in this challenge (it needs to be installed separately, see above), but one can always experiment with two built-in themes, namely "mkdocs" and "readthedocs" (no separate installation is needed, they come with [MkDocs](https://www.mkdocs.org/) installation).
+
+8. The website logo and favicon icon (the small icon in the tab when the website is open in a browser) can be specified separately with the corresponding fields ```logo``` and ```favicon``` in the "mkdocs.yml" configuration file. If this is not needed, these two fields can be commented out using the ```#``` symbol (similar to shell syntax):
     ```yaml
     # favicon: figures/favicon.png
     # logo: figures/logo.png
@@ -110,40 +113,40 @@ In this challenge, a step-by-step procedure is outlined that can be used to auto
     --8<-- "Homeworks/Homework_3/section_2.md"
     ```
 
-10. Finally, one can build and preview the static site locally, by executing in the directory where the main configuration file "mkdocs.yml" is placed:
+10. Finally, one can build and preview the static site locally, by executing the following command in the directory where the main configuration file "mkdocs.yml" is placed:
 	```bash
 	$ mkdocs serve
 	... some additional info ...
 	INFO    -  [12:21:02] Serving on http://127.0.0.1:8000/
 	```
-	It suffices now to open address "http://127.0.0.1:8000/" in a local browser, and the website will be displayed. If one runs the above command in a separate terminal, and keeps a local browser open with the address "http://127.0.0.1:8000/", then any change in the website source code will be automatically refreshed in the browser. 
+	It suffices now to open the address "http://127.0.0.1:8000/" in a local browser, and the website will be displayed. If one runs the above command in a separate terminal, and keeps a local browser open with the address "http://127.0.0.1:8000/", then any change in the website source code will be automatically refreshed in the browser (live reload). 
     
-11. When satisfied with the current status, one stages, commits and pushes to the online [GitHub](https://github.com) repository all changes in the standard way:
+11. When satisfied with the current status, stages, commit and push to the online [GitHub](https://github.com) repository all changes in the usual way:
 	```bash
 	$ git add .
 	$ git commit -m "first update"
 	$ git push
 	```
-	After this step, all changes on the local "main" branch are merely propagated to the corresponding remote branch in the online [GitHub](https://github.com) repository. But to host the [MkDocs](https://www.mkdocs.org/)-based project on [GitHub](https://github.com), one has to go through a few more steps.
+	After this step, all changes on the local "main" branch are merely propagated to the corresponding remote branch in the online [GitHub](https://github.com) repository. However, to host the [MkDocs](https://www.mkdocs.org/) site on [GitHub](https://github.com), a few additional steps are still required.
 	
-12. Deploy in addition the [MkDocs](https://www.mkdocs.org/)-based project via a separate branch in this repository. This step is completely automated, and one needs to execute only:
+12. Deploy in addition the [MkDocs](https://www.mkdocs.org/) site via a separate branch in this repository. This step is completely automated, and one needs to execute only:
     ```bash
     $ mkdocs gh-deploy
     ... some additional info ...
     INFO    -  Your documentation should shortly be available at: https://abilandz.github.io/myWebsite/
     ```
-    The above command **mkdocs gh-deploy** created a new branch automatically in a local Git repository, named "gh-pages", and even deployed that branch automatically to the online [GitHub](https://github.com) repository. One can select now on [GitHub](https://github.com) whether the project will be built and hosted from the "main" branch (using the default "GitHub Pages" theme and layout) or from "gh-pages" branch (using the specified [MkDocs](https://www.mkdocs.org/) theme in the configuration file "mkdocs.yml", which was "material" in the above example). In both cases, the project will be hosted at automatically generated URL (e.g. [https://abilandz.github.io/myWebsite/](https://abilandz.github.io/myWebsite/), replace "abilandz" your username).
+    The above command **mkdocs gh-deploy** created a new branch automatically in a local Git repository, named "gh-pages", and even deployed that branch automatically to the online [GitHub](https://github.com) repository. One can select now on [GitHub](https://github.com) whether the project will be built and hosted from the "main" branch (using the default "GitHub Pages" theme and layout) or from "gh-pages" branch (using the specified [MkDocs](https://www.mkdocs.org/) theme in the configuration file "mkdocs.yml", which was "material" in the above example). In both cases, the project will be hosted at automatically generated URL (e.g. [https://abilandz.github.io/myWebsite/](https://abilandz.github.io/myWebsite/), replace "abilandz" with your username).
     
 13. Finally, one needs to configure on [GitHub](https://github.com) from which branch the project's static website will be built (this configuration needs to be performed only once):
 	+ Go to the project repository on [GitHub](https://github.com), and navigate to "Settings";
 	+ In the left menu, choose "Pages";
-	+ Ensure that under "Build and deployment" the Git branch is set to "gh-pages" (if you want to use [MkDocs](https://www.mkdocs.org/) layout), or "main" (if you want to use the default "GitHub Pages" layout).
+	+ Ensure that under "Build and deployment" the Git branch is set to "gh-pages" (if you want to use [MkDocs](https://www.mkdocs.org/) layout), or "main" (if you want to use the default "GitHub Pages" theme and layout).
 
 14. After the above initial setup, the normal development workflow is:
 	+ Develop the site locally and preview all changes in a local browser with:
 		```bash
         $ mkdocs serve
-        ```
+      ```
 	+ Stage, commit, push and deploy all changes:
 		```bash
         $ git add .
@@ -151,13 +154,18 @@ In this challenge, a step-by-step procedure is outlined that can be used to auto
         $ git push
         $ mkdocs gh-deploy
 		```
-		After this step, the website content will be automatically updated on [GitHub](https://github.com). 
+		After this step, the website content will be automatically updated at URL [https://abilandz.github.io/myWebsite/](https://abilandz.github.io/myWebsite/) (replace "abilandz" with your username).
 		
 
 **Challenge:** Send me the link to your example website for documentation hosted on [GitHub](https://github.com), which is built by using the "material" theme of [MkDocs](https://www.mkdocs.org/) (or one of the built-in themes "mkdocs" or "readthedocs").
 
+**Remark #1**: The static-site generator [MkDocs](https://www.mkdocs.org/) offers a lot of additional features, however they have to be enabled explicitly in the configuration file "mkdocs.yml" if necessary. For instance, if one wants to automatically generate the PDF version of the website and make it available for downloading, the PDF plugin such as ```to-pdf``` can be used. In that case, first install the additional package ```mkdocs-to-pdf``` as follows:
 
-**Remark #1**: The static-site generator [MkDocs](https://www.mkdocs.org/) offers a lot of additional built-in features, however they have to be enabled explicitly in the configuration file "mkdocs.yml" if necessary. For instance, if one wants to automatically generate the PDF version of the website and make it available for downloading, the PDF plugin (such as ```to-pdf``` or ```with-pdf```) can be used. In that case, the following lines need to be added to "mkdocs.yml":
+```bash
+$ pip install mkdocs-to-pdf
+```
+
+After that, add the following lines to "mkdocs.yml":
 
 ```YAML
 # download a site in PDF:
@@ -167,6 +175,6 @@ plugins:
       cover: false
       cover_title: "some title"
 ```
-In a similar fashion, one needs to enable explicitly the support for mathematical expressions, [Mermaid](https://mermaid.ai/) diagrams, etc.
+In the same way, you can enabla the support for mathematical expressions with [MathJax](https://www.mathjax.org/), for diagrams with [Mermaid](https://mermaid.ai/), and other extensions.
 
-**Remark #2**: There are plethora of other static-site generators besides [MkDocs](https://www.mkdocs.org/) and the default "GitHub Pages" offered by [GitHub](https://github.com), each of which comes with different features, configuration files, syntax and deployement procedure. You can find a good overview at [https://jamstack.org/generators/](https://jamstack.org/generators/).
+**Remark #2**: There are plethora of other static-site generators besides [MkDocs](https://www.mkdocs.org/) and the default "GitHub Pages" offered by [GitHub](https://github.com), each of which comes with different features, configuration format, syntax, and deployment procedure. A good overview is available at [https://jamstack.org/generators/](https://jamstack.org/generators/).

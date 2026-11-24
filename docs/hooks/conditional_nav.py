@@ -8,7 +8,7 @@ def on_config(config):
     if theme_name == "mkdocs": # Navigation for "bootstrap" theme (the default theme, but I have to use "mkdocs", not "bootstrap" as the name here)
         config.nav = [
             {"Introduction": "index.md"}, # this file "index.md" must be in docs/
-            {"Lectures": [  
+            {"Lectures": [
                 {"Lecture 1: Regular expressions": "regex.md"},
                 {"Lecture 2: Git": "git.md"},
                 {"Lecture 3: make & cmake": "make.md"},
@@ -16,7 +16,7 @@ def on_config(config):
                 {"Lecture 5: Valgrind": "valgrind.md"},
                 {"Lecture 6: gdb: The GNU Debugger": "gdb.md"},
             ]},
-            {"Homeworks": [  
+            {"Homeworks": [
                 {"Scoresheet": "Homeworks/Scoresheet.md"},
                 {"Homework 1" : "Homeworks/Homework_1.md"},
                 {"Homework 2" : "Homeworks/Homework_2.md"},
@@ -30,7 +30,7 @@ def on_config(config):
     elif theme_name == "material": # Navigation for "Material" theme
         config.nav = [
             {"Introduction": "index.md"}, # this file "index.md" must be in docs/
-            {"Lectures": [  
+            {"Lectures": [
                 {"1. Regular expressions": "regex.md"},
                 {"2. Git": "git.md"},
                 {"3. make & cmake": "make.md"},
@@ -38,7 +38,7 @@ def on_config(config):
                 {"5. Valgrind": "valgrind.md"},
                 {"6. gdb: The GNU Debugger": "gdb.md"},
             ]},
-            {"Homeworks": [  
+            {"Homeworks": [
                 {"Scoresheet": "Homeworks/Scoresheet.md"},
                 {"Homework 1" : "Homeworks/Homework_1.md"},
                 {"Homework 2" : "Homeworks/Homework_2.md"},
@@ -52,7 +52,7 @@ def on_config(config):
     elif theme_name == "readthedocs": # Different structure for "ReadTheDocs" theme
         config.nav = [
             {"Introduction": "index.md"}, # this file "index.md" must be in docs/
-            {"Lectures": [  
+            {"Lectures": [
                 {"Lecture 1: Regular expressions": "regex.md"},
                 {"Lecture 2: Git": "git.md"},
                 {"Lecture 3: make & cmake": "make.md"},
@@ -60,7 +60,7 @@ def on_config(config):
                 {"Lecture 5: Valgrind": "valgrind.md"},
                 {"Lecture 6: gdb: The GNU Debugger": "gdb.md"},
             ]},
-            {"Homeworks": [  
+            {"Homeworks": [
                 {"Scoresheet": "Homeworks/Scoresheet.md"},
                 {"Homework 1" : "Homeworks/Homework_1.md"},
                 {"Homework 2" : "Homeworks/Homework_2.md"},
@@ -68,7 +68,7 @@ def on_config(config):
                 {"Homework 4" : "Homeworks/Homework_4.md"},
             ]},
 
-            {"Past semesters": [  
+            {"Past semesters": [
                 {"History": "history.md"},
             ]},
   #          {"Test suite": "testSuite.md"},
