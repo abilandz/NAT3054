@@ -28,6 +28,10 @@ project:
           title: "Homework 1"
         - file: content/Homeworks/Homework_2.md
           title: "Homework 2"
+        - file: content/Homeworks/Homework_3.md
+          title: "Homework 3"
+        - file: content/Homeworks/Homework_4.md
+          title: "Homework 4"
     - file: content/history.md
     - file: content/testSuite.md
 
