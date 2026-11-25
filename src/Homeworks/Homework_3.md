@@ -1,6 +1,6 @@
 # Homework 3: Git (1/2)
 
-**Last update:** 20261124-2
+**Last update:** 20261125-1
 
 **Automatically building and hosting a static website on GitHub**
 
@@ -125,7 +125,7 @@ The step-by-step procedure goes as follows:
 	```
 	It suffices now to open the address "http://127.0.0.1:8000/" in a local browser, and the website will be displayed. If one runs the above command in a separate terminal, and keeps a local browser open with the address "http://127.0.0.1:8000/", then any change in the website source code will be automatically refreshed in the browser (live reload). 
     
-11. When satisfied with the current status, stages, commit and push to the online [GitHub](https://github.com) repository all changes in the usual way:
+11. When satisfied with the current status, stage, commit and push to the online [GitHub](https://github.com) repository all changes in the usual way:
 	```bash
 	$ git add .
 	$ git commit -m "first update"
@@ -146,11 +146,11 @@ The step-by-step procedure goes as follows:
 	+ In the left menu, choose "Pages";
 	+ Ensure that under "Build and deployment" the Git branch is set to "gh-pages" (if you want to use [MkDocs](https://www.mkdocs.org/) layout), or "main" (if you want to use the default "GitHub Pages" theme and layout).
 
-14. After the above initial setup, the normal development workflow is:
+14. After the above somewhat lengthy initial setup, the normal development workflow afterward is very simple and elegant:
 	+ Develop the site locally and preview all changes in a local browser with:
 		```bash
-        $ mkdocs serve
-      ```
+		$ mkdocs serve
+		```
 	+ Stage, commit, push and deploy all changes:
 		```bash
         $ git add .
@@ -158,7 +158,7 @@ The step-by-step procedure goes as follows:
         $ git push
         $ mkdocs gh-deploy
 		```
-		After this step, the website content will be automatically updated at URL [https://abilandz.github.io/myWebsite/](https://abilandz.github.io/myWebsite/) (replace "abilandz" with your username).
+		After this step, the website content will be automatically updated at URL [https://abilandz.github.io/myWebsite/](https://abilandz.github.io/myWebsite/) (replace "abilandz" with your username). Allow a short period (usually under 10 seconds) for [GitHub](https://github.com) to process the update.
 		
 
 **Challenge:** Send me the link to your example website for documentation hosted on [GitHub](https://github.com), which is built by using the "material" theme of [MkDocs](https://www.mkdocs.org/) (or one of the built-in themes "mkdocs" or "readthedocs").
@@ -179,6 +179,6 @@ plugins:
       cover: false
       cover_title: "some title"
 ```
-In the same way, you can enabla the support for mathematical expressions with [MathJax](https://www.mathjax.org/), for diagrams with [Mermaid](https://mermaid.ai/), and other extensions.
+In the same way, you can enable the support for mathematical expressions with [MathJax](https://www.mathjax.org/), for diagrams with [Mermaid](https://mermaid.ai/), and other extensions.
 
 **Remark #2**: There are plethora of other static-site generators besides [MkDocs](https://www.mkdocs.org/) and the default "GitHub Pages" offered by [GitHub](https://github.com), each of which comes with different features, configuration format, syntax, and deployment procedure. A good overview is available at [https://jamstack.org/generators/](https://jamstack.org/generators/).
